@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/preprereg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="PrePreReg"
+        android:icon="@drawable/baseline_app_registration_24"/>
+    <item
+        android:id="@+id/routine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Routine"
+        android:icon="@drawable/baseline_backup_table_24"/>
+    <item
+        android:id="@+id/friends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Friends"
+        android:icon="@drawable/baseline_accessibility_new_24"/>
+
+</menu>
