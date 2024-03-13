@@ -5,7 +5,6 @@ import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
 import kotlinx.coroutines.*
 
 class FetchData{
@@ -13,8 +12,7 @@ class FetchData{
 
     }
 
-    var courseKey: MutableList<String> = mutableListOf("")
-    lateinit var courseDetails: JSONArray
+    private var courseKey: MutableList<String> = mutableListOf("")
 
     private fun checkLab(classTime: String): Boolean {
         val raw = classTime.split(")")
@@ -211,29 +209,21 @@ class FetchData{
     }
 
 
-    private fun createJSON() {
+    suspend fun executeAsyncTask(): JSONArray {
+        return withContext(Dispatchers.IO) {
+            val url =
+                "https://usis.bracu.ac.bd/academia/admissionRequirement/getAvailableSeatStatus"
+            val doc: Document = Jsoup.connect(url).get()
+            val rows: Elements = doc.select("tr")
+            val courses = dataFormat(rows)
+            createCourseList(courses)
+            //val file = File("course_info.json")
+            //file.writeText(courses.toString(4))
 
-        val url = "https://usis.bracu.ac.bd/academia/admissionRequirement/getAvailableSeatStatus"
-        val doc: Document = Jsoup.connect(url).get()
-        val rows: Elements = doc.select("tr")
-        val courses = dataFormat(rows)
-        createCourseList(courses)
-        courseDetails = courses
-        //val file = File("course_info.json")
-        //file.writeText(courses.toString(4))
+            println("Extraction completed. Data saved to 'course_info.json'.")
 
-
-        println("Extraction completed. Data saved to 'course_info.json'.")
-    }
-
-    fun executeAsyncTask(){
-        CoroutineScope(Dispatchers.IO).launch{
-            createJSON()
-            //println(courseKey)
-
-            withContext(Dispatchers.Main){
-                println("Completed successfully")
-            }
+            courses
         }
     }
+
 }

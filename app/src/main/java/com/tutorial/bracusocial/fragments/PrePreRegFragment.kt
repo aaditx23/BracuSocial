@@ -147,7 +147,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
                 break
             }
         }
-        if(!isCourseAdded){
+        if(!isCourseAdded && addedCourseString.size < 6){
             addedCourseString.add(item)
             println(addedCourseString.toString())
             setClassSlot(item)
@@ -167,13 +167,8 @@ class PrePreRegFragment : Fragment(), ListItemChange {
         val fetchData = FetchData()
         progressBarIndeterminate.visibility = View.VISIBLE
          CoroutineScope(Dispatchers.IO).launch {
-             fetchData.executeAsyncTask()
-             while (fetchData.courseKey.contains("")) {
-                 println("Waiting")
-                 delay(1)
-             }
-
-             val json = fetchData.courseDetails
+             val deferredResult = async { fetchData.executeAsyncTask() }
+             val json = deferredResult.await()
 
              val dao = CourseDataDatabase.getInstance(requireContext()).dao
 
@@ -302,32 +297,40 @@ class PrePreRegFragment : Fragment(), ListItemChange {
         return slot
     }
 
-    private fun getLabSlot(labTime: String, labDay:String): MutableMap<String, Any>{
-        val slot = mutableMapOf<String, Any>()
+    private fun getLabSlot(labTime: String, labDay:String): MutableMap<String, MutableList<Int>>{
+        val slot = mutableMapOf<String, MutableList<Int>>()
         val row = mutableListOf<Int>()
-        val time = labTime.split(" ").toMutableList()
-        for (i in 0 until time.size){
-            time[i] = time[i].trim()
-        }
-        for(t in time){
-            when (t) {
-                "08:00 AM - 09:20 AM" -> row.add(0)
-                "09:30 AM - 10:50 AM" -> row.add(1)
-                "11:00 AM - 12:20 PM" -> row.add(2)
-                "12:30 PM - 01:50 PM" -> row.add(3)
-                "02:00 PM - 03:20 PM" -> row.add(4)
-                "03:30 PM - 04:50 PM" -> row.add(5)
-                "05:00 PM - 06:20 PM" -> row.add(6)
-                "06:30 PM - 08:00 PM" -> row.add(7)
-            }
+
+        when (labTime) {
+            "08:00 AM - 09:20 AM" -> row.add(0)
+            "09:30 AM - 10:50 AM" -> row.add(1)
+            "11:00 AM - 12:20 PM" -> row.add(2)
+            "12:30 PM - 01:50 PM" -> row.add(3)
+            "02:00 PM - 03:20 PM" -> row.add(4)
+            "03:30 PM - 04:50 PM" -> row.add(5)
+            "05:00 PM - 06:20 PM" -> row.add(6)
+            "06:30 PM - 08:00 PM" -> row.add(7)
+            "08:00 AM - 10:50 AM" -> {row.add(0); row.add(1)}
+            "11:00 AM - 01:50 PM" -> {row.add(2); row.add(3)}
+            "02:00 PM - 04:50 PM" -> {row.add(4); row.add(5)}
+            "05:00 PM - 08:00 PM" -> {row.add(6); row.add(7)}
+
         }
         slot["row"] =  row
+        println(row)
         val column = mutableListOf<Int>()
         val days = labDay.split(" ").toMutableList()
         for(i in 0 until days.size){
-            days[i] = days[i].trim()
+            if (days[i] == " " || days[i] == ""){
+                days.removeAt(i)
+            }
+            else{
+                days[i] = days[i].trim()
+            }
+
         }
         for (day in days){
+
             when (day) {
                 "Sa" -> column.add(0)
                 "Su" -> column.add(1)
@@ -339,7 +342,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
             }
         }
         slot["column"] = column
-
+        println(column)
         return slot
     }
 
@@ -358,6 +361,10 @@ class PrePreRegFragment : Fragment(), ListItemChange {
             val section = courseObject.section
             val classTime = courseObject.classTime
             val classDay = courseObject.classDay
+            val labDay = courseObject.labDay
+            if (labDay!= null){
+                setLabSlot(item)
+            }
             val slotMap = getClassSlot(classTime!!, classDay!!)
             val row = slotMap["row"]!![0]
             val column = slotMap["column"]
@@ -370,6 +377,40 @@ class PrePreRegFragment : Fragment(), ListItemChange {
                 else{
                     table[row][c].text = String.format("%s %s", courseName, section)
                     table[row][c].setBackgroundResource(R.drawable.table_box_green)
+                }
+            }
+        }
+    }
+
+    private fun setLabSlot(item: String){
+        val dao = CourseDataDatabase.getInstance(requireContext()).dao
+        val itemName = item.substring(0, 6)
+        val itemSection = item.substring(7)
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val deferredCourseObject = async { dao.getCourseByKey(itemName, itemSection) }
+            val courseObject = deferredCourseObject.await()
+
+            val courseName = courseObject!!.courseName
+            val section = courseObject.section
+            val labTime = courseObject.labTime
+            val labDay = courseObject.labDay
+            val slotMap = getLabSlot(labTime!!, labDay!!)
+            val row = slotMap["row"]
+            
+            val column = slotMap["column"]
+            for(c in column!!){
+                for (r in row!!){
+                    println("Lab slots in row: $r column $c")
+                    val currentText = table[r][c].text.toString()
+                    if (currentText != "-"){
+                        table[r][c].text = String.format("%s\n%s %s", currentText, courseName, section)
+                        table[r][c].setBackgroundResource(R.drawable.table_box_red)
+                    }
+                    else{
+                        table[r][c].text = String.format("%s %s", courseName, section)
+                        table[r][c].setBackgroundResource(R.drawable.table_box_green)
+                    }
                 }
 
             }
@@ -390,6 +431,10 @@ class PrePreRegFragment : Fragment(), ListItemChange {
 
             val classTime = courseObject!!.classTime
             val classDay = courseObject.classDay
+            val labDay = courseObject.labDay
+            if (labDay!= null){
+                removeLabSlot(item)
+            }
             val slotMap = getClassSlot(classTime!!, classDay!!)
             val row = slotMap["row"]!![0]
             val column = slotMap["column"]
@@ -412,8 +457,45 @@ class PrePreRegFragment : Fragment(), ListItemChange {
                 else{
                     table[row][c].setBackgroundResource(R.drawable.table_box)
                 }
+            }
+        }
+    }
 
+    private fun removeLabSlot(item: String){
+        val dao = CourseDataDatabase.getInstance(requireContext()).dao
+        val itemName = item.substring(0, 6)
+        val itemSection = item.substring(7)
+        CoroutineScope(Dispatchers.IO).launch {
+            
+            val deferredCourseObject = async { dao.getCourseByKey(itemName, itemSection) }
+            val courseObject = deferredCourseObject.await()
 
+            val labTime = courseObject!!.labTime
+            val labDay = courseObject.labDay
+            val slotMap = getLabSlot(labTime!!, labDay!!)
+            val row = slotMap["row"]
+            val column = slotMap["column"]
+            for(c in column!!){
+                for (r in row!!){
+                    var currentText = table[r][c].text.toString()
+                    if (currentText.length > 9){
+                        val newText = currentText.substring(0, currentText.length-10)
+                        table[r][c].text = newText
+                    }
+                    else{
+                        table[r][c].text = "-"
+                    }
+                    currentText = table[r][c].text.toString()
+                    if( currentText.length > 10){
+                        table[r][c].setBackgroundResource(R.drawable.table_box_red)
+                    }
+                    else if(currentText.length > 1){
+                        table[r][c].setBackgroundResource(R.drawable.table_box_green)
+                    }
+                    else{
+                        table[r][c].setBackgroundResource(R.drawable.table_box)
+                    }
+                }
             }
         }
 
