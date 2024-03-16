@@ -1,6 +1,5 @@
 package com.tutorial.bracusocial.fragments
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -18,22 +17,15 @@ import com.tutorial.bracusocial.adapters.CourseListAdapter
 import com.tutorial.bracusocial.FetchData
 import com.tutorial.bracusocial.ListItemChange
 import com.tutorial.bracusocial.R
-import com.tutorial.bracusocial.courseData.CourseData
-import com.tutorial.bracusocial.courseData.CourseDataDatabase
-import com.tutorial.bracusocial.misc.Misc
-import com.tutorial.bracusocial.misc.MiscDatabase
+import com.tutorial.bracusocial.data.entities.CourseData
+
+import com.tutorial.bracusocial.data.entities.User
+import com.tutorial.bracusocial.data.UserDatabase
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import java.io.File
-import java.io.InputStream
-import kotlin.concurrent.thread
 
 
 class PrePreRegFragment : Fragment(), ListItemChange {
@@ -43,6 +35,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
     private lateinit var addedView: RecyclerView
     private lateinit var searchView: SearchView
     private lateinit var refresh: Button
+    private lateinit var save: Button
     private lateinit var listAdapter: CourseListAdapter
     private lateinit var addedAdapter: AddedListAdapter
     private lateinit var dataList: MutableList<String>
@@ -50,6 +43,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
     private lateinit var progressBarIndeterminate: ProgressBar
     private lateinit var table: Array<Array<TextView>>
     private val addedCourseString = mutableListOf<String>()
+    private val addedCourseMap = mutableMapOf<String, MutableMap<String, MutableList<Int>>>()
 
 
     override fun onDestroy() {
@@ -73,6 +67,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
         addedView = view.findViewById(R.id.added_view)
         searchView = view.findViewById(R.id.searchView)
         refresh = view.findViewById(R.id.refresh)
+        save = view.findViewById(R.id.saveRoutine)
         progressBarIndeterminate = view.findViewById(R.id.progressBarIndefinite)
         progressBarIndeterminate.visibility = View.GONE
 
@@ -104,6 +99,24 @@ class PrePreRegFragment : Fragment(), ListItemChange {
             populateCourseDatabase()
 
         }
+
+        save.setOnClickListener {
+            progressBarIndeterminate.visibility = View.VISIBLE
+            CoroutineScope(Dispatchers.Main).launch {
+                val deferredFlag = async{ saveUserCourse(addedCourseString) }
+                val flag = deferredFlag.await()
+
+                if (flag){
+                    Toast.makeText(requireContext(), "Coursed added successfully", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    Toast.makeText(requireContext(), "Could not be added", Toast.LENGTH_SHORT).show()
+                }
+                progressBarIndeterminate.visibility = View.GONE
+            }
+
+        }
+
 
         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -149,6 +162,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
         }
         if(!isCourseAdded && addedCourseString.size < 6){
             addedCourseString.add(item)
+            addedCourseMap[item] = mutableMapOf()
             println(addedCourseString.toString())
             setClassSlot(item)
             addedAdapter.notifyDataSetChanged()
@@ -158,6 +172,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
 
     override fun onItemRemoved(item: String) {
         addedCourseString.remove(item)
+        addedCourseMap.remove(item)
         removeClassSlot(item)
         addedAdapter.notifyDataSetChanged()
     }
@@ -170,7 +185,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
              val deferredResult = async { fetchData.executeAsyncTask() }
              val json = deferredResult.await()
 
-             val dao = CourseDataDatabase.getInstance(requireContext()).dao
+             val dao = UserDatabase.getInstance(requireContext()).dao
 
              for (i in 0 until json.length()) {
                  var timer = 0
@@ -245,7 +260,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
 
     private fun getCourseKey(): MutableList<String>{
         val dataInString = mutableListOf<String>()
-        val dao = CourseDataDatabase.getInstance(requireContext()).dao
+        val dao = UserDatabase.getInstance(requireContext()).dao
         CoroutineScope(Dispatchers.IO).launch {
             val deferredData = async { dao.getCourseList() }
             val data = deferredData.await()
@@ -261,7 +276,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
 
     }
 
-    private fun getClassSlot(classTime: String, classDay:String): MutableMap<String, MutableList<Int>>{
+    private fun getClassSlot(item: String, classTime: String, classDay:String): MutableMap<String, MutableList<Int>>{
         println("$classTime $classDay   getclassslot")
         val slot = mutableMapOf<String, MutableList<Int>>()
         val row = mutableListOf<Int>()
@@ -293,11 +308,12 @@ class PrePreRegFragment : Fragment(), ListItemChange {
             }
         }
         slot["column"] = column
-
+        addedCourseMap[item]?.set("row", row)
+        addedCourseMap[item]?.set("column", column)
         return slot
     }
 
-    private fun getLabSlot(labTime: String, labDay:String): MutableMap<String, MutableList<Int>>{
+    private fun getLabSlot(item:String, labTime: String, labDay:String): MutableMap<String, MutableList<Int>>{
         val slot = mutableMapOf<String, MutableList<Int>>()
         val row = mutableListOf<Int>()
 
@@ -342,14 +358,15 @@ class PrePreRegFragment : Fragment(), ListItemChange {
             }
         }
         slot["column"] = column
-        println(column)
+        addedCourseMap[item]?.set("labRow", row)
+        addedCourseMap[item]?.set("labColumn", column)
         return slot
     }
 
 
 
     private fun setClassSlot(item: String){
-        val dao = CourseDataDatabase.getInstance(requireContext()).dao
+        val dao = UserDatabase.getInstance(requireContext()).dao
         val itemName = item.substring(0, 6)
         val itemSection = item.substring(7)
         CoroutineScope(Dispatchers.IO).launch {
@@ -365,7 +382,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
             if (labDay!= null){
                 setLabSlot(item)
             }
-            val slotMap = getClassSlot(classTime!!, classDay!!)
+            val slotMap = getClassSlot(item, classTime!!, classDay!!)
             val row = slotMap["row"]!![0]
             val column = slotMap["column"]
             for(c in column!!){
@@ -383,7 +400,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
     }
 
     private fun setLabSlot(item: String){
-        val dao = CourseDataDatabase.getInstance(requireContext()).dao
+        val dao = UserDatabase.getInstance(requireContext()).dao
         val itemName = item.substring(0, 6)
         val itemSection = item.substring(7)
         CoroutineScope(Dispatchers.IO).launch {
@@ -395,7 +412,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
             val section = courseObject.section
             val labTime = courseObject.labTime
             val labDay = courseObject.labDay
-            val slotMap = getLabSlot(labTime!!, labDay!!)
+            val slotMap = getLabSlot(item, labTime!!, labDay!!)
             val row = slotMap["row"]
             
             val column = slotMap["column"]
@@ -420,7 +437,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
     }
 
     private fun removeClassSlot(item: String){
-        val dao = CourseDataDatabase.getInstance(requireContext()).dao
+        val dao = UserDatabase.getInstance(requireContext()).dao
         val itemName = item.substring(0, 6)
         val itemSection = item.substring(7)
         CoroutineScope(Dispatchers.IO).launch {
@@ -435,7 +452,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
             if (labDay!= null){
                 removeLabSlot(item)
             }
-            val slotMap = getClassSlot(classTime!!, classDay!!)
+            val slotMap = getClassSlot(item, classTime!!, classDay!!)
             val row = slotMap["row"]!![0]
             val column = slotMap["column"]
             for(c in column!!){
@@ -462,7 +479,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
     }
 
     private fun removeLabSlot(item: String){
-        val dao = CourseDataDatabase.getInstance(requireContext()).dao
+        val dao = UserDatabase.getInstance(requireContext()).dao
         val itemName = item.substring(0, 6)
         val itemSection = item.substring(7)
         CoroutineScope(Dispatchers.IO).launch {
@@ -472,7 +489,7 @@ class PrePreRegFragment : Fragment(), ListItemChange {
 
             val labTime = courseObject!!.labTime
             val labDay = courseObject.labDay
-            val slotMap = getLabSlot(labTime!!, labDay!!)
+            val slotMap = getLabSlot(item, labTime!!, labDay!!)
             val row = slotMap["row"]
             val column = slotMap["column"]
             for(c in column!!){
@@ -500,8 +517,28 @@ class PrePreRegFragment : Fragment(), ListItemChange {
         }
 
     }
-    
-    
+
+    private suspend fun saveUserCourse(list: MutableList<String>): Boolean {
+        return withContext(Dispatchers.IO) {
+            val dao = UserDatabase.getInstance(requireContext()).dao
+
+            val currentUserData = dao.getCurrentUser(1)
+            if (currentUserData != null) {
+                val newUserData = User(
+                    id = 1,
+                    studentID = currentUserData.studentID,
+                    name = currentUserData.name,
+                    courses = addedCourseMap,
+                    friends = currentUserData.friends,
+                    password = currentUserData.password
+                )
+                dao.upsertUser(newUserData)
+                true // Return true if currentUserData is not null
+            } else {
+                false // Return false if currentUserData is null
+            }
+        }
+    }
 
 
 }

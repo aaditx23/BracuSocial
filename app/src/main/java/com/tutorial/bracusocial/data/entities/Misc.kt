@@ -1,4 +1,4 @@
-package com.tutorial.bracusocial.misc
+package com.tutorial.bracusocial.data.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -9,6 +9,6 @@ data class Misc(
     val id:Int = 0,
     val login: Boolean,
     val loginID: Int,
-    val db_state: Boolean,
-    val db_update_date: String
+    val dbState: Boolean,
+    val dbUpdateDate: String
 )

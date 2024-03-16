@@ -8,7 +8,15 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.tutorial.bracusocial.data.entities.User
+import com.tutorial.bracusocial.data.UserDatabase
 import com.tutorial.bracusocial.fragments.PrePreRegFragment
+import com.tutorial.bracusocial.fragments.RoutineFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,11 +40,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+        createUserOne()
+
+
         bnv = findViewById(R.id.bottomNavigationView)
         bnv.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId){
                 R.id.preprereg ->{
                     replaceFragment(PrePreRegFragment())
+                    true
+                }
+                R.id.routine ->{
+                    replaceFragment(RoutineFragment())
                     true
                 }
                 else -> false
@@ -80,6 +96,34 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         builder.create().show()
+    }
+
+    private fun createUserOne(){
+        CoroutineScope(Dispatchers.IO).launch {
+            async{
+                val dao = UserDatabase.getInstance(this@MainActivity).dao
+                val user = dao.getCurrentUser(1)
+                if (user == null){
+                    val newUserData = User(
+                        id = 1,
+                        studentID = 23341077,
+                        name = "Aadit",
+                        courses = mutableMapOf(),
+                        friends = mutableListOf(),
+                        password = "123"
+                    )
+                    dao.upsertUser(newUserData)
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(this@MainActivity, "User 1 created", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else{
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(this@MainActivity, "User Exists", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }.await()
+        }
     }
 
 }

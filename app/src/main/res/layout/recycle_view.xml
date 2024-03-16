@@ -14,7 +14,7 @@
         android:id="@+id/item_sub1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="sub1"
+        android:text="BUS102 15 - PHR"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
