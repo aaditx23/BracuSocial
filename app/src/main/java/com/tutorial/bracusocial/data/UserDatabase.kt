@@ -6,19 +6,21 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.tutorial.bracusocial.data.entities.CourseData
-import com.tutorial.bracusocial.data.entities.CourseMapConverter
-import com.tutorial.bracusocial.data.entities.FriendListConverter
 import com.tutorial.bracusocial.data.entities.Misc
 import com.tutorial.bracusocial.data.entities.User
-
+import com.tutorial.bracusocial.data.entities.Friends
 
 @Database(
-    entities = [User :: class, CourseData:: class, Misc:: class],
+    entities = [
+        User :: class,
+        CourseData:: class,
+        Misc:: class,
+        Friends:: class
+               ],
     version = 1
 )
 @TypeConverters(
-    CourseMapConverter:: class,
-    FriendListConverter:: class
+    Converters::class
 )
 abstract class UserDatabase:RoomDatabase() {
     abstract val dao: Dao

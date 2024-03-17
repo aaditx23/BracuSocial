@@ -6,17 +6,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.tutorial.bracusocial.ListItemChange
 import com.tutorial.bracusocial.data.UserDatabase
 import com.tutorial.bracusocial.R
+import com.tutorial.bracusocial.adapters.AddedListAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class RoutineFragment : Fragment() {
+class RoutineFragment : Fragment(), ListItemChange {
 
     private lateinit var textView: TextView
     private lateinit var table: Array<Array<TextView>>
+    private lateinit var addedViewRoutine: RecyclerView
+    private lateinit var addedViewRoutineAdapter: AddedListAdapter
+    private var addedCoursesString: MutableList<String> = mutableListOf()
 
 
     override fun onCreateView(
@@ -30,7 +36,9 @@ class RoutineFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setRoutine()
+
+
+        addedViewRoutine = view.findViewById(R.id.added_view_routine)
 
         table = arrayOf(
             arrayOf(view.findViewById(R.id.slot1_1), view.findViewById(R.id.slot1_2), view.findViewById(R.id.slot1_3), view.findViewById(R.id.slot1_4), view.findViewById(R.id.slot1_5), view.findViewById(R.id.slot1_6), view.findViewById(R.id.slot1_7)),
@@ -42,7 +50,7 @@ class RoutineFragment : Fragment() {
             arrayOf(view.findViewById(R.id.slot7_1), view.findViewById(R.id.slot7_2), view.findViewById(R.id.slot7_3), view.findViewById(R.id.slot7_4), view.findViewById(R.id.slot7_5), view.findViewById(R.id.slot7_6), view.findViewById(R.id.slot7_7)),
             arrayOf(view.findViewById(R.id.slot8_1), view.findViewById(R.id.slot8_2), view.findViewById(R.id.slot8_3), view.findViewById(R.id.slot8_4), view.findViewById(R.id.slot8_5), view.findViewById(R.id.slot8_6), view.findViewById(R.id.slot8_7))
         )
-
+        setRoutine()
 
     }
 
@@ -62,50 +70,64 @@ class RoutineFragment : Fragment() {
         val dao = UserDatabase.getInstance(requireContext()).dao
         CoroutineScope(Dispatchers.Main).launch {
             val user = dao.getCurrentUser(1)
-            //withContext(Dispatchers.Main){
-                if (user != null) {
-                    val courseMap = user.courses
-                    for ((courseNameWithSection, slotMap) in courseMap){
-                        val temp = courseNameWithSection.split(" ")
-                        val courseName = temp[0].trim()
-                        val section = temp[1].trim()
-                        if (slotMap.size >2){
-                            println("$courseNameWithSection ${slotMap.keys}")
-                            val labRow = slotMap["labRow"]
-                            val labColumn = slotMap["labColumn"]
-                            for(c in labColumn!!){
-                                for (r in labRow!!){
-                                    println("Lab slots in labRow: $r labColumn $c")
-                                    val currentText = table[r][c].text.toString()
-                                    if (currentText != "-"){
-                                        table[r][c].text = String.format("%s\n%s-LAB %s", currentText, courseName, section)
-                                        table[r][c].setBackgroundResource(R.drawable.table_box_red)
-                                    }
-                                    else{
-                                        table[r][c].text = String.format("%s-LAB %s", courseName, section)
-                                        table[r][c].setBackgroundResource(R.drawable.table_box_green)
-                                    }
-                                    table[r][c].textSize = 11.5F
+            if (user != null) {
+                val courseMap = user.courses
+                for ((courseNameWithSection, slotMap) in courseMap){
+                    val temp = courseNameWithSection.split(" ")
+                    addedCoursesString.add(courseNameWithSection)
+                    val courseName = temp[0].trim()
+                    val section = temp[1].trim()
+                    if (slotMap.size >2){
+                        println("$courseNameWithSection ${slotMap.keys}")
+                        val labRow = slotMap["labRow"]
+                        val labColumn = slotMap["labColumn"]
+                        for(c in labColumn!!){
+                            for (r in labRow!!){
+                                println("Lab slots in labRow: $r labColumn $c")
+                                val currentText = table[r][c].text.toString()
+                                if (currentText != "-"){
+                                    table[r][c].text = String.format("%s\n%s-LAB %s", currentText, courseName, section)
+                                    table[r][c].setBackgroundResource(R.drawable.table_box_red)
                                 }
+                                else{
+                                    table[r][c].text = String.format("%s-LAB %s", courseName, section)
+                                    table[r][c].setBackgroundResource(R.drawable.table_box_green)
+                                }
+                                table[r][c].textSize = 11.5F
+                            }
 
-                            }
                         }
-                        val row = slotMap["row"]!!.get(0)
-                        val column = slotMap["column"]
-                        for(c in column!!){
-                            val currentText = table[row][c].text.toString()
-                            if (currentText != "-"){
-                                table[row][c].text = String.format("%s\n%s %s", currentText, courseName, section)
-                                table[row][c].setBackgroundResource(R.drawable.table_box_red)
-                            }
-                            else{
-                                table[row][c].text = String.format("%s %s", courseName, section)
-                                table[row][c].setBackgroundResource(R.drawable.table_box_green)
-                            }
+                    }
+                    val row = slotMap["row"]!!.get(0)
+                    val column = slotMap["column"]
+                    for(c in column!!){
+                        val currentText = table[row][c].text.toString()
+                        if (currentText != "-"){
+                            table[row][c].text = String.format("%s\n%s %s", currentText, courseName, section)
+                            table[row][c].setBackgroundResource(R.drawable.table_box_red)
+                        }
+                        else{
+                            table[row][c].text = String.format("%s %s", courseName, section)
+                            table[row][c].setBackgroundResource(R.drawable.table_box_green)
                         }
                     }
                 }
-            //}
+            }
+            withContext(Dispatchers.Main){
+                addedViewRoutineAdapter = AddedListAdapter(this@RoutineFragment, addedCoursesString)
+                println(addedCoursesString)
+                addedViewRoutine.adapter = addedViewRoutineAdapter
+            }
         }
+
+
+    }
+
+    override fun onItemAdded(item: String) {
+
+    }
+
+    override fun onItemRemoved(item: String) {
+
     }
 }

@@ -102,6 +102,17 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0">
 
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/table_box"
+                    android:fontFamily="serif-monospace"
+                    android:gravity="center|center_vertical"
+                    android:text="Added Courses"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/added_view"

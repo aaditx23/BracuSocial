@@ -126,4 +126,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkDatabase(): Boolean{
+        var flag = false
+        CoroutineScope(Dispatchers.IO).launch {
+            val dao = UserDatabase.getInstance(this@MainActivity).dao
+            val user = dao.getCourseList()
+            if (user.isEmpty()){
+                flag = false
+            }
+            else{
+                flag = true
+            }
+        }
+
+        return flag
+    }
+
 }

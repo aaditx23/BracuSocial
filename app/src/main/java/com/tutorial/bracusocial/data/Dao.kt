@@ -5,12 +5,13 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import com.tutorial.bracusocial.data.entities.CourseData
+import com.tutorial.bracusocial.data.entities.Friends
 import com.tutorial.bracusocial.data.entities.Misc
 import com.tutorial.bracusocial.data.entities.User
 
 @Dao
 interface Dao {
-    //User
+//    ++++++++++++++++USER++++++++++++++++
     @Upsert
     suspend fun upsertUser(user: User)
 
@@ -20,7 +21,7 @@ interface Dao {
     @Query("select * from User where id = :id")
     suspend fun getCurrentUser(id: Int): User?
 
-    //CourseData
+//    ++++++++++++++++COURSE-DATA++++++++++++++++
     @Upsert
     suspend fun upsertCourse(course: CourseData)
 
@@ -36,7 +37,7 @@ interface Dao {
     @Query("select * from CourseData where courseName = :name and section = :section")
     fun getCourseByKey(name: String, section: String): CourseData?
 
-    //Misc
+//    ++++++++++++++++MISC++++++++++++++++
     @Upsert
     suspend fun upsertMisc(course: Misc)
 
@@ -45,4 +46,16 @@ interface Dao {
 
     @Query("select * from Misc where login = :flag")
     fun getMiscInfo(flag: Boolean): Misc?
+
+//    ++++++++++++++++FRIENDS++++++++++++++++
+
+    @Upsert
+    suspend fun upsertFriend(friend: Friends)
+
+    @Delete
+    suspend fun deleteFriend(friend: Friends)
+
+    @Query("select * from Friends")
+    suspend fun getFriends(): List<Friends>
+
 }
