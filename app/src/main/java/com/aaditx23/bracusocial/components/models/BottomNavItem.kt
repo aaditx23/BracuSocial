@@ -2,10 +2,12 @@ package com.aaditx23.bracusocial.components.models
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AppRegistration
+import androidx.compose.material.icons.filled.AutoAwesomeMosaic
 import androidx.compose.material.icons.filled.BackupTable
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.AppRegistration
+import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
 import androidx.compose.material.icons.outlined.BackupTable
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Person
@@ -23,22 +25,31 @@ sealed class BottomNavItem(
 ) {
     var badge = mutableStateOf(badge)
     val badgeCount = mutableIntStateOf(badgeCount)
+
+    object AllCourses: BottomNavItem(
+        title = "All Courses",
+        selectedIcon = Icons.Filled.AutoAwesomeMosaic,
+        unselectedIcon = Icons.Outlined.AutoAwesomeMosaic,
+        badge = false,
+        idx = 0
+    )
     object PrePreReg: BottomNavItem(
         title = "PrePreReg",
         selectedIcon = Icons.Filled.AppRegistration,
         unselectedIcon = Icons.Outlined.AppRegistration,
         badge = false,
-        idx = 0
+        idx = 1
     )
     object SavedRoutine: BottomNavItem(
         title = "Saved Routine",
         selectedIcon = Icons.Filled.BackupTable,
         unselectedIcon = Icons.Outlined.BackupTable,
         badge = false,
-        idx = 1
+        idx = 2
     )
     companion object{
         val bottomNavItemList = listOf(
+            AllCourses,
             PrePreReg,
             SavedRoutine
         )

@@ -21,10 +21,15 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.components.BottomNavigation
 import com.aaditx23.bracusocial.components.NavDrawer
 import com.aaditx23.bracusocial.components.TopActionBar
+import com.aaditx23.bracusocial.ui.screens.CourseScreen
+import com.aaditx23.bracusocial.ui.screens.PrePreReg
+import org.json.JSONArray
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -41,11 +46,7 @@ fun Main(){
     var scope = rememberCoroutineScope()
     var scrollState = rememberScrollState()
 
-    // server check
-
-
-
-    //-------------------------------
+    var allCourseList by remember { mutableStateOf<JSONArray>(JSONArray()) }
 
 
     ModalNavigationDrawer(
@@ -77,18 +78,26 @@ fun Main(){
                     selectedIndexDrawer = -1
                     println("$selectedIndexDrawer $selectedIndexBotNav")
                     when (index) {
-                        0 -> navController.navigate("PrePreReg")
-                        1 -> navController.navigate("Saved Routine")
+                        0 -> navController.navigate("All Courses")
+                        1 -> navController.navigate("PrePreReg")
+                        2 -> navController.navigate("Saved Routine")
                     }
 
                 }
             },
             topBar = { TopActionBar(drawerState = drawerState, scope = scope ) }
         ){
-            NavHost(navController = navController, startDestination = "PrePreReg" ){
+            NavHost(navController = navController, startDestination = "All Courses" ){
                 // Routes
+                composable("All Courses"){
+                    CourseScreen(
+                        setJson = {courseList ->
+                            allCourseList = courseList
+                        }
+                    )
+                }
                 composable("PrePreReg"){
-
+                    PrePreReg(allCourseList)
                 }
                 composable("Saved Routine"){
 
