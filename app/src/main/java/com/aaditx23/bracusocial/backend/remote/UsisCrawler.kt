@@ -122,7 +122,7 @@ class UsisCrawler{
             dict.put("ClassDay", JSONArray(processedClass.first))
             val time = processedClass.second
             if (!isValidTime(time)){
-                println("Here are the timings: $time")
+//                println("Here are the timings: $time")
                 return false
             }
             dict.put("ClassTime", processedClass.second)
@@ -178,6 +178,7 @@ class UsisCrawler{
                 courseInfo.put("Section", section)
                 courseInfo.put("ClassTime", timings)
                 courseInfo.put("Lab", labFlag)
+                courseInfo.put("Selected", false)
                 val timeCheckFlag = timeFormat(courseInfo)
                 if(!courseInfo.has("ClassDay")){
                     continue
@@ -209,20 +210,28 @@ class UsisCrawler{
     }
 
 
-    suspend fun executeAsyncTask(): JSONArray {
+    suspend fun executeAsyncTask(): MutableList<JSONObject> {
         return withContext(Dispatchers.IO) {
             val url =
                 "https://usis.bracu.ac.bd/academia/admissionRequirement/getAvailableSeatStatus"
             val doc: Document = Jsoup.connect(url).get()
             val rows: Elements = doc.select("tr")
             val courses = dataFormat(rows)
-            createCourseList(courses)
+            val courseList = mutableListOf<JSONObject>()
+            for (i in 0 until courses.length()) {
+                val jsonObject = courses.getJSONObject(i)
+                courseList.add(jsonObject)
+            }
+
+            // You can still use createCourseList(courseList) if it accepts MutableList<JSONObject>
+            // createCourseList(courseList)
+
             //val file = File("course_info.json")
-            //file.writeText(courses.toString(4))
+            //file.writeText(courseList.toString())
 
             println("Extraction completed. Data saved to 'course_info.json'.")
 
-            courses
+            courseList
         }
     }
 

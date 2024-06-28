@@ -1,6 +1,7 @@
 package com.aaditx23.bracusocial.ui
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.DrawerValue
@@ -23,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.components.BottomNavigation
 import com.aaditx23.bracusocial.components.NavDrawer
@@ -30,9 +32,10 @@ import com.aaditx23.bracusocial.components.TopActionBar
 import com.aaditx23.bracusocial.ui.screens.CourseScreen
 import com.aaditx23.bracusocial.ui.screens.PrePreReg
 import org.json.JSONArray
+import org.json.JSONObject
 
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "MutableCollectionMutableState")
 @Composable
 fun Main(){
     var selectedIndexBotNav by rememberSaveable {
@@ -46,7 +49,9 @@ fun Main(){
     var scope = rememberCoroutineScope()
     var scrollState = rememberScrollState()
 
-    var allCourseList by remember { mutableStateOf<JSONArray>(JSONArray()) }
+    var allCourses by remember { mutableStateOf(mutableListOf<JSONObject>()) }
+    var availableCourses by remember { mutableStateOf(mutableListOf<JSONObject>()) }
+    var selectedCourses by remember { mutableStateOf(mutableListOf<JSONObject>()) }
 
 
     ModalNavigationDrawer(
@@ -92,12 +97,29 @@ fun Main(){
                 composable("All Courses"){
                     CourseScreen(
                         setJson = {courseList ->
-                            allCourseList = courseList
+                            allCourses = courseList
+                            availableCourses = courseList
                         }
                     )
                 }
                 composable("PrePreReg"){
-                    PrePreReg(allCourseList)
+                    PrePreReg(
+                        courseList = availableCourses,
+                        selectedCourseList = selectedCourses,
+                        addCourse = {course ->
+                            if (!selectedCourses.contains(course)){
+                                course.put("Selected", true)
+                                selectedCourses = selectedCourses.toMutableList().apply{ add(course) }
+                            }
+
+                        },
+                        removeCourse = {course->
+                            course.put("Selected", false)
+                            selectedCourses = selectedCourses.toMutableList().apply{ remove(course) }
+
+
+                        }
+                    )
                 }
                 composable("Saved Routine"){
 

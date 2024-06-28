@@ -1,5 +1,6 @@
 package com.aaditx23.bracusocial.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,9 +16,10 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
-fun CourseScreen(setJson: (courseList: JSONArray) -> Unit) {
-    var courseList by remember { mutableStateOf<JSONArray?>(null) }
+fun CourseScreen(setJson: (courseList: MutableList<JSONObject>) -> Unit) {
+    var courseList by remember { mutableStateOf(mutableListOf<JSONObject>()) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
@@ -50,7 +52,7 @@ fun CourseScreen(setJson: (courseList: JSONArray) -> Unit) {
             }
             courseList != null -> {
                 // Show the list of courses
-                setJson(courseList!!)
+                setJson(courseList)
                 CourseList(courses = courseList)
             }
         }
@@ -58,15 +60,15 @@ fun CourseScreen(setJson: (courseList: JSONArray) -> Unit) {
 }
 
 @Composable
-fun CourseList(courses: JSONArray?) {
+fun CourseList(courses: MutableList<JSONObject>) {
     if (courses == null) return
 
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(courses.length()) { index ->
-            val course = courses.getJSONObject(index)
+        items(courses.size) { index ->
+            val course = courses[index]
             CourseItem(course)
         }
     }
