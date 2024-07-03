@@ -4,11 +4,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AppRegistration
 import androidx.compose.material.icons.filled.AutoAwesomeMosaic
 import androidx.compose.material.icons.filled.BackupTable
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.AppRegistration
 import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
 import androidx.compose.material.icons.outlined.BackupTable
+import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.mutableIntStateOf
@@ -47,11 +49,19 @@ sealed class BottomNavItem(
         badge = false,
         idx = 2
     )
+    object CourseHandler: BottomNavItem(
+        title = "Course Handler",
+        selectedIcon = Icons.Filled.Code,
+        unselectedIcon = Icons.Outlined.Code,
+        badge = false,
+        idx = 3
+    )
     companion object{
         val bottomNavItemList = listOf(
             AllCourses,
             PrePreReg,
-            SavedRoutine
+            SavedRoutine,
+            CourseHandler
         )
     }
 

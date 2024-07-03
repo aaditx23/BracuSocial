@@ -26,11 +26,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.aaditx23.bracusocial.CourseHandler
 import com.aaditx23.bracusocial.components.BottomNavigation
 import com.aaditx23.bracusocial.components.NavDrawer
 import com.aaditx23.bracusocial.components.TopActionBar
+import com.aaditx23.bracusocial.components.models.BottomNavItem
 import com.aaditx23.bracusocial.ui.screens.CourseScreen
 import com.aaditx23.bracusocial.ui.screens.PrePreReg
+import com.aaditx23.bracusocial.ui.screens.SavedRoutine
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -43,6 +46,9 @@ fun Main(){
     }
     var selectedIndexDrawer by rememberSaveable {
         mutableIntStateOf(-1)
+    }
+    val bottomNavList by rememberSaveable {
+        mutableStateOf(BottomNavItem.bottomNavItemList)
     }
     val navController = rememberNavController()
     var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -79,14 +85,11 @@ fun Main(){
         Scaffold(
             bottomBar = {
                 BottomNavigation(selectedIndex = selectedIndexBotNav) { index ->
+                    println("Selected index $index size ${bottomNavList.size}")
                     selectedIndexBotNav = index
                     selectedIndexDrawer = -1
                     println("$selectedIndexDrawer $selectedIndexBotNav")
-                    when (index) {
-                        0 -> navController.navigate("All Courses")
-                        1 -> navController.navigate("PrePreReg")
-                        2 -> navController.navigate("Saved Routine")
-                    }
+                    navController.navigate(bottomNavList[index].title)
 
                 }
             },
@@ -122,10 +125,11 @@ fun Main(){
                     )
                 }
                 composable("Saved Routine"){
+                    SavedRoutine()
 
                 }
-                composable("About Us"){
-
+                composable("Course Handler"){
+                    CourseHandler()
                 }
                 composable("About BUCC"){
 
