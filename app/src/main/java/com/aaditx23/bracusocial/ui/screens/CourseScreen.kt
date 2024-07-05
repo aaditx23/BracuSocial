@@ -11,6 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.backend.local.viewmodels.CourseVM
 import com.aaditx23.bracusocial.backend.remote.UsisCrawler
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -18,49 +21,18 @@ import org.json.JSONObject
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun CourseScreen(setJson: (courseList: MutableList<JSONObject>) -> Unit) {
-    var courseList by remember { mutableStateOf(mutableListOf<JSONObject>()) }
-    var isLoading by remember { mutableStateOf(true) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(Unit) {
-        coroutineScope.launch {
-            try {
-                val usisCrawler = UsisCrawler()
-                val courses = usisCrawler.executeAsyncTask()
-                courseList = courses
-            } catch (e: Exception) {
-                errorMessage = e.message
-            } finally {
-                isLoading = false
-            }
-        }
-    }
+fun CourseScreen() {
+    val coursevm : CourseVM = hiltViewModel()
+    val courseList by coursevm.allCourses.collectAsState()
 
     Box(modifier = Modifier.padding(top = 60.dp)){
-        when {
-            isLoading -> {
-                // Show a loading indicator
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-            errorMessage != null -> {
-                // Show an error message
-                Text(text = "Failed to load data: $errorMessage")
-            }
-            courseList != null -> {
-                // Show the list of courses
-                setJson(courseList)
-                CourseList(courses = courseList)
-            }
-        }
+        CourseList(courses = courseList)
     }
+
 }
 
 @Composable
-fun CourseList(courses: MutableList<JSONObject>) {
+fun CourseList(courses: List<Course>) {
     if (courses == null) return
 
     LazyColumn(
@@ -75,7 +47,7 @@ fun CourseList(courses: MutableList<JSONObject>) {
 }
 
 @Composable
-fun CourseItem(course: JSONObject) {
+fun CourseItem(course: Course) {
     println()
     Column(
         modifier = Modifier
@@ -84,17 +56,16 @@ fun CourseItem(course: JSONObject) {
             .border(1.dp, MaterialTheme.colorScheme.primary)
             .padding(8.dp)
     ) {
-        Text(text = "Course: ${course.getString("Course")}")
-        Text(text = "Section: ${course.getString("Section")}")
-        Text(text = "Class Time: ${course.getString("ClassTime")}")
-        if (course.has("ClassDay")) {
-            Text(text = "Class Day: ${course.getJSONArray("ClassDay").join(", ")}")
-        }
-        if (course.has("LabTime")) {
-            Text(text = "Lab Time: ${course.getString("LabTime")}")
-        }
-        if (course.has("LabDay")) {
-            Text(text = "Lab Day: ${course.getJSONArray("LabDay").join(", ")}")
+        Text(text = "Course: ${course.courseName}")
+        Text(text = "Section: ${course.section}")
+        Text(text = "Class Time: ${course.classTime}")
+        Text(text = "Class Day: ${course.classDay}")
+        Text(text = "Class Room: ${course.classRoom}")
+
+        if (course.labDay != "-") {
+            Text(text = "Lab Time: ${course.labDay}")
+            Text(text = "Lab Time: ${course.labTime}")
+            Text(text = "Lab Time: ${course.labRoom}")
         }
     }
 }

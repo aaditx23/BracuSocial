@@ -53,4 +53,11 @@ class CourseRepository @Inject constructor(
         }
     }
 
+    suspend fun deleteAllCourses(){
+        realm.write {
+            val courses = query<Course>().find()
+            delete(courses)
+        }
+    }
+
 }

@@ -61,50 +61,55 @@ open class CourseVM @Inject constructor(
         }
     }
 
-    fun populateDb(){
-        var allCoursesJson = mutableListOf<JSONObject>()
-        viewModelScope.launch {
-            allCoursesJson = uc.executeAsyncTask()
-            allCoursesJson.forEachIndexed { _, course ->
-                val lab = course.getBoolean("Lab")
-                val courseInfo: List<String>
-                if (lab){
-                    courseInfo = listOf(
-                        course.optString("Course"),
-                        course.optString("Section"),
-                        course.getJSONArray("ClassDay").join(" - "),
-                        course.optString("ClassTime"),
-                        course.optString("ClassRoom"),
-                        course.getJSONArray("LabDay").join(" - "),
-                        course.optString("LabTime"),
-                        course.optString("LabRoom")
-                    )
-                }
-                else{
-                    courseInfo = listOf(
-                        course.optString("Course"),
-                        course.optString("Section"),
-                        course.getJSONArray("ClassDay").join(" - "),
-                        course.optString("ClassTime"),
-                        course.optString("ClassRoom"),
-                        "-",
-                        "-",
-                        "-"
-                    )
-                }
-                courseR.createCourse(courseInfo)
-                println("Course created $courseInfo")
+    suspend fun populateDb(onSet: (s: String) -> Unit){
+        val allCoursesJson: MutableList<JSONObject> = uc.executeAsyncTask()
+        allCoursesJson.forEachIndexed { _, course ->
+            val lab = course.getBoolean("Lab")
+            val courseInfo: List<String>
+            if (lab){
+                courseInfo = listOf(
+                    course.optString("Course"),
+                    course.optString("Section"),
+                    course.getJSONArray("ClassDay").join(" - "),
+                    course.optString("ClassTime"),
+                    course.optString("ClassRoom"),
+                    course.getJSONArray("LabDay").join(" - "),
+                    course.optString("LabTime"),
+                    course.optString("LabRoom")
+                )
             }
+            else{
+                courseInfo = listOf(
+                    course.optString("Course"),
+                    course.optString("Section"),
+                    course.getJSONArray("ClassDay").join(" - "),
+                    course.optString("ClassTime"),
+                    course.optString("ClassRoom"),
+                    "-",
+                    "-",
+                    "-"
+                )
+            }
+            courseR.createCourse(courseInfo)
+            onSet("Creating: ${courseInfo[0]} - ${courseInfo[1]}")
+            println("Course created $courseInfo")
+        }
+
+    }
+
+    suspend fun clearDB(){
+        viewModelScope.launch {
+            courseR.deleteAllCourses()
         }
     }
 
-    fun clearDB(){
-        val db = allCourses.value
+    fun refreshDB(onSet: (s: String) -> Unit){
         viewModelScope.launch {
-            db.forEachIndexed { _, course ->
-                courseR.deleteCourse(course._id)
-            }
+            courseR.deleteAllCourses()
+            populateDb(onSet)
         }
     }
+
+
 
 }

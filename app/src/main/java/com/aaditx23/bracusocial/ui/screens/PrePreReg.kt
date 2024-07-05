@@ -14,32 +14,33 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.backend.local.viewmodels.CourseVM
 import org.json.JSONArray
 import org.json.JSONObject
 
 @Composable
 fun PrePreReg(
-    courseList: MutableList<JSONObject>,
-    selectedCourseList: MutableList<JSONObject>,
-    addCourse: (course: JSONObject) -> Unit,
-    removeCourse: (course: JSONObject) -> Unit
+    selectedCourseList: MutableList<Course>,
+    selectedMap: MutableMap<String, Boolean>,
+    addCourse: (course: Course) -> Unit,
+    removeCourse: (course: Course) -> Unit
 
 ){
-    AllCourseList(courseList = courseList, addCourse = addCourse)
-    SelectedCourses(courseList = selectedCourseList, removeCourse = removeCourse)
-
-
-
-}
-
-
-@Composable
-fun AllCourseList(courseList: MutableList<JSONObject>, addCourse: (course: JSONObject) -> Unit){
+    val coursevm : CourseVM = hiltViewModel()
+    val courseList by coursevm.allCourses.collectAsState()
+    //All Courses
+    println(courseList.size)
     Box(
         modifier = Modifier
             .size(height = 330.dp, width = 150.dp)
@@ -48,35 +49,49 @@ fun AllCourseList(courseList: MutableList<JSONObject>, addCourse: (course: JSONO
         LazyColumn {
             items(courseList.size){index ->
                 val course = courseList[index]
-                Course(course = course, courseAction = addCourse, left = true)
+                CourseCard(
+                    course = course,
+                    selectedMap = selectedMap,
+                    courseAction = addCourse,
+                    left = true
+                )
             }
         }
     }
-}
 
-@Composable
-fun SelectedCourses(courseList: MutableList<JSONObject>, removeCourse: (course: JSONObject) -> Unit){
+    //Selected Courses
     Box(
         modifier = Modifier
             .size(height = 330.dp, width = 450.dp)
             .padding(top = 100.dp, start = 250.dp)
     ) {
         LazyColumn {
-            items(courseList.size){index ->
+            items(selectedCourseList.size){index ->
                 val course = courseList[index]
-//                println(course.getString("Course"))
-                Course(course = course, courseAction = removeCourse)
+                CourseCard(
+                    course = course,
+                    courseAction = removeCourse
+                )
             }
         }
     }
+
+
 }
 
 @Composable
-fun Course(course: JSONObject, courseAction: (course: JSONObject) -> Unit, left: Boolean = false){
-    val text = "${course.getString("Course")} - ${course.getString("Section")}"
+fun CourseCard(
+    course: Course,
+    selectedMap: MutableMap<String, Boolean> = mutableMapOf<String, Boolean>(),
+    courseAction: (course: Course) -> Unit,
+    left: Boolean = false
+    ){
+    val text = "${course.courseName} - ${course.section}"
     var color = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
-    if (left && course.getBoolean("Selected")){
-        color = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiary)
+    if (left){
+        if (selectedMap[course.courseName] == true){
+            color = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiary)
+        }
     }
     Box(
         modifier = Modifier

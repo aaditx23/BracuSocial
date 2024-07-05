@@ -27,6 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.CourseHandler
+import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.backend.local.viewmodels.CourseVM
 import com.aaditx23.bracusocial.components.BottomNavigation
 import com.aaditx23.bracusocial.components.NavDrawer
 import com.aaditx23.bracusocial.components.TopActionBar
@@ -41,6 +43,9 @@ import org.json.JSONObject
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "MutableCollectionMutableState")
 @Composable
 fun Main(){
+    val coursevm : CourseVM = hiltViewModel()
+    val courseList by coursevm.allCourses.collectAsState()
+
     var selectedIndexBotNav by rememberSaveable {
         mutableIntStateOf(0)
     }
@@ -50,14 +55,24 @@ fun Main(){
     val bottomNavList by rememberSaveable {
         mutableStateOf(BottomNavItem.bottomNavItemList)
     }
+    val selectedMap by remember {
+        mutableStateOf(mutableMapOf<String, Boolean>())
+    }
+
+    var allCourses by remember {
+        mutableStateOf(courseList)
+    }
+    var availableCourses by remember {
+        mutableStateOf(courseList)
+    }
+    var selectedCourses by remember {
+        mutableStateOf(mutableListOf<Course>())
+    }
+
     val navController = rememberNavController()
     var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var scope = rememberCoroutineScope()
     var scrollState = rememberScrollState()
-
-    var allCourses by remember { mutableStateOf(mutableListOf<JSONObject>()) }
-    var availableCourses by remember { mutableStateOf(mutableListOf<JSONObject>()) }
-    var selectedCourses by remember { mutableStateOf(mutableListOf<JSONObject>()) }
 
 
     ModalNavigationDrawer(
@@ -98,26 +113,21 @@ fun Main(){
             NavHost(navController = navController, startDestination = "All Courses" ){
                 // Routes
                 composable("All Courses"){
-                    CourseScreen(
-                        setJson = {courseList ->
-                            allCourses = courseList
-                            availableCourses = courseList
-                        }
-                    )
+                    CourseScreen()
                 }
                 composable("PrePreReg"){
                     PrePreReg(
-                        courseList = availableCourses,
                         selectedCourseList = selectedCourses,
+                        selectedMap = selectedMap,
                         addCourse = {course ->
                             if (!selectedCourses.contains(course)){
-                                course.put("Selected", true)
+                                selectedMap[course.courseName] = true
                                 selectedCourses = selectedCourses.toMutableList().apply{ add(course) }
                             }
 
                         },
                         removeCourse = {course->
-                            course.put("Selected", false)
+                            selectedMap.remove(course.courseName)
                             selectedCourses = selectedCourses.toMutableList().apply{ remove(course) }
 
 

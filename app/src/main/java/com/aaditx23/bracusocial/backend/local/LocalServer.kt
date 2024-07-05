@@ -2,6 +2,7 @@ package com.aaditx23.bracusocial.backend.local
 
 import android.app.Application
 import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.backend.local.models.Profile
 import com.aaditx23.bracusocial.backend.local.models.Session
 import dagger.hilt.android.HiltAndroidApp
 import io.realm.kotlin.Realm
@@ -22,6 +23,7 @@ class LocalServer: Application() {
                 schema = setOf(     // register models here
                     Session::class,
                     Course::class,
+                    Profile::class
                 )
             )
         )
