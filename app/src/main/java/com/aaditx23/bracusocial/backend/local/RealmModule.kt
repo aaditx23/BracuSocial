@@ -1,6 +1,7 @@
 package com.aaditx23.bracusocial.backend.local
 
 import com.aaditx23.bracusocial.backend.local.LocalServer
+import com.aaditx23.bracusocial.backend.remote.UsisCrawler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,5 +17,11 @@ object RealmModule {
     @Singleton
     fun provideRealm(): Realm {
         return LocalServer.realm
+    }
+
+    @Provides
+    @Singleton
+    fun provideUsis(): UsisCrawler{
+        return UsisCrawler()
     }
 }

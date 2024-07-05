@@ -76,6 +76,7 @@ fun CourseList(courses: MutableList<JSONObject>) {
 
 @Composable
 fun CourseItem(course: JSONObject) {
+    println()
     Column(
         modifier = Modifier
             .fillMaxWidth()

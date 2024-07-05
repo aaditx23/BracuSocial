@@ -171,6 +171,9 @@ class UsisCrawler{
                 val section = data[5].text().trim()
                 if (section.contains("OM", ignoreCase = true) || section.contains("closed", ignoreCase = true)) continue
                 val timings = data[6].text().trim()
+                if(courseCode == "CSE101"){
+                    println(timings)
+                }
                 if (timings.count { it == 'L' } > 2 || "UB0000" in timings) continue
                 val labFlag = checkLab(timings)
                 val courseInfo = JSONObject()
@@ -223,8 +226,8 @@ class UsisCrawler{
                 courseList.add(jsonObject)
             }
 
-            // You can still use createCourseList(courseList) if it accepts MutableList<JSONObject>
-            // createCourseList(courseList)
+//             You can still use createCourseList(courseList) if it accepts MutableList<JSONObject>
+             createCourseList(courses)
 
             //val file = File("course_info.json")
             //file.writeText(courseList.toString())

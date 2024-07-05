@@ -34,19 +34,17 @@ fun CourseHandler(){
         Column(modifier = Modifier.padding(top = 100.dp)) {
             Button(onClick = {
                 CoroutineScope(Dispatchers.IO).launch {
-                    courseVM.createCourseDB(
-                        courseName = "New course",
-                        section = "01",
-                        classDay = "Sun-Mon",
-                        classTime = "05:00-06:20",
-                        classRoom = "9A-2C",
-                        labDay = "0",
-                        labRoom = "0",
-                        labTime = "0"
-                    )
+                    courseVM.populateDb()
                 }
             }) {
-                Text(text = "Create Course")
+                Text(text = "Create DB")
+            }
+            Button(onClick = {
+                CoroutineScope(Dispatchers.IO).launch {
+                    courseVM.clearDB()
+                }
+            }) {
+                Text(text = "Delete All")
             }
             allCourses.forEachIndexed { _, course ->
                 Text(text = course._id.toString())
