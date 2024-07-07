@@ -1,5 +1,6 @@
 package com.aaditx23.bracusocial.components
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,6 +13,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.aaditx23.bracusocial.components.models.BottomNavItem
 
 
@@ -24,7 +27,9 @@ fun BottomNavigation(selectedIndex: Int, onItemSelcted: (Int) -> Unit){
         mutableIntStateOf(0)
     }
 
-    NavigationBar {
+    NavigationBar(
+        modifier = Modifier.height(110.dp)
+    ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedIndex == index,

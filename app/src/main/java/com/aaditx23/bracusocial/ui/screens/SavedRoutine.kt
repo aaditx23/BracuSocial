@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SavedRoutine(){
     val sessionvm: SessionVM = hiltViewModel()
+    val allSession by sessionvm.allSessions.collectAsState()
 
     val session by sessionvm.firstSession.collectAsState(initial = null)
 
@@ -36,6 +37,7 @@ fun SavedRoutine(){
             if (session != null){
                 Text(text = session!!._id.toString())
                 Text(text = session!!.dbStatus.toString())
+                Text(text = "${allSession.size}")
 
                 Button(onClick = {
                     CoroutineScope(Dispatchers.IO).launch {

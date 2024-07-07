@@ -49,19 +49,11 @@ sealed class BottomNavItem(
         badge = false,
         idx = 2
     )
-    object CourseHandler: BottomNavItem(
-        title = "Course Handler",
-        selectedIcon = Icons.Filled.Code,
-        unselectedIcon = Icons.Outlined.Code,
-        badge = false,
-        idx = 3
-    )
     companion object{
         val bottomNavItemList = listOf(
             AllCourses,
             PrePreReg,
             SavedRoutine,
-            CourseHandler
         )
     }
 

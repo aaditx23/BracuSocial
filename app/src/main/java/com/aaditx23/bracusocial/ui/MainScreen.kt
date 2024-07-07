@@ -2,8 +2,11 @@ package com.aaditx23.bracusocial.ui
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -24,9 +27,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.aaditx23.bracusocial.CourseHandler
+
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.local.viewmodels.CourseVM
 import com.aaditx23.bracusocial.components.BottomNavigation
@@ -45,6 +50,7 @@ import org.json.JSONObject
 fun Main(){
     val coursevm : CourseVM = hiltViewModel()
     val courseList by coursevm.allCourses.collectAsState()
+    val context = LocalContext.current
 
     var selectedIndexBotNav by rememberSaveable {
         mutableIntStateOf(0)
@@ -110,36 +116,43 @@ fun Main(){
             },
             topBar = { TopActionBar(drawerState = drawerState, scope = scope ) }
         ){
-            NavHost(navController = navController, startDestination = "All Courses" ){
+            NavHost(navController = navController, startDestination = "PrePreReg" ){
                 // Routes
                 composable("All Courses"){
                     CourseScreen()
                 }
                 composable("PrePreReg"){
-                    PrePreReg(
-                        selectedCourseList = selectedCourses,
-                        selectedMap = selectedMap,
-                        addCourse = {course ->
-                            if (!selectedCourses.contains(course)){
-                                selectedMap[course.courseName] = true
-                                selectedCourses = selectedCourses.toMutableList().apply{ add(course) }
+                    Box(
+
+                    ){
+                        PrePreReg(
+                            selectedCourseList = selectedCourses,
+                            selectedMap = selectedMap,
+                            addCourse = {course ->
+                                if (selectedMap[course.courseName] != true){
+                                    selectedMap[course.courseName] = true
+                                    selectedCourses = selectedCourses.toMutableList().apply{ add(course) }
+                                }
+                                else{
+                                    Toast.makeText(context, "${course.courseName} Already Added", Toast.LENGTH_SHORT).show()
+                                }
+
+                            },
+                            removeCourse = {course->
+                                selectedMap.remove(course.courseName)
+                                selectedCourses = selectedCourses.toMutableList().apply{ remove(course) }
+
+
                             }
-
-                        },
-                        removeCourse = {course->
-                            selectedMap.remove(course.courseName)
-                            selectedCourses = selectedCourses.toMutableList().apply{ remove(course) }
-
-
-                        }
-                    )
+                        )
+                    }
                 }
                 composable("Saved Routine"){
                     SavedRoutine()
 
                 }
                 composable("Course Handler"){
-                    CourseHandler()
+
                 }
                 composable("About BUCC"){
 

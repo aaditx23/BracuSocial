@@ -18,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 open class CourseVM @Inject constructor(
     private val courseR: CourseRepository,
+    private val sessionR: SessionRepository,
     private val uc: UsisCrawler
     ): ViewModel() {
 
@@ -63,17 +64,28 @@ open class CourseVM @Inject constructor(
 
     suspend fun populateDb(onSet: (s: String) -> Unit){
         val allCoursesJson: MutableList<JSONObject> = uc.executeAsyncTask()
+
         allCoursesJson.forEachIndexed { _, course ->
             val lab = course.getBoolean("Lab")
+            val classArray = course.getJSONArray("ClassDay")
+            var classDay = ""
+            for(i in 0..classArray.length()-1){
+                classDay = "$classDay ${classArray[i]}"
+            }
             val courseInfo: List<String>
             if (lab){
+                val labArray = course.getJSONArray("LabDay")
+                var labDay = ""
+                for(i in 0..labArray.length()-1){
+                    labDay = "$labDay ${classArray[i]}"
+                }
                 courseInfo = listOf(
                     course.optString("Course"),
                     course.optString("Section"),
-                    course.getJSONArray("ClassDay").join(" - "),
+                    classDay,
                     course.optString("ClassTime"),
                     course.optString("ClassRoom"),
-                    course.getJSONArray("LabDay").join(" - "),
+                    labDay,
                     course.optString("LabTime"),
                     course.optString("LabRoom")
                 )
@@ -82,7 +94,8 @@ open class CourseVM @Inject constructor(
                 courseInfo = listOf(
                     course.optString("Course"),
                     course.optString("Section"),
-                    course.getJSONArray("ClassDay").join(" - "),
+//                    course.getJSONArray("ClassDay").join(" - "),
+                    classDay,
                     course.optString("ClassTime"),
                     course.optString("ClassRoom"),
                     "-",
@@ -92,7 +105,6 @@ open class CourseVM @Inject constructor(
             }
             courseR.createCourse(courseInfo)
             onSet("Creating: ${courseInfo[0]} - ${courseInfo[1]}")
-            println("Course created $courseInfo")
         }
 
     }

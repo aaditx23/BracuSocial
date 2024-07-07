@@ -1,54 +1,143 @@
 package com.aaditx23.bracusocial.ui.screens
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.local.viewmodels.CourseVM
-import com.aaditx23.bracusocial.backend.remote.UsisCrawler
+import com.aaditx23.bracusocial.backend.local.viewmodels.SessionVM
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONObject
 
-@SuppressLint("MutableCollectionMutableState")
 @Composable
-fun CourseScreen() {
-    val coursevm : CourseVM = hiltViewModel()
-    val courseList by coursevm.allCourses.collectAsState()
+fun CourseScreen(){
+    val sessionvm: SessionVM = hiltViewModel()
+    val courseVM: CourseVM = hiltViewModel()
 
-    Box(modifier = Modifier.padding(top = 60.dp)){
-        CourseList(courses = courseList)
+    val allCourses by courseVM.allCourses.collectAsState()
+    val allSessions by sessionvm.allSessions.collectAsState()
+    var status by rememberSaveable {
+        mutableStateOf("Status")
     }
-
-}
-
-@Composable
-fun CourseList(courses: List<Course>) {
-    if (courses == null) return
-
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(courses.size) { index ->
-            val course = courses[index]
-            CourseItem(course)
+    var isSessionReady by rememberSaveable {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(allSessions) {
+        println(allSessions)
+        CoroutineScope(Dispatchers.IO).launch {
+            delay(500)
+            if(allSessions.isEmpty()){
+                sessionvm.createSession()
+            }
+            isSessionReady = true
         }
+
     }
+    if(isSessionReady){
+        Column(modifier = Modifier.padding(top = 100.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ){
+                Text(text = status)
+            }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Button(onClick = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        courseVM.populateDb{s ->
+                            status = s
+                        }
+                        status = "Database Created"
+                    }
+                }) {
+                    Text(text = "Create DB")
+                }
+                Button(onClick = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        status = "Deleting all Entries"
+                        courseVM.clearDB()
+                        status = "Database empty"
+
+                    }
+
+                }) {
+                    Text(text = "Delete All")
+                }
+                Button(onClick = {
+                    status = "Refreshing DB"
+                    courseVM.refreshDB{s ->
+                        status = s
+                    }
+                    status = "Databsae Refreshed"
+
+                }) {
+                    Text(text = "Refresh DB")
+                }
+            }
+
+
+        }
+        LazyColumn(
+            modifier = Modifier
+                .padding(top = 200.dp)
+        ) {
+            items(allCourses){course ->
+                CourseItem(course = course)
+            }
+        }
+        
+    }
+    else{
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+
+        ){
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                Text(text = "Checking Session")
+                CircularProgressIndicator()
+            }
+        }
+
+    }
+
+        
 }
 
 @Composable
 fun CourseItem(course: Course) {
-    println()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -63,11 +152,10 @@ fun CourseItem(course: Course) {
         Text(text = "Class Room: ${course.classRoom}")
 
         if (course.labDay != "-") {
-            Text(text = "Lab Time: ${course.labDay}")
+            Text(text = "Lab Day: ${course.labDay}")
             Text(text = "Lab Time: ${course.labTime}")
             Text(text = "Lab Time: ${course.labRoom}")
         }
+
     }
 }
-
-
