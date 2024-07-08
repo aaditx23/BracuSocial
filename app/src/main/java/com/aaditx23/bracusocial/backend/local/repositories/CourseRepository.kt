@@ -30,7 +30,6 @@ class CourseRepository @Inject constructor(
             }
             copyToRealm(courseData, updatePolicy = UpdatePolicy.ALL)
         }
-        println("DATA WRITTEN TO Course")
     }
 
     fun getAllCourses() : Flow<List<Course>> {
@@ -40,6 +39,45 @@ class CourseRepository @Inject constructor(
             .map { results ->
                 results.list.toList()
             }
+    }
+
+    fun getAllClass(): Flow<List<String?>> {
+        return realm
+            .query<Course>()
+            .asFlow()
+            .map { course ->
+                course.list
+                    .map { "${it.classRoom}" }
+                    .toSet()
+                    .sortedBy { it ?: "" }
+            }
+    }
+    fun getAllLab(): Flow<List<String?>> {
+        return realm
+            .query<Course>()
+            .asFlow()
+            .map { course ->
+                course.list
+                    .filter { it.labRoom != "-" && it.labRoom!!.slice(0..1) != "FT" }
+                    .map { it.labRoom }
+                    .toSet()
+                    .sortedBy { it ?: "" }
+            }
+    }
+
+    fun findOccupiedClass(time: String, day: String): List<Course>{
+        return realm
+            .query<Course>(
+                "classTime == $0 AND classDay == $1", time, day
+            )
+            .find()
+    }
+    fun findOccupiedLab(time: String, day: String): List<Course>{
+        return realm
+            .query<Course>(
+                "classTime == $0 AND classDay == $1", time, day
+            )
+            .find()
     }
 
     suspend fun deleteCourse(id: ObjectId){

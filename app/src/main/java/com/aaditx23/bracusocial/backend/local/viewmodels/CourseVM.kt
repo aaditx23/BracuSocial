@@ -9,6 +9,7 @@ import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository
 import com.aaditx23.bracusocial.backend.remote.UsisCrawler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -27,6 +28,19 @@ open class CourseVM @Inject constructor(
             viewModelScope,
             SharingStarted.WhileSubscribed(),
             emptyList()
+        )
+
+    val allClassRooms = courseR.getAllClass()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            emptySet()
+        )
+    val allLabRooms = courseR.getAllLab()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            emptySet()
         )
 
     fun createCourseDB(
@@ -68,15 +82,20 @@ open class CourseVM @Inject constructor(
         allCoursesJson.forEachIndexed { _, course ->
             val lab = course.getBoolean("Lab")
             val classArray = course.getJSONArray("ClassDay")
+            var classRoom = course.optString("ClassRoom")
+            if(classRoom[0] != '0' && classRoom[0] != '1'){
+                println(classRoom)
+                classRoom = classRoom.slice(1..<classRoom.length)
+            }
             var classDay = ""
-            for(i in 0..classArray.length()-1){
+            for(i in 0..<classArray.length()){
                 classDay = "$classDay ${classArray[i]}"
             }
             val courseInfo: List<String>
             if (lab){
                 val labArray = course.getJSONArray("LabDay")
                 var labDay = ""
-                for(i in 0..labArray.length()-1){
+                for(i in 0..<labArray.length()){
                     labDay = "$labDay ${classArray[i]}"
                 }
                 courseInfo = listOf(
@@ -84,7 +103,7 @@ open class CourseVM @Inject constructor(
                     course.optString("Section"),
                     classDay,
                     course.optString("ClassTime"),
-                    course.optString("ClassRoom"),
+                    classRoom,
                     labDay,
                     course.optString("LabTime"),
                     course.optString("LabRoom")
@@ -97,7 +116,7 @@ open class CourseVM @Inject constructor(
 //                    course.getJSONArray("ClassDay").join(" - "),
                     classDay,
                     course.optString("ClassTime"),
-                    course.optString("ClassRoom"),
+                    classRoom,
                     "-",
                     "-",
                     "-"

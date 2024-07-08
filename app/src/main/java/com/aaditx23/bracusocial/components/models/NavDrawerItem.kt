@@ -2,8 +2,10 @@ package com.aaditx23.bracusocial.components.models
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apartment
+import androidx.compose.material.icons.filled.Room
 import androidx.compose.material.icons.filled.SupervisedUserCircle
 import androidx.compose.material.icons.outlined.Apartment
+import androidx.compose.material.icons.outlined.Room
 import androidx.compose.material.icons.outlined.SupervisedUserCircle
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -15,10 +17,10 @@ sealed class NavDrawerItem(
     val isHeader: Boolean = false,
     val index: Int? = null
 ){
-    object AboutUs: NavDrawerItem(
-        selectedIcon = Icons.Filled.SupervisedUserCircle,
-        unselectedIcon = Icons.Outlined.SupervisedUserCircle,
-        title = "About Me",
+    object FindRoom: NavDrawerItem(
+        selectedIcon = Icons.Filled.Room,
+        unselectedIcon = Icons.Outlined.Room,
+        title = "Find Room",
         index = 0
     )
     object AboutClub: NavDrawerItem(
@@ -35,7 +37,7 @@ sealed class NavDrawerItem(
 
     companion object{
         val navDrawerItems = listOf(
-            AboutUs,
+            FindRoom,
             AboutClub
         )
     }

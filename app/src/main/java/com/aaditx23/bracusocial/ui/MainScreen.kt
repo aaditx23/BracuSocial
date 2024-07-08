@@ -39,6 +39,7 @@ import com.aaditx23.bracusocial.components.NavDrawer
 import com.aaditx23.bracusocial.components.TopActionBar
 import com.aaditx23.bracusocial.components.models.BottomNavItem
 import com.aaditx23.bracusocial.ui.screens.CourseScreen
+import com.aaditx23.bracusocial.ui.screens.FindRoom
 import com.aaditx23.bracusocial.ui.screens.PrePreReg
 import com.aaditx23.bracusocial.ui.screens.SavedRoutine
 import org.json.JSONArray
@@ -116,7 +117,7 @@ fun Main(){
             },
             topBar = { TopActionBar(drawerState = drawerState, scope = scope ) }
         ){
-            NavHost(navController = navController, startDestination = "PrePreReg" ){
+            NavHost(navController = navController, startDestination = "All Courses" ){
                 // Routes
                 composable("All Courses"){
                     CourseScreen()
@@ -151,8 +152,8 @@ fun Main(){
                     SavedRoutine()
 
                 }
-                composable("Course Handler"){
-
+                composable("Find Room"){
+                    FindRoom()
                 }
                 composable("About BUCC"){
 
