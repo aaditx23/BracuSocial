@@ -30,7 +30,8 @@ import com.aaditx23.bracusocial.components.models.NavDrawerItem
 fun NavDrawer(
     scrollState: ScrollState,
     selectedIndex: Int,
-    onClick: (item: NavDrawerItem) -> Unit
+    onClick: (item: NavDrawerItem) -> Unit,
+
 ){
     val items = NavDrawerItem.navDrawerItems
     Column(

@@ -2,9 +2,11 @@ package com.aaditx23.bracusocial.components.models
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apartment
+import androidx.compose.material.icons.filled.CalendarViewWeek
 import androidx.compose.material.icons.filled.Room
 import androidx.compose.material.icons.filled.SupervisedUserCircle
 import androidx.compose.material.icons.outlined.Apartment
+import androidx.compose.material.icons.outlined.CalendarViewWeek
 import androidx.compose.material.icons.outlined.Room
 import androidx.compose.material.icons.outlined.SupervisedUserCircle
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -35,10 +37,16 @@ sealed class NavDrawerItem(
         isDivider = true
     )
 
+
+
+
+
     companion object{
+
         val navDrawerItems = listOf(
             FindRoom,
             AboutClub
         )
+
     }
 }
