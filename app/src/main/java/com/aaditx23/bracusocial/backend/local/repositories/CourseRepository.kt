@@ -64,20 +64,22 @@ class CourseRepository @Inject constructor(
                     .sortedBy { it ?: "" }
             }
     }
-
-    fun findOccupiedClass(time: String, day: String): List<Course>{
+    fun findOccupiedClass(time: String, day: String): List<String>{
+        println("Time: $time day : $day")
         return realm
             .query<Course>(
-                "classTime == $0 AND classDay == $1", time, day
+                "classTime == $0 AND classDay CONTAINS $1", time, day
             )
             .find()
+            .map { it.classRoom.toString() }
     }
-    fun findOccupiedLab(time: String, day: String): List<Course>{
+    fun findOccupiedLab(time: String, day: String): List<String>{
         return realm
             .query<Course>(
-                "classTime == $0 AND classDay == $1", time, day
+                "classTime == $0 AND classDay CONTAINS $1", time, day
             )
             .find()
+            .map { it.labRoom.toString() }
     }
 
     suspend fun deleteCourse(id: ObjectId){
