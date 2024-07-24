@@ -46,11 +46,13 @@ open class RoomVM @Inject constructor(
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
         val time12 = SimpleDateFormat("hh:mm a", Locale.getDefault())
         val date = SimpleDateFormat("HH:mm", Locale.getDefault())
-        return time12.format(date.parse(currentTime.format(formatter))!!)
+
+        return time12.format(date.parse(currentTime.format(formatter))!!).uppercase()
     }
     fun getToday(): String{
         val currentTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("EEEE")
+        println("Current day ${currentTime.format(formatter)}")
         return currentTime.format(formatter)
     }
 
@@ -80,11 +82,12 @@ open class RoomVM @Inject constructor(
     }
 
     fun compareTime(t1: String, t2: String): Int{
-        val formatter = DateTimeFormatter.ofPattern("hh:mm a")
-        val localTime1 = LocalTime.parse(t1, formatter)
-        val localTime2 = LocalTime.parse(t2, formatter)
+        println("$t1 $t2 time before format")
+//        val formatter = DateTimeFormatter.ofPattern("hh:mm a")
+//        val localTime1 = LocalTime.parse(t1, formatter)
+//        val localTime2 = LocalTime.parse(t2, formatter)
 
-        return localTime1.compareTo(localTime2)
+        return t1.compareTo(t2)
     }
 
 

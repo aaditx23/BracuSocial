@@ -327,6 +327,7 @@ fun getTimeSlot(time:String, slotList: List<String>, vm: RoomVM): String{
             val withStart = vm.compareTime(time, start) // should be >=0
             val withEnd = vm.compareTime(time, end) // should be <=0
 
+            println("$time $start $end")
             if (withStart >=0 && withEnd <= 0){
                 return s
             }

@@ -34,8 +34,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.models.Course
@@ -146,7 +148,11 @@ fun SavedRoutine(
                                 .padding(start = 10.dp),
                             contentAlignment = Alignment.Center,
                         ){
-                            Text(text = "Added\nCourses")
+                            Text(
+                                text = "Added\nCourses",
+                                textAlign = TextAlign.Center,
+                                color = Color.Black
+                            )
                         }
 
                     }
@@ -244,7 +250,9 @@ fun CourseItem(course: Course) {
         Text(
             text = "${course.courseName}, Section: ${course.section}",
             modifier = Modifier
-                .padding(5.dp)
+                .padding(5.dp),
+            textAlign = TextAlign.Center,
+            color = Color.Black
         )
     }
 }

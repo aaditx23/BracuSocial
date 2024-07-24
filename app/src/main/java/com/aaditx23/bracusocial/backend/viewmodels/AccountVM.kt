@@ -66,17 +66,19 @@ open class AccountVM @Inject constructor(
     fun createFriends(){
         viewModelScope.launch {
             val me = profileR.getFirstProfile()
-            me?.addedFriends!!.split(",").forEachIndexed { _, s ->
-                println("$me \n found \n $s")
-                if(s!=""){
-                    val friend = ppR.getProfileProxy(s)
-                    if (friend != null) {
-                        fpR.createFriendProfile(
-                            sid = friend.studentId,
-                            name = friend.studentName,
-                            courses = friend.enrolledCourses,
-                            friends = friend.addedFriends
-                        )
+            if(me != null){
+                me.addedFriends.split(",").forEachIndexed { _, s ->
+                    println("$me \n found \n $s")
+                    if(s!=""){
+                        val friend = ppR.getProfileProxy(s)
+                        if (friend != null) {
+                            fpR.createFriendProfile(
+                                sid = friend.studentId,
+                                name = friend.studentName,
+                                courses = friend.enrolledCourses,
+                                friends = friend.addedFriends
+                            )
+                        }
                     }
                 }
             }
