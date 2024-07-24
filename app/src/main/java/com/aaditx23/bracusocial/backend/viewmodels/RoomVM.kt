@@ -1,22 +1,13 @@
-package com.aaditx23.bracusocial.backend.local.viewmodels
+package com.aaditx23.bracusocial.backend.viewmodels
 
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aaditx23.bracusocial.backend.local.repositories.CourseRepository
-import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository
-import com.aaditx23.bracusocial.backend.remote.UsisCrawler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import org.mongodb.kbson.ObjectId
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.LocalTime

@@ -2,6 +2,7 @@ package com.aaditx23.bracusocial.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -27,10 +29,12 @@ import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layoutId
@@ -39,13 +43,17 @@ import androidx.compose.ui.unit.min
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.Dp
 import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.ui.theme.palette2DarkRed
+import com.aaditx23.bracusocial.ui.theme.palette3paste
 
+val celHeight = 45.dp
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun Routine(courseList: MutableList<Course>){
-    val scrollState = rememberScrollState()
+fun Routine(courseList: MutableList<Course>, topPadding: Dp = 350.dp ){
+
     val tableData: MutableList<MutableList<MutableState<MutableList<Course>>>> = MutableList(8) { row ->
         MutableList(7) { column ->
             mutableStateOf(mutableListOf<Course>())
@@ -64,7 +72,7 @@ fun Routine(courseList: MutableList<Course>){
             labColumn!!.forEachIndexed { _, r ->
                 labRow!!.forEachIndexed { _, c ->
 
-                    tableData[r][c].value.add(course)
+                    tableData[c][r].value.add(course)
 
                 }
             }
@@ -73,7 +81,7 @@ fun Routine(courseList: MutableList<Course>){
         val classRow = classSlot["row"]
         classColumn!!.forEachIndexed { _, r ->
             classRow!!.forEachIndexed { _, c ->
-                tableData[r][c].value.add(course)
+                tableData[c][r].value.add(course)
 
             }
         }
@@ -81,15 +89,19 @@ fun Routine(courseList: MutableList<Course>){
 
     }
 
-    Table(data = tableData)
+    Table(data = tableData, topPadding)
 
 
 }
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
-fun Table(
-    data: MutableList<MutableList<MutableState<MutableList<Course>>>>,
+fun Table(data: MutableList<MutableList<MutableState<MutableList<Course>>>>,
+          topPadding: Dp = 350.dp
 ){
+    var status by rememberSaveable {
+        mutableStateOf(mutableListOf(true, false, false))   //empty, clash, valid
+    }
     val days = listOf(
         "Time",
         "Saturday",
@@ -113,23 +125,21 @@ fun Table(
     )
     // Top Row
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    var celHeight = rememberSaveable {
-        mutableStateOf(70)
-    }
+
     val availableHeight = screenHeight - 430
     val boxModifier: Modifier =
         if(availableHeight < celHeight.value * 8){
             Modifier
-                .padding(top = 350.dp)
+                .padding(top = topPadding)
                 .height(availableHeight.dp)
                 .horizontalScroll(rememberScrollState())
-                .verticalScroll(rememberScrollState())
+//                .verticalScroll(rememberScrollState())
         }
         else{
             Modifier
-                .padding(top = 350.dp)
+                .padding(top = topPadding)
                 .horizontalScroll(rememberScrollState())
-                .verticalScroll(rememberScrollState())
+//                .verticalScroll(rememberScrollState())
         }
 
 
@@ -152,11 +162,12 @@ fun Table(
                     Row {
                         Cell(text = time[row])
                         courseRow.forEachIndexed { _, courseList ->
+
                             Cell(
                                 courseList = courseList.value,
                                 modifier = Modifier
-                                    .size(height = celHeight.value.dp, width = 120.dp)
-                                    .border(1.dp, Color.Blue)
+                                    .size(height = celHeight, width = 120.dp)
+                                    .border(1.dp, Color.DarkGray)
                             )
                         }
                     }
@@ -169,24 +180,45 @@ fun Table(
 @Composable
 fun Cell(
     modifier: Modifier = Modifier
-        .size(height = 70.dp, width = 120.dp)
-        .border(1.dp, Color.Blue),
+        .size(height = celHeight, width = 120.dp)
+        .border(1.dp, Color.DarkGray),
     courseList: MutableList<Course>? = null,
     text: String? = null,
 
 ){
+    val color =
+        if (courseList != null && courseList.size >1) palette2DarkRed
+        else if (courseList != null && courseList.size ==1 ) palette3paste
+        else Color.Transparent
     Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-
+        modifier = modifier
+            .background(color),
+        contentAlignment = Alignment.Center,
     ){
         if (courseList != null){
             if (courseList.isEmpty()){
                 Text(text = "-")
             }
+            else if (courseList.size >1){
+                LazyColumn {
+                    items(courseList){course ->
+//                        val course = courseList[courseList.size-1 - index]
+                        Text(
+                            text = "${course.courseName} - ${course.section}",
+                            color = Color.Black,
+                            modifier = Modifier
+                                .padding(top = 10.dp, bottom = 10.dp)
+                        )
+                    }
+                }
+            }
+
             else {
                 courseList.forEachIndexed { _, course ->
-                    Text(text = course.courseName)
+                    Text(
+                        text = "${course.courseName} - ${course.section}",
+                        color = Color.Black
+                    )
                 }
             }
         }

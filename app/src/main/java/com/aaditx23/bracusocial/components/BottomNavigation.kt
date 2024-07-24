@@ -20,22 +20,25 @@ import com.aaditx23.bracusocial.components.models.BottomNavItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavigation(selectedIndex: Int, onItemSelcted: (Int) -> Unit){
-    val items = BottomNavItem.bottomNavItemList
-
+fun BottomNavigation(
+    items: List<BottomNavItem>,
+    selectedIndex: Int,
+    onItemSelcted: (Int) -> Unit
+){
     var navSelect by rememberSaveable {
         mutableIntStateOf(0)
     }
 
     NavigationBar(
-        modifier = Modifier.height(110.dp)
+        modifier = Modifier.height(120.dp)
     ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedIndex == index,
                 onClick = {
-                    onItemSelcted(item.idx)
-                    navSelect = item.idx
+                    val idx = items.indexOf(item)
+                    onItemSelcted(idx)
+                    navSelect = idx
                     item.badge.value = false
                     item.badgeCount.intValue = 0
                           },

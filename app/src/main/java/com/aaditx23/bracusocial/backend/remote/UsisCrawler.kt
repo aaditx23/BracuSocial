@@ -1,5 +1,6 @@
 package com.aaditx23.bracusocial.backend.remote
 
+import com.aaditx23.bracusocial.backend.local.models.Course
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements

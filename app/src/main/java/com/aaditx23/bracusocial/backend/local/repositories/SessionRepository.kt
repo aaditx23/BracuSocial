@@ -25,9 +25,9 @@ class SessionRepository @Inject constructor(
         }
     }
 
-    suspend fun dbStatusUpdate(id: ObjectId, status: Boolean){
+    suspend fun dbStatusUpdate(status: Boolean){
         realm.write {
-            val sessionData = query<Session>("_id == $0", id).first().find()
+            val sessionData = query<Session>().first().find()
             if (sessionData != null) {
                 sessionData.dbStatus = status
             }
@@ -35,9 +35,9 @@ class SessionRepository @Inject constructor(
         println("DB status updated to $status")
     }
 
-    suspend fun loginStatusUpdate(id: ObjectId, status: Boolean){
+    suspend fun loginStatusUpdate(status: Boolean){
         realm.write {
-            val sessionData = query<Session>("_id == $0", id).first().find()
+            val sessionData = query<Session>().first().find()
             if (sessionData != null) {
                 sessionData.loginStatus = status
             }

@@ -26,8 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.models.Course
-import com.aaditx23.bracusocial.backend.local.viewmodels.CourseVM
-import com.aaditx23.bracusocial.backend.local.viewmodels.SessionVM
+import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
+import com.aaditx23.bracusocial.backend.viewmodels.SessionVM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -46,14 +46,16 @@ fun CourseScreen(){
     var isSessionReady by rememberSaveable {
         mutableStateOf(false)
     }
+
+
     LaunchedEffect(allSessions) {
         println(allSessions)
         CoroutineScope(Dispatchers.IO).launch {
             delay(500)
-            if(allSessions.isEmpty()){
-                sessionvm.createSession()
-            }
             isSessionReady = true
+//            if(allSessions.isEmpty()){
+//                sessionvm.createSession()
+//            }
         }
 
     }

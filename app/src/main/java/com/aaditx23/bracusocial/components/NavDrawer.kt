@@ -31,6 +31,7 @@ fun NavDrawer(
     scrollState: ScrollState,
     selectedIndex: Int,
     onClick: (item: NavDrawerItem) -> Unit,
+    isLogin: Boolean
 
 ){
     val items = NavDrawerItem.navDrawerItems
@@ -39,9 +40,6 @@ fun NavDrawer(
             .verticalScroll(scrollState)
             .width(250.dp)
     ) {
-
-//        MiniProfile()
-
         Text(
             text = "BRACU SOCIAL",
             color = Color(28, 48, 92),
@@ -52,7 +50,8 @@ fun NavDrawer(
         )
 
 
-        items.forEachIndexed{ index, item ->
+        for(index in items.indices){
+            val item = items[index]
             when {
                 item.isDivider -> {
                     HorizontalDivider(
@@ -70,20 +69,38 @@ fun NavDrawer(
                     )
                 }
 
+
                 else -> {
-                    NavigationDrawerItem(
-                        label = { Text(text = item.title) },
-                        selected = selectedIndex == index,
-                        onClick = { onClick(item) },
-                        icon = {
-                            if (selectedIndex == index){
-                                Icon(imageVector = item.selectedIcon!!, contentDescription = item.title)
+                    @Composable
+                    fun drawer(){
+                        NavigationDrawerItem(
+                            label = { Text(text = item.title) },
+                            selected = selectedIndex == index,
+                            onClick = { onClick(item) },
+                            icon = {
+                                if (selectedIndex == index) {
+                                    Icon(
+                                        imageVector = item.selectedIcon!!,
+                                        contentDescription = item.title
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = item.unselectedIcon!!,
+                                        contentDescription = item.title
+                                    )
+                                }
                             }
-                            else{
-                                Icon(imageVector = item.unselectedIcon!!, contentDescription = item.title)
-                            }
-                        }
                         )
+                    }
+
+                    if(isLogin){
+                        if(item.title == "Signup/Login") continue
+                        drawer()
+                    }
+                    else{
+                        if(item.title == "Logout") continue
+                        drawer()
+                    }
                 }
             }
 

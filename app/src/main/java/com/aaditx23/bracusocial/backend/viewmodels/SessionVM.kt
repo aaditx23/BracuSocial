@@ -1,4 +1,4 @@
-package com.aaditx23.bracusocial.backend.local.viewmodels
+package com.aaditx23.bracusocial.backend.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,8 +30,7 @@ open class SessionVM @Inject constructor(
     }
 
 
-    fun createSession(
-    ){
+    fun createSession(){
         viewModelScope.launch {
             sessionR.createSession()
         }
@@ -43,10 +42,11 @@ open class SessionVM @Inject constructor(
         }
     }
 
-    fun updateSessionDbStatus(id: ObjectId, status: Boolean){
+    fun updateSessionDbStatus(status: Boolean){
         viewModelScope.launch {
-            sessionR.dbStatusUpdate(id, status)
+            sessionR.dbStatusUpdate(status)
         }
     }
+
 
 }

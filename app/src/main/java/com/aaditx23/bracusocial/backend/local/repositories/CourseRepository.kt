@@ -74,9 +74,10 @@ class CourseRepository @Inject constructor(
             .map { it.classRoom.toString() }
     }
     fun findOccupiedLab(time: String, day: String): List<String>{
+        println("Time: $time day : $day")
         return realm
             .query<Course>(
-                "classTime == $0 AND classDay CONTAINS $1", time, day
+                "labTime == $0 AND labDay CONTAINS $1", time, day
             )
             .find()
             .map { it.labRoom.toString() }
@@ -98,6 +99,17 @@ class CourseRepository @Inject constructor(
             val courses = query<Course>().find()
             delete(courses)
         }
+    }
+
+    suspend fun findCourse(name: String, section: String): Flow<List<Course>>{
+        return realm
+            .query<Course>(
+                "courseName == $0 AND section == $1", name, section
+            )
+            .asFlow()
+            .map { results ->
+                results.list.toList()
+            }
     }
 
 }

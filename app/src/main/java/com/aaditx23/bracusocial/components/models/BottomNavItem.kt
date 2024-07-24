@@ -6,13 +6,19 @@ import androidx.compose.material.icons.filled.AutoAwesomeMosaic
 import androidx.compose.material.icons.filled.BackupTable
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PersonAddAlt1
+import androidx.compose.material.icons.filled.PersonSearch
 import androidx.compose.material.icons.outlined.AppRegistration
 import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
 import androidx.compose.material.icons.outlined.BackupTable
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Dashboard
+import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PersonAddAlt1
+import androidx.compose.material.icons.outlined.PersonSearch
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -23,37 +29,51 @@ sealed class BottomNavItem(
     val unselectedIcon: ImageVector,
     badge: Boolean,
     badgeCount: Int = 0,
-    val idx: Int
 ) {
     var badge = mutableStateOf(badge)
     val badgeCount = mutableIntStateOf(badgeCount)
 
-    object AllCourses: BottomNavItem(
-        title = "All Courses",
-        selectedIcon = Icons.Filled.AutoAwesomeMosaic,
-        unselectedIcon = Icons.Outlined.AutoAwesomeMosaic,
-        badge = false,
-        idx = 0
-    )
+
     object PrePreReg: BottomNavItem(
         title = "PrePreReg",
         selectedIcon = Icons.Filled.AppRegistration,
         unselectedIcon = Icons.Outlined.AppRegistration,
-        badge = false,
-        idx = 1
+        badge = false
     )
     object SavedRoutine: BottomNavItem(
         title = "Saved Routine",
         selectedIcon = Icons.Filled.BackupTable,
         unselectedIcon = Icons.Outlined.BackupTable,
-        badge = false,
-        idx = 2
+        badge = false
     )
+    object MyFriends: BottomNavItem(
+        title = "My Friends",
+        selectedIcon = Icons.Filled.Groups,
+        unselectedIcon = Icons.Outlined.Groups,
+        badge = false
+    )
+    object FriendRequests: BottomNavItem(
+        title = "Friend Requests",
+        selectedIcon = Icons.Filled.PersonAddAlt1,
+        unselectedIcon = Icons.Outlined.PersonAddAlt1,
+        badge = false
+    )
+    object FindFriend: BottomNavItem(
+        title = "Find Friends",
+        selectedIcon = Icons.Filled.PersonSearch,
+        unselectedIcon = Icons.Outlined.PersonSearch,
+        badge = false
+    )
+
     companion object{
-        val bottomNavItemList = listOf(
-            AllCourses,
+        val PrePreRegItemList = listOf(
             PrePreReg,
             SavedRoutine,
+        )
+        val friendItemList = listOf(
+            MyFriends,
+            FriendRequests,
+            FindFriend
         )
     }
 
