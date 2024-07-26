@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aaditx23.bracusocial.components.models.BottomNavItem
+import com.aaditx23.bracusocial.components.models.IconMap
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,8 +40,7 @@ fun BottomNavigation(
                     val idx = items.indexOf(item)
                     onItemSelcted(idx)
                     navSelect = idx
-                    item.badge.value = false
-                    item.badgeCount.intValue = 0
+                    println(item.selectedIcon)
                           },
                 label = {
                     Text(text = item.title)
@@ -49,17 +49,11 @@ fun BottomNavigation(
                 icon = {
                     BadgedBox(
                         badge = {
-                            if (item.badgeCount.intValue != 0 ){
-                                Badge{
-                                    Text(text = item.badgeCount.intValue.toString())
-                                }
-                            }
-                            else if (item.badge.value){
-                                Badge()
-                            }
+
                         }
                     ) {
-                        Icon(imageVector = if (index == navSelect) item.selectedIcon else item.unselectedIcon,
+                        Icon(imageVector = if (index == navSelect) IconMap(item.selectedIcon)
+                                            else IconMap(item.unselectedIcon),
                             contentDescription = item.title )
                     }
                 }

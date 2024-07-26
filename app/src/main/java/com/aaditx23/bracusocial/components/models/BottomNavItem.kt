@@ -1,5 +1,6 @@
 package com.aaditx23.bracusocial.components.models
 
+import android.os.Parcelable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AppRegistration
 import androidx.compose.material.icons.filled.AutoAwesomeMosaic
@@ -22,47 +23,46 @@ import androidx.compose.material.icons.outlined.PersonSearch
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
+@Parcelize
 sealed class BottomNavItem(
     val title: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-    badge: Boolean,
-    badgeCount: Int = 0,
-) {
-    var badge = mutableStateOf(badge)
-    val badgeCount = mutableIntStateOf(badgeCount)
+    val selectedIcon: String,
+    val unselectedIcon: String,
+): Parcelable {
 
-
+    @Parcelize
     object PrePreReg: BottomNavItem(
         title = "PrePreReg",
-        selectedIcon = Icons.Filled.AppRegistration,
-        unselectedIcon = Icons.Outlined.AppRegistration,
-        badge = false
+        selectedIcon = "filled_app_registration",
+        unselectedIcon = "outlined_app_registration",
+
     )
+    @Parcelize
     object SavedRoutine: BottomNavItem(
         title = "Saved Routine",
-        selectedIcon = Icons.Filled.BackupTable,
-        unselectedIcon = Icons.Outlined.BackupTable,
-        badge = false
+        selectedIcon = "filled_backup_table",
+        unselectedIcon = "outlined_backup_table",
     )
+    @Parcelize
     object MyFriends: BottomNavItem(
         title = "My Friends",
-        selectedIcon = Icons.Filled.Groups,
-        unselectedIcon = Icons.Outlined.Groups,
-        badge = false
+        selectedIcon = "filled_groups",
+        unselectedIcon = "outlined_groups",
     )
+    @Parcelize
     object FriendRequests: BottomNavItem(
         title = "Friend Requests",
-        selectedIcon = Icons.Filled.PersonAddAlt1,
-        unselectedIcon = Icons.Outlined.PersonAddAlt1,
-        badge = false
+        selectedIcon = "filled_person_add_alt_1",
+        unselectedIcon = "outlined_person_add_alt_1",
     )
+    @Parcelize
     object FindFriend: BottomNavItem(
         title = "Find Friends",
-        selectedIcon = Icons.Filled.PersonSearch,
-        unselectedIcon = Icons.Outlined.PersonSearch,
-        badge = false
+        selectedIcon = "filled_person_search",
+        unselectedIcon = "outlined_person_search",
     )
 
     companion object{

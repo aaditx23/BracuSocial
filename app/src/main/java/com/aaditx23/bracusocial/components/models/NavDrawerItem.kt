@@ -1,5 +1,6 @@
 package com.aaditx23.bracusocial.components.models
 
+import android.os.Parcelable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -25,57 +26,66 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Room
 import androidx.compose.material.icons.outlined.SupervisedUserCircle
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 sealed class NavDrawerItem(
-    val selectedIcon: ImageVector? = null,
-    val unselectedIcon: ImageVector? = null,
+    val selectedIcon: String? = null,
+    val unselectedIcon: String? = null,
     val title: String,
     val isDivider: Boolean = false,
     val isHeader: Boolean = false,
-){
+): Parcelable{
+
+    @Parcelize
     object Profile: NavDrawerItem(
-        selectedIcon = Icons.Filled.Person,
-        unselectedIcon = Icons.Outlined.Person,
+        selectedIcon = "filled_person",
+        unselectedIcon = "outlined_person",
         title = "Profile"
     )
+    @Parcelize
     object Friends: NavDrawerItem(
-        selectedIcon = Icons.Filled.Group,
-        unselectedIcon = Icons.Outlined.Group,
+        selectedIcon = "filled_group",
+        unselectedIcon = "outlined_group",
         title = "Friends"
     )
-
+    @Parcelize
     object AllCourses: NavDrawerItem(
-        selectedIcon = Icons.Filled.AutoAwesomeMosaic,
-        unselectedIcon = Icons.Outlined.AutoAwesomeMosaic,
+        selectedIcon = "filled_auto_awesome_mosaic",
+        unselectedIcon = "outlined_auto_awesome_mosaic",
         title = "All Courses"
     )
+    @Parcelize
     object PrePreReg: NavDrawerItem(
-        selectedIcon = Icons.Filled.AppRegistration,
-        unselectedIcon = Icons.Outlined.AppRegistration,
+        selectedIcon = "filled_app_registration",
+        unselectedIcon = "outlined_app_registration",
         title = "PrePreReg"
     )
+    @Parcelize
     object FindRoom: NavDrawerItem(
-        selectedIcon = Icons.Filled.Room,
-        unselectedIcon = Icons.Outlined.Room,
+        selectedIcon = "filled_room",
+        unselectedIcon = "outlined_room",
         title = "Find Room"
     )
-
+    @Parcelize
     object Login: NavDrawerItem(
-        selectedIcon = Icons.AutoMirrored.Filled.Login,
-        unselectedIcon = Icons.AutoMirrored.Outlined.Login,
+        selectedIcon = "auto_mirrored_filled_login",
+        unselectedIcon = "auto_mirrored_outlined_login",
         title = "Signup/Login"
     )
+    @Parcelize
     object Logout: NavDrawerItem(
-        selectedIcon = Icons.AutoMirrored.Filled.Logout,
-        unselectedIcon = Icons.AutoMirrored.Outlined.Logout,
+        selectedIcon = "auto_mirrored_filled_logout",
+        unselectedIcon = "auto_mirrored_outlined_logout",
         title = "Logout"
     )
+    @Parcelize
     object AboutApp: NavDrawerItem(
-        selectedIcon = Icons.Filled.Apartment,
-        unselectedIcon = Icons.Outlined.Apartment,
+        selectedIcon = "filled_apartment",
+        unselectedIcon = "outlined_apartment",
         title = "About App"
     )
-
+    @Parcelize
     object Divider: NavDrawerItem(
         title = "Divider",
         isDivider = true
@@ -98,6 +108,7 @@ sealed class NavDrawerItem(
             Login,
             Logout
         )
+
 
     }
 }

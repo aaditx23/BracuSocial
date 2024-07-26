@@ -79,8 +79,8 @@ open class CourseVM @Inject constructor(
 
     suspend fun populateDb(onSet: (s: String) -> Unit){
         viewModelScope.launch{
-//            val allCoursesJson: MutableList<JSONObject> = uc.executeAsyncTask()
-            val allCoursesJson = courseArray
+            val allCoursesJson: MutableList<JSONObject> = uc.executeAsyncTask()
+//            val allCoursesJson = courseArray
             allCoursesJson.forEachIndexed { _, course ->
                 val lab = course.getBoolean("Lab")
                 val classArray = course.getJSONArray("ClassDay")

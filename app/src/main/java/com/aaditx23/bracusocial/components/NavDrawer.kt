@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aaditx23.bracusocial.R
+import com.aaditx23.bracusocial.components.models.IconMap
 import com.aaditx23.bracusocial.components.models.NavDrawerItem
 
 
@@ -80,12 +81,12 @@ fun NavDrawer(
                             icon = {
                                 if (selectedIndex == index) {
                                     Icon(
-                                        imageVector = item.selectedIcon!!,
+                                        imageVector = IconMap(item.selectedIcon!!),
                                         contentDescription = item.title
                                     )
                                 } else {
                                     Icon(
-                                        imageVector = item.unselectedIcon!!,
+                                        imageVector = IconMap(item.unselectedIcon!!),
                                         contentDescription = item.title
                                     )
                                 }
