@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Apartment
 import androidx.compose.material.icons.filled.AppRegistration
 import androidx.compose.material.icons.filled.AutoAwesomeMosaic
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarViewWeek
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Logout
@@ -42,6 +43,12 @@ sealed class NavDrawerItem(
         selectedIcon = "filled_person",
         unselectedIcon = "outlined_person",
         title = "Profile"
+    )
+    @Parcelize
+    object Routine: NavDrawerItem(
+        selectedIcon = "filled_routine",
+        unselectedIcon = "outlined_routine",
+        title = "Routine"
     )
     @Parcelize
     object Friends: NavDrawerItem(
@@ -99,6 +106,7 @@ sealed class NavDrawerItem(
 
         val navDrawerItems = listOf(
             Profile,
+            Routine,
             Friends,
             AllCourses,
             PrePreReg,

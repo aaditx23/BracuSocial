@@ -180,6 +180,9 @@ class ProfileRepository @Inject constructor(
     fun getFirstProfile(): Profile?{
         return realm.query<Profile>().first().find()
     }
+    suspend fun getMyProfile(): Profile?{
+        return realm.query<Profile>().first().find()
+    }
 
     private fun stringToSet(st: String): MutableSet<Int>{
         val t = st.split(",")

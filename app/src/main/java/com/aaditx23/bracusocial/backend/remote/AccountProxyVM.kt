@@ -37,7 +37,8 @@ open class AccountProxyVM @Inject constructor(
             ppR.createProfile(
                 sid = profileData[0],
                 name = profileData[1],
-                pass = profileData[2]
+                pass = profileData[2],
+                courses = profileData[3]
             )
         }
     }

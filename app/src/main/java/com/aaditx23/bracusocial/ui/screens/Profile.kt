@@ -59,12 +59,14 @@ fun Profile(accountvm: AccountVM, accountproxyvm: AccountProxyVM){
         ){
             Text(text = allProfile[0].studentId.toString())
             Text(text = allProfile[0].studentName)
+            Text(text = allProfile[0].enrolledCourses.split(",").toString())
             Text(text = allProfile[0].addedFriends.split(",").toString())
             Text(text = allProfile[0].friendRequests.split(",").toString())
             HorizontalDivider()
             allProxyProfile.forEachIndexed { _, profile ->
                 Text(text = profile.studentId.toString())
                 Text(text = profile.studentName)
+                Text(text = profile.enrolledCourses.split(",").toString())
                 Text(text = profile.addedFriends.split(",").toString())
                 Text(text = profile.friendRequests.split(",").toString())
             }

@@ -95,11 +95,13 @@ fun NavDrawer(
                     }
 
                     if(isLogin){
-                        if(item.title == "Signup/Login") continue
+                        if(item.title == "Signup/Login" ) continue
                         drawer()
                     }
                     else{
-                        if(item.title == "Logout") continue
+                        if(item.title == "Logout" ||
+                            item.title == "Routine" ||
+                            item.title == "Friends") continue
                         drawer()
                     }
                 }

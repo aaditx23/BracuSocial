@@ -54,6 +54,7 @@ import com.aaditx23.bracusocial.ui.screens.SessionInfo
 import com.aaditx23.bracusocial.ui.screens.Account.Signup
 import com.aaditx23.bracusocial.ui.screens.Friends
 import com.aaditx23.bracusocial.ui.screens.Login_Signup
+import com.aaditx23.bracusocial.ui.screens.Routine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -157,6 +158,9 @@ fun Main(){
                     // Routes
                     composable("Profile") {
                         Profile(accountvm, accountproxyvm)
+                    }
+                    composable("Routine"){
+                        Routine()
                     }
                     composable("All Courses") {
                         CourseScreen()

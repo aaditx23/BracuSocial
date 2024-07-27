@@ -101,15 +101,12 @@ class CourseRepository @Inject constructor(
         }
     }
 
-    suspend fun findCourse(name: String, section: String): Flow<List<Course>>{
+    suspend fun findCourse(name: String, section: String): Course?{
         return realm
             .query<Course>(
                 "courseName == $0 AND section == $1", name, section
-            )
-            .asFlow()
-            .map { results ->
-                results.list.toList()
-            }
+            ).first().find()
+
     }
 
 }

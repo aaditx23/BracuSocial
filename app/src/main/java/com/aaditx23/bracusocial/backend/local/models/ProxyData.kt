@@ -118,30 +118,35 @@ val demoProfiles =
             "21201618",
             "Demo 1",
             "123",
+            "CSE221 02,SOC101 09,CSE489 01"
 
         ),
         listOf(
             "21201617",
             "Demo 2",
             "123",
+            "ACT201 01,ANT101 01,BCH101 03"
 
             ),
         listOf(
             "21201616",
             "Demo 3",
             "123",
+            "ACT201 02,ANT101 02,BIO101 02"
 
             ),
         listOf(
             "21201615",
             "Demo 4",
             "123",
+            "BUS102 01,CHE110 01,CSE110 19"
 
             ),
         listOf(
             "21201614",
             "Demo 5",
             "123",
+            "CSE220 25,CSE230 20,CSE250 21"
 
             ),
 

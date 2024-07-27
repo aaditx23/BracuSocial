@@ -1,5 +1,6 @@
 package com.aaditx23.bracusocial.backend.local.repositories
 
+import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.local.models.FriendProfile
 import com.aaditx23.bracusocial.backend.local.models.Profile
 import io.realm.kotlin.Realm
@@ -66,6 +67,22 @@ class FriendProfileRepository @Inject constructor(
                 results.list.toList()
             }
     }
+    fun getAllFriendCourses() : List<String> {
+        return realm
+            .query<FriendProfile>()
+            .find()
+            .map { it.enrolledCourses }
+    }
+    suspend fun getFriendCourses(id: String): String {
+        val friendProfile = realm
+            .query<FriendProfile>("studentId == ?", id)
+            .find()
+            .firstOrNull()
+
+        return friendProfile?.enrolledCourses ?: ""
+    }
+
+
 
 
 }
