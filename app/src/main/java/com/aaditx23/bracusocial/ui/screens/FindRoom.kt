@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.aaditx23.bracusocial.backend.local.repositories.compareTime
 import com.aaditx23.bracusocial.backend.viewmodels.RoomVM
 import com.aaditx23.bracusocial.ui.theme.Purple80
 import com.aaditx23.bracusocial.ui.theme.palette2DarkPurple2
@@ -102,10 +103,10 @@ fun FindRoom(){
         mutableIntStateOf(dayList.indexOf(today))
     }
     var selectedIndexTime by rememberSaveable {
-        mutableIntStateOf(timeList.indexOf(getTimeSlot(currentTime, timeList, roomvm)))
+        mutableIntStateOf(timeList.indexOf(getTimeSlot(currentTime, timeList)))
     }
     var selectedIndexTimeLab by rememberSaveable {
-        mutableIntStateOf(labTimeList.indexOf(getTimeSlot(currentTime, labTimeList, roomvm)))
+        mutableIntStateOf(labTimeList.indexOf(getTimeSlot(currentTime, labTimeList)))
     }
     var emptyClasses by rememberSaveable {
         mutableStateOf(mutableListOf<String>())
@@ -138,7 +139,7 @@ fun FindRoom(){
     }
 
     LaunchedEffect(Unit) {
-        getClasses()
+        if(selectedIndexDay != 8) getClasses()
     }
 
     Row{
@@ -315,7 +316,8 @@ fun CustomNavDrawer(
 }
 
 
-fun getTimeSlot(time:String, slotList: List<String>, vm: RoomVM): String{
+
+fun getTimeSlot(time:String, slotList: List<String>): String{
     println(time)
 
     slotList.forEachIndexed { _, s ->
@@ -324,8 +326,8 @@ fun getTimeSlot(time:String, slotList: List<String>, vm: RoomVM): String{
             val temp = s.split("-")
             val start = temp[0].trim()
             val end = temp[1].trim()
-            val withStart = vm.compareTime(time, start) // should be >=0
-            val withEnd = vm.compareTime(time, end) // should be <=0
+            val withStart = compareTime(time, start) // should be >=0
+            val withEnd = compareTime(time, end) // should be <=0
 
             println("$time $start $end")
             if (withStart >=0 && withEnd <= 0){

@@ -3,6 +3,7 @@ package com.aaditx23.bracusocial.backend.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aaditx23.bracusocial.backend.local.repositories.CourseRepository
+import com.aaditx23.bracusocial.timeSlots
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -89,6 +90,7 @@ open class RoomVM @Inject constructor(
 
         return t1.compareTo(t2)
     }
+
 
 
 }

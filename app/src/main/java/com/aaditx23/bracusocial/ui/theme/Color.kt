@@ -12,6 +12,8 @@ val Pink40 = Color(0xFF7D5260)
 
 val paletteYellow= Color(0xFFF6F7A9)
 val paletteGreen= Color(0xFF5EC5D4)
+val paletteDarkGreen = Color(0xFF4BAAB8)
+val paletteDarkGreen2 = Color(0xFF2B727B)
 val paletteLightPurple= Color(0xFFA782EC)
 val paletteDarkPurple= Color(0xFF710096)
 val paletteNavyBlue= Color(0xFF06114F)
