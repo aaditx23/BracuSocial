@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.aaditx23.bracusocial.backend.local.repositories.add10ToMinutes
 import com.aaditx23.bracusocial.backend.local.repositories.compareTime
 import com.aaditx23.bracusocial.backend.viewmodels.RoomVM
 import com.aaditx23.bracusocial.ui.theme.Purple80
@@ -75,6 +76,7 @@ fun FindRoom(){
         "03:30 PM - 04:50 PM",
         "05:00 PM - 06:20 PM",
         "06:30 PM - 08:00 PM",
+        "Break",
         "Closed"
     )
     val labTimeList = listOf(
@@ -82,6 +84,7 @@ fun FindRoom(){
         "11:00 AM - 01:50 PM",
         "02:00 PM - 04:50 PM",
         "05:00 PM - 08:00 PM",
+        "Break",
         "Closed"
     )
     var clicked by rememberSaveable {
@@ -152,7 +155,7 @@ fun FindRoom(){
 //            selectedColor = paletteLightPurple
         ) {i ->
             selectedIndexDay = i
-            if (timeList[selectedIndexTime] != "Closed"){
+            if (timeList[selectedIndexTime] != "Closed" && timeList[selectedIndexTime] != "Break"){
                 getClasses()
             }
             else{
@@ -171,7 +174,7 @@ fun FindRoom(){
             ) {i ->
                 selectedIndexTimeLab = i
                 val t = labTimeList[selectedIndexTimeLab]
-                if (t != "Closed"){
+                if (t != "Closed" && t != "Break"){
                     getLabs()
                 }
                 else{
@@ -191,7 +194,7 @@ fun FindRoom(){
 //                unselectedColor = palette2DarkPurple3
             ) {i ->
                 selectedIndexTime = i
-                if (timeList[selectedIndexTime] != "Closed"){
+                if (timeList[selectedIndexTime] != "Closed" && timeList[selectedIndexTime] != "Break"){
                     getClasses()
                 }
                 else{
@@ -328,10 +331,13 @@ fun getTimeSlot(time:String, slotList: List<String>): String{
             val end = temp[1].trim()
             val withStart = compareTime(time, start) // should be >=0
             val withEnd = compareTime(time, end) // should be <=0
-
+            val withStartNext = compareTime(time, end, true) // should be <=0
             println("$time $start $end")
             if (withStart >=0 && withEnd <= 0){
                 return s
+            }
+            else if(withEnd >=0 && withStartNext <=0){
+                return "Break"
             }
         }
     }

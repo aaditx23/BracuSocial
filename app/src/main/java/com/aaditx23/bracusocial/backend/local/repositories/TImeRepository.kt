@@ -39,11 +39,39 @@ fun to24Hours(time: String): String {
     return String.format(Locale.US, "%02d:%02d", hour24, minute)
 }
 
+fun to24HoursPlus10(time: String): String {
+    // Split the time into its components
+    val (timePart, amPm) = time.split(" ")
+    var (hour, minute) = timePart.split(":").map { it.toInt() }
+    minute = minute.toInt() + 10
+
+    // Convert hour based on AM/PM
+    val hour24 = when {
+        amPm == "AM" && hour == 12 -> 0
+        amPm == "AM" -> hour
+        amPm == "PM" && hour == 12 -> 12
+        amPm == "PM" -> hour + 12
+        else -> hour // This case should not occur with valid input
+    }
+
+    // Format the result as a two-digit hour and minute, specifying the Locale
+    return String.format(Locale.US, "%02d:%02d", hour24, minute)
+}
+
+fun add10ToMinutes(time: String): String {
+    val (timePart, amPm) = time.split(" ")
+    var (hour, minute) = timePart.split(":").map { it.toInt() }
+    minute = minute.toInt() + 10
+    return String.format(Locale.US, "%02d:%02d %s", hour, minute, amPm)
+}
 
 
-fun compareTime(time1: String, time2: String): Int{
+
+fun compareTime(time1: String, time2: String, isNext: Boolean = false): Int{
     val t1 = to24Hours(time1)
-    val t2 = to24Hours(time2)
+    val t2 =
+        if (isNext)  to24HoursPlus10(time2)
+        else  to24Hours(time2)
     return t1.compareTo(t2)
 
 }
@@ -58,10 +86,14 @@ fun getTimeSlot(slotList: List<String>): String{
             val start = temp[0].trim()
             val end = temp[1].trim()
             val withStart = compareTime(time, start) // should be >=0
+            val withStartNext = compareTime(time, end, true) // should be <=0
             val withEnd = compareTime(time, end) // should be <=0
             println("$withStart start $withEnd end")
             if (withStart >=0 && withEnd <= 0){
                 return s
+            }
+            else if(withEnd >=0 && withStartNext <=0){
+                return add10ToMinutes(end)
             }
         }
     }

@@ -128,13 +128,6 @@ fun MyRoutine(routinevm: RoutineVM){
     routinevm.getMyCourses { list ->
         myCourses =  list
     }
-    fun getCurrentSlot(){
-        val combinedSlots = listOf(
-            getClassSlot(),
-            getLabSlot()
-        )
-
-    }
 
     LaunchedEffect(myCourses) {
         scope.launch {
@@ -199,6 +192,26 @@ fun MyRoutine(routinevm: RoutineVM){
 
 @Composable
 fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean){
+    val combinedSlots = listOf(
+        getClassSlot(),
+        getLabSlot()
+    )
+    fun getCurrentSlot(time: String): Boolean{
+        if (combinedSlots.contains(time)){
+            return true
+        }
+        else{
+            combinedSlots.forEach { result ->
+                return if (result.length == 8){
+                    time.contains(result)
+                } else{
+                    false
+                }
+            }
+        }
+        return false
+
+    }
     val combinedList = listOf(
         getClassSlot(),
         getLabSlot()
@@ -225,7 +238,7 @@ fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean){
             RoutineRow()
             timeSlots.forEach { key ->
                 if(map[key] != null && map[key] != ""){
-                    val isNow = combinedList.contains(key) && isToday
+                    val isNow = getCurrentSlot(key) && isToday
                     RoutineRow(time = key, data = map[key]!!, isNow)
                 }
             }
