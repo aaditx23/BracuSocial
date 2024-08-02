@@ -1,5 +1,7 @@
 package com.aaditx23.bracusocial.backend.local.repositories
 
+import com.aaditx23.bracusocial.classTimeList
+import com.aaditx23.bracusocial.labTimeList
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -49,7 +51,6 @@ fun compareTime(time1: String, time2: String): Int{
 
 fun getTimeSlot(slotList: List<String>): String{
     val time = getCurrentTime()
-    var c = 0
     slotList.forEachIndexed { _, s ->
 
         if(s!= "Closed"){
@@ -58,7 +59,6 @@ fun getTimeSlot(slotList: List<String>): String{
             val end = temp[1].trim()
             val withStart = compareTime(time, start) // should be >=0
             val withEnd = compareTime(time, end) // should be <=0
-            c++
             println("$withStart start $withEnd end")
             if (withStart >=0 && withEnd <= 0){
                 return s
@@ -66,4 +66,11 @@ fun getTimeSlot(slotList: List<String>): String{
         }
     }
     return "Closed"
+}
+fun getClassSlot(): String{
+    return getTimeSlot(classTimeList)
+}
+
+fun getLabSlot(): String{
+    return getTimeSlot(labTimeList)
 }

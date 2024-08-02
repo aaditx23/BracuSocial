@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -20,6 +21,7 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,10 +39,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.backend.local.repositories.getClassSlot
+import com.aaditx23.bracusocial.backend.local.repositories.getCurrentTime
+import com.aaditx23.bracusocial.backend.local.repositories.getLabSlot
 import com.aaditx23.bracusocial.backend.local.repositories.getTimeSlot
 import com.aaditx23.bracusocial.backend.local.repositories.getToday
 import com.aaditx23.bracusocial.backend.viewmodels.RoutineVM
+import com.aaditx23.bracusocial.ui.theme.palette3paste
+import com.aaditx23.bracusocial.ui.theme.palette5HintOfGreen
+import com.aaditx23.bracusocial.ui.theme.palette6LightIndigo
+import com.aaditx23.bracusocial.ui.theme.palette6LightSlateBlue1
+import com.aaditx23.bracusocial.ui.theme.palette6MagicMint
+import com.aaditx23.bracusocial.ui.theme.palette6PalePink
+import com.aaditx23.bracusocial.ui.theme.palette6PowderBlue
 import com.aaditx23.bracusocial.ui.theme.palette7Green2
+import com.aaditx23.bracusocial.ui.theme.palette7Paste1
 import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen
 import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen2
 import com.aaditx23.bracusocial.ui.theme.paletteGreen
@@ -79,7 +92,7 @@ fun MyRoutine(routinevm: RoutineVM){
     var isLoading by rememberSaveable {
         mutableStateOf(true)
     }
-    var currentDay by rememberSaveable {
+    val currentDay by rememberSaveable {
         mutableStateOf(getToday().slice(0..1))
     }
     var currentTimeSlot by rememberSaveable {
@@ -88,7 +101,7 @@ fun MyRoutine(routinevm: RoutineVM){
     var isLabToday by rememberSaveable {
         mutableStateOf(false)
     }
-    var map by rememberSaveable {
+    val map by rememberSaveable {
         mutableStateOf(mutableMapOf<String, MutableMap<String, String>>().apply {
             days.forEach { day ->
                 this[day] = mutableMapOf<String, String>().apply {
@@ -98,7 +111,7 @@ fun MyRoutine(routinevm: RoutineVM){
         })
     }
     // {Day: {Time: Course} }
-    var nonEmpty by rememberSaveable {
+    val nonEmpty by rememberSaveable {
         mutableStateOf(mutableListOf<String>())
     }
     fun add(entry: String){
@@ -110,16 +123,20 @@ fun MyRoutine(routinevm: RoutineVM){
 
 
     var scope = rememberCoroutineScope()
+    var listState = rememberLazyListState()
     var myCourses: List<Course> = listOf()
     routinevm.getMyCourses { list ->
         myCourses =  list
     }
     fun getCurrentSlot(){
+        val combinedSlots = listOf(
+            getClassSlot(),
+            getLabSlot()
+        )
 
     }
 
     LaunchedEffect(myCourses) {
-        println(currentDay)
         scope.launch {
             delay(500)
             if(myCourses.isNotEmpty()){
@@ -146,8 +163,10 @@ fun MyRoutine(routinevm: RoutineVM){
                 }
                 nonEmpty.remove("")
                 isLoading = false
+                listState.animateScrollToItem(days.indexOf(currentDay))
             }
         }
+
     }
     if(isLoading){
         Box(
@@ -163,11 +182,12 @@ fun MyRoutine(routinevm: RoutineVM){
         println(nonEmpty.sorted())
         LazyColumn(
             modifier = Modifier
-                .padding(top = 100.dp, bottom = 130.dp)
+                .padding(top = 100.dp, bottom = 130.dp),
+            state = listState
         ) {
             items(days){ key ->
                 if (nonEmpty.contains(key)){
-                    Day(key, (map[key]!!))
+                    Day(key, (map[key]!!), key == currentDay)
                 }
 
             }
@@ -178,7 +198,11 @@ fun MyRoutine(routinevm: RoutineVM){
 }
 
 @Composable
-fun Day(day: String, map: MutableMap<String, String>){
+fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean){
+    val combinedList = listOf(
+        getClassSlot(),
+        getLabSlot()
+    )
     ElevatedCard(
         modifier = Modifier
             .padding(5.dp)
@@ -187,6 +211,11 @@ fun Day(day: String, map: MutableMap<String, String>){
         elevation = CardDefaults.cardElevation(
             defaultElevation = 5.dp,
         ),
+        colors = CardDefaults.cardColors(
+            if (isToday) palette6MagicMint
+            else palette3paste
+        )
+
     ) {
         Column(
             modifier = Modifier
@@ -196,7 +225,8 @@ fun Day(day: String, map: MutableMap<String, String>){
             RoutineRow()
             timeSlots.forEach { key ->
                 if(map[key] != null && map[key] != ""){
-                    RoutineRow(time = key, data = map[key]!!)
+                    val isNow = combinedList.contains(key) && isToday
+                    RoutineRow(time = key, data = map[key]!!, isNow)
                 }
             }
         }
