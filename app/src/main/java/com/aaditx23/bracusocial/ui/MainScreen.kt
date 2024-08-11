@@ -80,7 +80,7 @@ fun Main(){
         mutableIntStateOf(0)
     }
     var selectedIndexDrawer by rememberSaveable {
-        mutableIntStateOf(0)
+        mutableIntStateOf(3)
     }
     val bottomNavList by rememberSaveable {
         mutableStateOf(BottomNavItem.PrePreRegItemList)
@@ -154,7 +154,7 @@ fun Main(){
 
                 topBar = { TopActionBar(drawerState = drawerState, scope = scope) }
             ) {
-                NavHost(navController = navController, startDestination = "Profile") {
+                NavHost(navController = navController, startDestination = "All Courses") {
                     // Routes
                     composable("Profile") {
                         Profile(accountvm, accountproxyvm)

@@ -101,7 +101,9 @@ fun NavDrawer(
                     else{
                         if(item.title == "Logout" ||
                             item.title == "Routine" ||
-                            item.title == "Friends") continue
+                            item.title == "Friends" ||
+                            item.title == "Profile"
+                            ) continue
                         drawer()
                     }
                 }

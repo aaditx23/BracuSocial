@@ -66,6 +66,19 @@ fun CourseScreen(){
 
     val coroutineScope = rememberCoroutineScope()
 
+    fun refresh(){
+        status = "Refreshing DB"
+        courseVM.refreshDB(
+            onSet = {s->
+                status = s
+            },
+            status = {b->
+                isLoading = b
+            }
+
+        )
+    }
+
     // Filtering logic within a coroutine
     LaunchedEffect(searchQuery) {
         coroutineScope.launch {
@@ -83,6 +96,10 @@ fun CourseScreen(){
         coroutineScope.launch {
             delay(500)
             isSessionReady = true
+            val firstSession = allSessions[0]
+            if (!firstSession.dbStatus){
+                refresh()
+            }
 //            if(allSessions.isEmpty()){
 //                sessionvm.createSession()
 //            }
@@ -106,16 +123,7 @@ fun CourseScreen(){
             ) {
                 Button(
                     onClick = {
-                        status = "Refreshing DB"
-                        courseVM.refreshDB(
-                            onSet = {s->
-                                status = s
-                            },
-                            status = {b->
-                                isLoading = b
-                            }
-
-                        )
+                        refresh()
                     },
                     modifier = Modifier
                         .fillMaxWidth()

@@ -127,6 +127,7 @@ open class CourseVM @Inject constructor(
         }
         onSet("Database Updated")
         sessionR.dbStatusUpdate(true)
+        onSet("")
     }
 
 
