@@ -2,6 +2,7 @@ package com.aaditx23.bracusocial.ui.screens.PrePreReg
 
 import android.widget.Toast
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -72,7 +73,7 @@ fun MakeRoutine(
     LaunchedEffect(searchQuery) {
         coroutineScope.launch {
             isFiltering = true
-            delay(300) // Optional delay to simulate processing time
+            delay(500) // Optional delay to simulate processing time
             filteredCourseList = FilterCourseList(list = courseList, searchQuery = searchQuery.text)
             isFiltering = false
 
@@ -82,8 +83,8 @@ fun MakeRoutine(
     Column(modifier = Modifier.padding(top = 70.dp)){
 
         SearchBar(action = {query ->
-            searchQuery = query
-        }
+                searchQuery = query
+            }
         )
 
         Row(

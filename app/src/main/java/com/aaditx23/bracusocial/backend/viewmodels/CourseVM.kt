@@ -78,70 +78,64 @@ open class CourseVM @Inject constructor(
     }
 
     suspend fun populateDb(onSet: (s: String) -> Unit){
-        viewModelScope.launch{
-            val allCoursesJson: MutableList<JSONObject> = uc.executeAsyncTask()
+        val allCoursesJson: MutableList<JSONObject> = uc.executeAsyncTask()
 //            val allCoursesJson = courseArray
-            allCoursesJson.forEachIndexed { _, course ->
-                val lab = course.getBoolean("Lab")
-                val classArray = course.getJSONArray("ClassDay")
-                var classRoom = course.optString("ClassRoom")
-                if (classRoom[0] != '0' && classRoom[0] != '1') {
-                    println(classRoom)
-                    classRoom = classRoom.slice(1..<classRoom.length)
-                }
-                var classDay = ""
-                for (i in 0..<classArray.length()) {
-                    classDay = "$classDay ${classArray[i]}"
-                }
-                val courseInfo: List<String>
-                if (lab) {
-                    val labArray = course.getJSONArray("LabDay")
-                    var labDay = ""
-                    for (i in 0..<labArray.length()) {
-                        labDay = "$labDay ${labArray[i]}"
-                    }
-                    courseInfo = listOf(
-                        course.optString("Course"),
-                        course.optString("Section"),
-                        classDay,
-                        course.optString("ClassTime"),
-                        classRoom,
-                        labDay,
-                        course.optString("LabTime"),
-                        course.optString("LabRoom")
-                    )
-                } else {
-                    courseInfo = listOf(
-                        course.optString("Course"),
-                        course.optString("Section"),
-//                    course.getJSONArray("ClassDay").join(" - "),
-                        classDay,
-                        course.optString("ClassTime"),
-                        classRoom,
-                        "-",
-                        "-",
-                        "-"
-                    )
-                }
-                courseR.createCourse(courseInfo)
-                onSet("Creating: ${courseInfo[0]} - ${courseInfo[1]}")
+        allCoursesJson.forEachIndexed { _, course ->
+            val lab = course.getBoolean("Lab")
+            val classArray = course.getJSONArray("ClassDay")
+            var classRoom = course.optString("ClassRoom")
+            if (classRoom[0] != '0' && classRoom[0] != '1') {
+                println(classRoom)
+                classRoom = classRoom.slice(1..<classRoom.length)
             }
-            sessionR.dbStatusUpdate(true)
+            var classDay = ""
+            for (i in 0..<classArray.length()) {
+                classDay = "$classDay ${classArray[i]}"
+            }
+            val courseInfo: List<String>
+            if (lab) {
+                val labArray = course.getJSONArray("LabDay")
+                var labDay = ""
+                for (i in 0..<labArray.length()) {
+                    labDay = "$labDay ${labArray[i]}"
+                }
+                courseInfo = listOf(
+                    course.optString("Course"),
+                    course.optString("Section"),
+                    classDay,
+                    course.optString("ClassTime"),
+                    classRoom,
+                    labDay,
+                    course.optString("LabTime"),
+                    course.optString("LabRoom")
+                )
+            } else {
+                courseInfo = listOf(
+                    course.optString("Course"),
+                    course.optString("Section"),
+//                    course.getJSONArray("ClassDay").join(" - "),
+                    classDay,
+                    course.optString("ClassTime"),
+                    classRoom,
+                    "-",
+                    "-",
+                    "-"
+                )
+            }
+            courseR.createCourse(courseInfo)
+            onSet("Creating: ${courseInfo[0]} - ${courseInfo[1]}")
         }
-
+        onSet("Database Updated")
+        sessionR.dbStatusUpdate(true)
     }
 
-    suspend fun clearDB(){
-        viewModelScope.launch {
-            courseR.deleteAllCourses()
-            sessionR.dbStatusUpdate(false)
-        }
-    }
 
-    fun refreshDB(onSet: (s: String) -> Unit){
+    fun refreshDB(onSet: (s: String) -> Unit, status: (b: Boolean) -> Unit){
         viewModelScope.launch {
+            status(true)
             courseR.deleteAllCourses()
             populateDb(onSet)
+            status(false)
         }
     }
 

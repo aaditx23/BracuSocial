@@ -34,10 +34,10 @@ import com.aaditx23.bracusocial.backend.local.models.Course
 @Composable
 fun SearchBar(
     action: (TextFieldValue) -> Unit,
-    width: Dp = 150.dp,
+    width: Dp = 305.dp,
     height: Dp = 40.dp,
-    cornerRadius: Dp = 10.dp,
-    textSize: TextUnit = 12.sp
+    cornerRadius: Dp = 5.dp,
+    textSize: TextUnit = 15.sp
     ){
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     action(searchQuery)
@@ -46,7 +46,7 @@ fun SearchBar(
         onValueChange = { newValue -> searchQuery = newValue },
         modifier = Modifier
             .size(width = width, height = height)
-            .padding(start = 5.dp, end = 5.dp)
+            .padding(start = 8.dp, end = 8.dp)
             .border(1.dp, Color.Gray, RoundedCornerShape(cornerRadius))
             .padding(8.dp),
         textStyle = TextStyle(

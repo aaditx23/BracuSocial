@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +26,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -48,9 +51,12 @@ fun CourseScreen(){
     val allCourses by courseVM.allCourses.collectAsState()
     val allSessions by sessionvm.allSessions.collectAsState()
     var status by rememberSaveable {
-        mutableStateOf("Status")
+        mutableStateOf("")
     }
     var isSessionReady by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var isLoading by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -85,7 +91,7 @@ fun CourseScreen(){
     }
     if(isSessionReady){
 
-        Column(modifier = Modifier.padding(top = 100.dp)) {
+        Column(modifier = Modifier.padding(top = 80.dp)) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -97,37 +103,25 @@ fun CourseScreen(){
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 5.dp)
             ) {
-                Button(onClick = {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        courseVM.populateDb{s ->
-                            status = s
-                        }
-                        status = "Database Created"
-                    }
-                }) {
-                    Text(text = "Create DB")
-                }
-                Button(onClick = {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        status = "Deleting all Entries"
-                        courseVM.clearDB()
-                        status = "Database empty"
+                Button(
+                    onClick = {
+                        status = "Refreshing DB"
+                        courseVM.refreshDB(
+                            onSet = {s->
+                                status = s
+                            },
+                            status = {b->
+                                isLoading = b
+                            }
 
-                    }
-
-                }) {
-                    Text(text = "Delete All")
-                }
-                Button(onClick = {
-                    status = "Refreshing DB"
-                    courseVM.refreshDB{s ->
-                        status = s
-                    }
-                    status = "Databsae Refreshed"
-
-                }) {
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    shape = RoundedCornerShape(5.dp)
+                ) {
                     Text(text = "Refresh DB")
                 }
             }
@@ -149,6 +143,21 @@ fun CourseScreen(){
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
                         Text(text = "Searching Course ${searchQuery.text}")
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+            else if(isLoading){
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+
+                ){
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Text(text = "Updating Database, please wait")
                         CircularProgressIndicator()
                     }
                 }
@@ -200,7 +209,7 @@ fun CourseItem(course: Course) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .border(1.dp, MaterialTheme.colorScheme.primary)
+            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(5.dp))
             .padding(8.dp)
     ) {
         Text(text = "Course: ${course.courseName}")

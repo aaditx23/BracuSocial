@@ -325,7 +325,7 @@ fun getTimeSlot(time:String, slotList: List<String>): String{
 
     slotList.forEachIndexed { _, s ->
 
-        if(s!= "Closed"){
+        if(s!= "Closed" && s!= "Break"){
             val temp = s.split("-")
             val start = temp[0].trim()
             val end = temp[1].trim()
