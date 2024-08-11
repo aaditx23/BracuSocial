@@ -1,7 +1,11 @@
 package com.aaditx23.bracusocial.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,33 +23,54 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aaditx23.bracusocial.backend.local.models.Course
 
 @Composable
-fun SearchBar(action: (TextFieldValue) -> Unit){
+fun SearchBar(
+    action: (TextFieldValue) -> Unit,
+    width: Dp = 150.dp,
+    height: Dp = 40.dp,
+    cornerRadius: Dp = 10.dp,
+    textSize: TextUnit = 12.sp
+    ){
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     action(searchQuery)
     BasicTextField(
         value = searchQuery,
         onValueChange = { newValue -> searchQuery = newValue },
         modifier = Modifier
-            .size(width = 150.dp, height = 40.dp)
-            .padding(start = 5.dp)
-            .border(1.dp, Color.Gray, RoundedCornerShape(10.dp))
+            .size(width = width, height = height)
+            .padding(start = 5.dp, end = 5.dp)
+            .border(1.dp, Color.Gray, RoundedCornerShape(cornerRadius))
             .padding(8.dp),
+        textStyle = TextStyle(
+            fontSize = textSize
+        ),
         decorationBox = { innerTextField ->
             if (searchQuery.text.isEmpty()) {
-                Text(
-                    text = "Search Courses...",
-                    color = Color.Gray,
-                    fontSize = 12.sp,
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.CenterStart
+                ){
+                    Text(
+                        text = "Search Courses...",
+                        color = Color.Gray,
+                        fontSize = textSize,
+                    )
+                }
             }
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxHeight()
             ){
                 innerTextField()
                 IconButton(

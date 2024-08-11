@@ -75,47 +75,16 @@ fun MakeRoutine(
             delay(300) // Optional delay to simulate processing time
             filteredCourseList = FilterCourseList(list = courseList, searchQuery = searchQuery.text)
             isFiltering = false
+
         }
     }
     //All Courses
     Column(modifier = Modifier.padding(top = 70.dp)){
 
-//        BasicTextField(
-//            value = searchQuery,
-//            onValueChange = { newValue -> searchQuery = newValue },
-//            modifier = Modifier
-//                .size(width = 150.dp, height = 40.dp)
-//                .padding(start = 5.dp)
-//                .border(1.dp, Color.Gray, RoundedCornerShape(10.dp))
-//                .padding(8.dp),
-//            decorationBox = { innerTextField ->
-//                if (searchQuery.text.isEmpty()) {
-//                    Text(
-//                        text = "Search Courses...",
-//                        color = Color.Gray,
-//                        fontSize = 12.sp,
-//                    )
-//                }
-//                Row(
-//                    verticalAlignment = Alignment.CenterVertically
-//                ){
-//                    innerTextField()
-//                    IconButton(
-//                        onClick = { searchQuery = TextFieldValue("") }
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.AutoMirrored.Filled.Backspace,
-//                            contentDescription = "Clear search",
-//                            tint = Color.Gray
-//                        )
-//                    }
-//                }
-//
-//            }
-//        )
-        SearchBar {query ->
+        SearchBar(action = {query ->
             searchQuery = query
         }
+        )
 
         Row(
             modifier = Modifier

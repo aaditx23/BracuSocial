@@ -19,15 +19,22 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.backend.viewmodels.SessionVM
+import com.aaditx23.bracusocial.components.FilterCourseList
+import com.aaditx23.bracusocial.components.SearchBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -47,10 +54,27 @@ fun CourseScreen(){
         mutableStateOf(false)
     }
 
+    var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
+    var filteredCourseList by remember { mutableStateOf(allCourses) }
+    var isFiltering by remember { mutableStateOf(false) }
 
-    LaunchedEffect(allSessions) {
+    val coroutineScope = rememberCoroutineScope()
+
+    // Filtering logic within a coroutine
+    LaunchedEffect(searchQuery) {
+        coroutineScope.launch {
+            isFiltering = true
+            delay(300) // Optional delay to simulate processing time
+            filteredCourseList = FilterCourseList(list = allCourses, searchQuery = searchQuery.text)
+            isFiltering = false
+
+        }
+    }
+
+
+    LaunchedEffect(key1 = allSessions) {
         println(allSessions)
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineScope.launch {
             delay(500)
             isSessionReady = true
 //            if(allSessions.isEmpty()){
@@ -60,6 +84,7 @@ fun CourseScreen(){
 
     }
     if(isSessionReady){
+
         Column(modifier = Modifier.padding(top = 100.dp)) {
             Box(
                 modifier = Modifier
@@ -72,6 +97,7 @@ fun CourseScreen(){
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(bottom = 5.dp)
             ) {
                 Button(onClick = {
                     CoroutineScope(Dispatchers.IO).launch {
@@ -105,17 +131,47 @@ fun CourseScreen(){
                     Text(text = "Refresh DB")
                 }
             }
+            SearchBar(action = {query ->
+                    searchQuery = query
+                },
+                width = LocalConfiguration.current.screenWidthDp.dp,
+                height = 40.dp,
+                textSize = 16.sp
+            )
+            if (isFiltering){
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
 
-
-        }
-        LazyColumn(
-            modifier = Modifier
-                .padding(top = 200.dp)
-        ) {
-            items(allCourses){course ->
-                CourseItem(course = course)
+                ){
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Text(text = "Searching Course ${searchQuery.text}")
+                        CircularProgressIndicator()
+                    }
+                }
             }
+            else{
+                LazyColumn() {
+                    items(
+                        if(searchQuery.text == ""){
+                            allCourses
+                        }
+                        else{
+                            filteredCourseList
+                        }
+                    ){course ->
+                        CourseItem(course = course)
+                    }
+                }
+            }
+
+
+
         }
+
         
     }
     else{
