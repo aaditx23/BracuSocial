@@ -1,16 +1,21 @@
 package com.aaditx23.bracusocial.ui.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -140,76 +145,33 @@ fun FindRoom(){
             showLoading = false
         }
     }
-
-    LaunchedEffect(Unit) {
-        if(selectedIndexDay != 8) getClasses()
+    
+    @Composable
+    fun classCard(i: Int, room: String){
+        Card(
+            modifier = Modifier
+                .padding(5.dp)
+                .height(45.dp)
+                .width(160.dp)
+        ){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                Text(
+                    text = "${i + 1}. $room",
+                    fontSize = 14.sp
+                )
+            }
+        }
     }
 
-    Row{
-        //for day
-        CustomNavDrawer(
-            list = dayList,
-            selectedIndex = selectedIndexDay,
-            cardHeight = 66.0, //462,
-//            unselectedColor = Purple80,
-//            selectedColor = paletteLightPurple
-        ) {i ->
-            selectedIndexDay = i
-            if (timeList[selectedIndexTime] != "Closed" && timeList[selectedIndexTime] != "Break"){
-                getClasses()
-            }
-            else{
-                emptyClasses = mutableListOf()
-            }
-        }
-        // for time slot
-        if (isLab){
-            CustomNavDrawer(
-                list = labTimeList,
-                selectedIndex = selectedIndexTimeLab,
-                cardHeight = 46.0, //414
-                containerWidth = 145,
-//                selectedColor = palette2DarkPurple2,
-//                unselectedColor = palette2DarkPurple3
-            ) {i ->
-                selectedIndexTimeLab = i
-                val t = labTimeList[selectedIndexTimeLab]
-                if (t != "Closed" && t != "Break"){
-                    getLabs()
-                }
-                else{
-                    emptyLab = mutableListOf()
-                }
-            }
-
-
-        }
-        else{
-            CustomNavDrawer(
-                list = timeList,
-                selectedIndex = selectedIndexTime,
-                cardHeight = 46.0, //414
-                containerWidth = 145,
-//                selectedColor = palette2DarkPurple2,
-//                unselectedColor = palette2DarkPurple3
-            ) {i ->
-                selectedIndexTime = i
-                if (timeList[selectedIndexTime] != "Closed" && timeList[selectedIndexTime] != "Break"){
-                    getClasses()
-                }
-                else{
-                    emptyClasses = mutableListOf()
-                }
-            }
-
-        }
-
-
-
-
+    @Composable
+    fun showClasses(){
         LazyColumn(
             modifier = Modifier
-                .padding(top = 130.dp, bottom = 150.dp, start = 30.dp)
+                .padding( bottom = 150.dp, start = 20.dp)
         ) {
             if(showLoading){
                 item{
@@ -221,18 +183,72 @@ fun FindRoom(){
             }
             else{
                 if (isLab){
-                    items(emptyLab.size) { index ->
-                        Text(text = "${index + 1}. ${emptyLab[index]}")
+                    itemsIndexed(emptyLab) { index, item ->
+                        classCard(i = index, room =item)
                     }
                 }
                 else{
-                    items(emptyClasses.size) { index ->
-                        Text(text = "${index + 1}. ${emptyClasses[index]}")
+                    itemsIndexed(emptyClasses) { index, item ->
+                        classCard(i = index, room = item)
                     }
                 }
             }
 
         }
+    }
+
+    LaunchedEffect(Unit) {
+        if(selectedIndexDay != 8) getClasses()
+    }
+
+    Column{
+        //for day
+        CustomNavBar(
+            list = dayList,
+            selectedIndex = selectedIndexDay,
+        ) {i ->
+            selectedIndexDay = i
+            if (timeList[selectedIndexTime] != "Closed" && timeList[selectedIndexTime] != "Break"){
+                getClasses()
+            }
+            else{
+                emptyClasses = mutableListOf()
+            }
+        }
+        // for time slot
+        Row{
+            if (isLab) {
+                CustomNavDrawer(
+                    list = labTimeList,
+                    selectedIndex = selectedIndexTimeLab,
+                ) { i ->
+                    selectedIndexTimeLab = i
+                    val t = labTimeList[selectedIndexTimeLab]
+                    if (t != "Closed" && t != "Break") {
+                        getLabs()
+                    } else {
+                        emptyLab = mutableListOf()
+                    }
+                }
+
+
+            } else {
+                CustomNavDrawer(
+                    list = timeList,
+                    selectedIndex = selectedIndexTime,
+                ) { i ->
+                    selectedIndexTime = i
+                    if (timeList[selectedIndexTime] != "Closed" && timeList[selectedIndexTime] != "Break") {
+                        getClasses()
+                    } else {
+                        emptyClasses = mutableListOf()
+                    }
+                }
+
+            }
+            showClasses()
+        }
+
     }
     Button(
         modifier = Modifier
@@ -262,27 +278,21 @@ fun FindRoom(){
 fun CustomNavDrawer(
     list: List<String>,
     selectedIndex: Int,
-    cardHeight: Double = 40.0,
-    containerWidth: Int = 80,
-    fontSize: Int = 14,
-    selectedColor: Color = MaterialTheme.colorScheme.inversePrimary,
-    unselectedColor: Color = MaterialTheme.colorScheme.primary,
     onClick: (i: Int)-> Unit
 ){
-    var padding = 130
-    if (list.size == 9 ){
-        padding = 154
-    }
-    else if (list.size == 5){
-        padding = 246
-    }
+    val cardHeight = 45.0
+    val containerWidth = 160
+    val fontSize = 14
+    val selectedColor = MaterialTheme.colorScheme.inversePrimary
+    val unselectedColor = MaterialTheme.colorScheme.primary
     Box(
         modifier = Modifier
             .width(containerWidth.dp)
     ) {
         Column(
             modifier = Modifier
-                .padding(top = padding.dp)
+                .fillMaxHeight()
+//                .background(Color.LightGray)
         ) {
             list.forEachIndexed { i, s ->
                 Card(
@@ -294,14 +304,13 @@ fun CustomNavDrawer(
                     } else {
                         CardDefaults.cardColors(unselectedColor)
                     },
-                    shape = RectangleShape,
+//                    shape = RectangleShape,
 
                     modifier = Modifier
+                        .padding(5.dp)
                         .height(cardHeight.dp)
-                        .border(1.dp, palette7Blue1)
+//                        .border(1.dp, palette7Blue1)
                         .fillMaxWidth(),
-
-
                 ) {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -318,6 +327,56 @@ fun CustomNavDrawer(
     }
 }
 
+@Composable
+fun CustomNavBar(
+    list: List<String>,
+    selectedIndex: Int,
+    selectedColor: Color = MaterialTheme.colorScheme.inversePrimary,
+    unselectedColor: Color = MaterialTheme.colorScheme.primary,
+    onClick: (i: Int)-> Unit
+){
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(),
+        contentAlignment = Alignment.Center,
+
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(top = 119.dp)
+//                .background(Color.LightGray)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            println(list)
+            list.forEachIndexed { i, s ->
+                Card(
+                    onClick = {
+                        onClick(i)
+                    },
+                    colors = if (selectedIndex == i){
+                        CardDefaults.cardColors(selectedColor)
+                    } else {
+                        CardDefaults.cardColors(unselectedColor)
+                    },
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .size(width = 50.dp, height = 35.dp)
+                    ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = s.slice(0..1),
+                            fontSize = 15.sp,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
 
 
 fun getTimeSlot(time:String, slotList: List<String>): String{
