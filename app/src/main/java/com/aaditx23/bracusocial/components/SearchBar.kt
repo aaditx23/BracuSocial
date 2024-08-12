@@ -36,8 +36,10 @@ fun SearchBar(
     action: (TextFieldValue) -> Unit,
     width: Dp = 305.dp,
     height: Dp = 40.dp,
+    paddingStart: Dp = 8.dp,
+    paddingEnd: Dp = 8.dp,
     cornerRadius: Dp = 5.dp,
-    textSize: TextUnit = 15.sp
+    textSize: TextUnit = 15.sp,
     ){
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     action(searchQuery)
@@ -46,7 +48,7 @@ fun SearchBar(
         onValueChange = { newValue -> searchQuery = newValue },
         modifier = Modifier
             .size(width = width, height = height)
-            .padding(start = 8.dp, end = 8.dp)
+            .padding(start = paddingStart, end = paddingEnd)
             .border(1.dp, Color.Gray, RoundedCornerShape(cornerRadius))
             .padding(8.dp),
         textStyle = TextStyle(
@@ -60,7 +62,7 @@ fun SearchBar(
                     contentAlignment = Alignment.CenterStart
                 ){
                     Text(
-                        text = "Search Courses...",
+                        text = "Search Courses",
                         color = Color.Gray,
                         fontSize = textSize,
                     )

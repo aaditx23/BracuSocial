@@ -82,46 +82,51 @@ fun MakeRoutine(
     //All Courses
     Column(modifier = Modifier.padding(top = 70.dp)){
 
-        SearchBar(action = {query ->
-                searchQuery = query
-            }
-        )
-
         Row(
             modifier = Modifier
                 .padding(top = 10.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(height = 230.dp, width = 150.dp)
-                    .padding(start = 5.dp)
-                    .border(1.dp, Color.Magenta, RoundedCornerShape(10.dp))
-            ) {
-                if(isFiltering){
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ){
-                        CircularProgressIndicator()
-                    }
-                }
-                else{
-                    LazyColumn {
-                        items(
-                            if(searchQuery.text == ""){
-                                courseList
+            Column{
+                SearchBar(
+                    action = { query ->
+                        searchQuery = query
+                    },
+                    width = 150.dp,
+                    paddingStart = 5.dp,
+                    paddingEnd = 0.dp,
+                    textSize = 12.sp
+                )
+                Box(
+                    modifier = Modifier
+                        .size(height = 230.dp, width = 150.dp)
+                        .padding(start = 5.dp)
+                        .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
+                ) {
+
+                    if (isFiltering) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        LazyColumn {
+                            items(
+                                if (searchQuery.text == "") {
+                                    courseList
+                                } else {
+                                    filteredCourseList
+                                }
+                            ) { course ->
+                                CourseCard(
+                                    course = course,
+                                    selectedMap = selectedMap,
+                                    courseAction = addCourse,
+                                    left = true
+                                )
                             }
-                            else{
-                                filteredCourseList
-                            }
-                        ) { course ->
-                            CourseCard(
-                                course = course,
-                                selectedMap = selectedMap,
-                                courseAction = addCourse,
-                                left = true
-                            )
                         }
                     }
                 }
@@ -130,9 +135,10 @@ fun MakeRoutine(
             //Selected Courses
             Box(
                 modifier = Modifier
+                    .padding(top = 40.dp,start = 5.dp)
                     .size(height = 230.dp, width = 150.dp)
-                    .padding(start = 5.dp)
-                    .border(1.dp, Color.Red, RoundedCornerShape(10.dp))
+
+                    .border(1.dp, Color.Red, RoundedCornerShape(5.dp))
             ) {
                 LazyColumn {
                     items(selectedCourseList) { course ->
@@ -146,7 +152,7 @@ fun MakeRoutine(
 
             Column(
                 modifier = Modifier
-                    .padding(start = 5.dp)
+                    .padding(top = 50.dp, start = 5.dp)
             ) {
                 Button(onClick =
                 {
