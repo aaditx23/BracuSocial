@@ -31,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.models.Profile
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
+import com.aaditx23.bracusocial.components.NoButtonDialog
 import com.aaditx23.bracusocial.ui.theme.palette2DarkRed
 import com.aaditx23.bracusocial.ui.theme.palette4green
 import kotlinx.coroutines.CoroutineScope
@@ -122,7 +123,7 @@ fun Login(accountvm: AccountVM, loginSuccess: () -> Unit){
                 Text(text = "Login")
             }
             if(isLoading){
-                CircularProgressIndicator()
+                NoButtonDialog(title = "Logging in to $id", message = "Please wait...")
             }
         }
     }

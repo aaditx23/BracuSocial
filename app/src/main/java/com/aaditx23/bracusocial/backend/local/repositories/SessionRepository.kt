@@ -35,6 +35,7 @@ class SessionRepository @Inject constructor(
         println("DB status updated to $status")
     }
 
+
     suspend fun loginStatusUpdate(status: Boolean){
         realm.write {
             val sessionData = query<Session>().first().find()
@@ -42,7 +43,7 @@ class SessionRepository @Inject constructor(
                 sessionData.loginStatus = status
             }
         }
-        println("DB status updated to $status")
+        println("Login status updated to $status")
     }
     suspend fun deleteSession(id: ObjectId){
         realm.write {

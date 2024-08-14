@@ -25,9 +25,14 @@ open class SessionVM @Inject constructor(
             emptyList()
         )
 
-    val firstSession: Flow<Session?> = allSessions.map{ sessions ->
+    val firstSession = allSessions.map { sessions ->
         sessions.firstOrNull()
-    }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        null
+    )
+
 
 
     fun createSession(){
@@ -47,6 +52,8 @@ open class SessionVM @Inject constructor(
             sessionR.dbStatusUpdate(status)
         }
     }
+
+
 
 
 }

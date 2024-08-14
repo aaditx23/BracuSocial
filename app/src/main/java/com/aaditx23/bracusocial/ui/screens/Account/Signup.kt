@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.models.Profile
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
+import com.aaditx23.bracusocial.components.NoButtonDialog
 import com.aaditx23.bracusocial.ui.theme.palette2DarkRed
 import com.aaditx23.bracusocial.ui.theme.palette4green
 import kotlinx.coroutines.CoroutineScope
@@ -62,13 +63,8 @@ fun Signup(
     }
 
     if (isLoading){
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ){
-            CircularProgressIndicator()
-        }
+//        NoButtonDialog(title = "Creating account: $id", message = "Please wait...")
+        CircularProgressIndicator()
     }
     else if (isSuccess){
 

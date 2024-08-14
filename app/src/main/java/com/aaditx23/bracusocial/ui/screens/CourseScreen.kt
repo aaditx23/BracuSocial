@@ -26,8 +26,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -37,9 +35,8 @@ import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.backend.viewmodels.SessionVM
 import com.aaditx23.bracusocial.components.FilterCourseList
+import com.aaditx23.bracusocial.components.NoButtonDialog
 import com.aaditx23.bracusocial.components.SearchBar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -109,13 +106,6 @@ fun CourseScreen(){
     if(isSessionReady){
 
         Column(modifier = Modifier.padding(top = 80.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ){
-                Text(text = status)
-            }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
@@ -156,19 +146,23 @@ fun CourseScreen(){
                 }
             }
             else if(isLoading){
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-
-                ){
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ){
-                        Text(text = "Updating Database, please wait")
-                        CircularProgressIndicator()
-                    }
-                }
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxSize(),
+//                    contentAlignment = Alignment.Center
+//
+//                ){
+//                    Column(
+//                        horizontalAlignment = Alignment.CenterHorizontally
+//                    ){
+//                        Text(text = "Updating Database, please wait")
+//                        CircularProgressIndicator()
+//                    }
+//                }
+                NoButtonDialog(
+                    title = "Collecting courses",
+                    message = "Please wait\n$status"
+                )
             }
             else{
                 LazyColumn() {
