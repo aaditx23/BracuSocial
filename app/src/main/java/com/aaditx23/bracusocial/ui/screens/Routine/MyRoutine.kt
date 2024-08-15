@@ -45,6 +45,9 @@ import com.aaditx23.bracusocial.backend.local.repositories.getLabSlot
 import com.aaditx23.bracusocial.backend.local.repositories.getTimeSlot
 import com.aaditx23.bracusocial.backend.local.repositories.getToday
 import com.aaditx23.bracusocial.backend.viewmodels.RoutineVM
+import com.aaditx23.bracusocial.components.Day
+import com.aaditx23.bracusocial.components.DayCard
+import com.aaditx23.bracusocial.components.RoutineRow
 import com.aaditx23.bracusocial.ui.theme.palette3paste
 import com.aaditx23.bracusocial.ui.theme.palette5HintOfGreen
 import com.aaditx23.bracusocial.ui.theme.palette6LightIndigo
@@ -88,15 +91,11 @@ val days = listOf(
 @Composable
 fun MyRoutine(routinevm: RoutineVM){
 
-
     var isLoading by rememberSaveable {
         mutableStateOf(true)
     }
     val currentDay by rememberSaveable {
         mutableStateOf(getToday().slice(0..1))
-    }
-    var currentTimeSlot by rememberSaveable {
-        mutableIntStateOf(-1)
     }
     var isLabToday by rememberSaveable {
         mutableStateOf(false)
@@ -190,191 +189,5 @@ fun MyRoutine(routinevm: RoutineVM){
 
 }
 
-@Composable
-fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean){
-    val combinedSlots = listOf(
-        getClassSlot(),
-        getLabSlot()
-    )
-    fun getCurrentSlot(time: String): Boolean{
-        if (combinedSlots.contains(time)){
-            return true
-        }
-        else{
-            combinedSlots.forEach { result ->
-                return if (result.length == 8){
-                    time.contains(result)
-                } else{
-                    false
-                }
-            }
-        }
-        return false
 
-    }
-    val combinedList = listOf(
-        getClassSlot(),
-        getLabSlot()
-    )
-    ElevatedCard(
-        modifier = Modifier
-            .padding(5.dp)
-            .horizontalScroll(rememberScrollState())
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 5.dp,
-        ),
-        colors = CardDefaults.cardColors(
-            if (isToday) palette6MagicMint
-            else palette3paste
-        )
 
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(5.dp)
-        ) {
-            DayCard(day = day)
-            RoutineRow()
-            timeSlots.forEach { key ->
-                if(map[key] != null && map[key] != ""){
-                    val isNow = getCurrentSlot(key) && isToday
-                    RoutineRow(time = key, data = map[key]!!, isNow)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun RoutineRow(
-    time: String = "",
-    data: String = "",
-    isNow: Boolean = false
-){
-    val temp = data.split(",")
-    val course: String
-    val section: String
-    val room: String
-    val t: String
-    if(time!= ""){
-        course = temp[0]
-        section = temp[1]
-        room = temp[2]
-        t = time
-    }
-    else{
-        course = "Course"
-        section = "Sec"
-        room = "Room"
-        t  = "Class Time"
-    }
-
-    ElevatedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp),
-        shape = RoundedCornerShape(5.dp),
-        colors =
-        if (time == "") CardDefaults.cardColors(paletteDarkGreen)
-        else if(isNow) CardDefaults.cardColors(paletteLightPurple)
-        else CardDefaults.cardColors(paletteGreen),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp,
-        )
-    ) {
-        Row{
-            Box(
-                modifier = Modifier
-                    .width(170.dp),
-                contentAlignment = Alignment.Center
-//                    .border(1.dp, Color.Black)
-            ){
-                Text(
-                    modifier = Modifier
-                        .padding(5.dp),
-                    fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
-                    text = t)
-            }
-            Box(
-                modifier = Modifier
-                    .width(80.dp),
-                contentAlignment = Alignment.Center
-//                    .border(1.dp, Color.Black)
-            ){
-                Text(
-                    modifier = Modifier
-                        .padding(5.dp),
-                    fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
-                    text = course)
-            }
-            Box(
-                modifier = Modifier
-                    .width(40.dp),
-                contentAlignment = Alignment.Center
-//                    .border(1.dp, Color.Black)
-            ){
-                Text(
-                    modifier = Modifier
-                        .padding(5.dp),
-                    fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
-                    text = section)
-            }
-            Box(
-                modifier = Modifier
-                    .width(90.dp),
-                contentAlignment = Alignment.Center
-//                    .border(1.dp, Color.Black)
-            ){
-                Text(
-                    modifier = Modifier
-                        .padding(5.dp),
-                    fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
-                    text = room)
-            }
-        }
-    }
-}
-
-@Composable
-fun DayCard(day: String){
-    val d = when(day) {
-        "Su" -> "Sunday"
-        "Mo" -> "Monday"
-        "Tu" -> "Tuesday"
-        "We" -> "Wednesday"
-        "Th" -> "Thursday"
-        "Fr" -> "Friday"
-        "Sa" -> "Saturday"
-        else -> "Unknown" // Handle unexpected inputs
-    }
-
-    ElevatedCard(
-        modifier = Modifier
-            .padding(5.dp)
-            .width(380.dp),
-        shape = RoundedCornerShape(5.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp,
-        ),
-        colors = CardDefaults.cardColors(paletteDarkGreen2)
-    ){
-        Row(
-            modifier = Modifier
-                .padding(5.dp),
-
-        ){
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = d,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-        }
-    }
-}

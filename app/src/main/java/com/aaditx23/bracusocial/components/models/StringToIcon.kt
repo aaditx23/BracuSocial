@@ -16,6 +16,8 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAddAlt1
 import androidx.compose.material.icons.filled.PersonSearch
 import androidx.compose.material.icons.filled.Room
+import androidx.compose.material.icons.filled.StackedBarChart
+import androidx.compose.material.icons.filled.TableChart
 import androidx.compose.material.icons.outlined.Apartment
 import androidx.compose.material.icons.outlined.AppRegistration
 import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
@@ -28,6 +30,8 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.PersonAddAlt1
 import androidx.compose.material.icons.outlined.PersonSearch
 import androidx.compose.material.icons.outlined.Room
+import androidx.compose.material.icons.outlined.StackedBarChart
+import androidx.compose.material.icons.outlined.TableChart
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val map = mutableMapOf(
@@ -44,6 +48,8 @@ val map = mutableMapOf(
     "auto_mirrored_filled_login" to Icons.AutoMirrored.Filled.Login,
     "auto_mirrored_filled_logout" to Icons.AutoMirrored.Filled.Logout,
     "filled_routine" to Icons.Filled.CalendarMonth,
+    "filled_my_routine" to Icons.Filled.TableChart,
+    "filled_friend_routine" to Icons.Filled.StackedBarChart,
 
     "outlined_app_registration" to Icons.Outlined.AppRegistration,
     "outlined_backup_table" to Icons.Outlined.BackupTable,
@@ -57,7 +63,9 @@ val map = mutableMapOf(
     "outlined_apartment" to Icons.Outlined.Apartment,
     "auto_mirrored_outlined_login" to Icons.AutoMirrored.Outlined.Login,
     "auto_mirrored_outlined_logout" to Icons.AutoMirrored.Outlined.Logout,
-    "outlined_routine" to Icons.Outlined.CalendarMonth
+    "outlined_routine" to Icons.Outlined.CalendarMonth,
+    "outlined_my_routine" to Icons.Outlined.TableChart,
+    "outlined_friends_routine" to Icons.Outlined.StackedBarChart
 )
 
 fun IconMap(icon: String): ImageVector{

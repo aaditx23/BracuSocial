@@ -64,6 +64,18 @@ sealed class BottomNavItem(
         selectedIcon = "filled_person_search",
         unselectedIcon = "outlined_person_search",
     )
+    @Parcelize
+    object MyRoutine: BottomNavItem(
+        title = "My Routine",
+        selectedIcon = "filled_my_routine",
+        unselectedIcon =  "outlined_my_routine",
+    )
+    @Parcelize
+    object FriendsRoutine: BottomNavItem(
+        title = "Friends' Routine",
+        selectedIcon = "filled_friend_routine",
+        unselectedIcon = "outlined_friends_routine",
+    )
 
     companion object{
         val PrePreRegItemList = listOf(
@@ -74,6 +86,10 @@ sealed class BottomNavItem(
             MyFriends,
             FriendRequests,
             FindFriend
+        )
+        val routineItemList = listOf(
+            MyRoutine,
+            FriendsRoutine
         )
     }
 

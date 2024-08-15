@@ -118,14 +118,14 @@ val demoProfiles =
             "21201618",
             "Demo 1",
             "123",
-            "CSE221 02,SOC101 09,CSE489 01"
+            "CSE221 02,SOC101 02,CSE489 01"
 
         ),
         listOf(
             "21201617",
             "Demo 2",
             "123",
-            "ACT201 01,ANT101 01,BCH101 03"
+            "CSE221 02,SOC101 02,CSE489 01"
 
             ),
         listOf(

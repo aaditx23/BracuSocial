@@ -37,7 +37,7 @@ fun Login_Signup(
                 )
             }
         }
-        Button(onClick = { toggle =! toggle }) {
+        Button(onClick = { toggle = !toggle }) {
             Text(text = if (toggle) "Login" else "Signup")
         }
     }

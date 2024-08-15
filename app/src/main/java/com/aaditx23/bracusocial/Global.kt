@@ -13,7 +13,8 @@ val timeSlots = arrayOf(
     "03:30 PM - 04:50 PM",
     "05:00 PM - 06:20 PM",
     "05:00 PM - 08:00 PM", //lab
-    "06:30 PM - 08:00 PM"
+    "06:30 PM - 08:00 PM",
+    "Closed"
 )
 val days = listOf(
     "Sa",

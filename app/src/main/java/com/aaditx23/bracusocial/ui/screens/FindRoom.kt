@@ -59,10 +59,6 @@ import kotlinx.coroutines.launch
 fun FindRoom(){
     val roomvm: RoomVM = hiltViewModel()
 
-    val allClass = roomvm.allClassRooms.collectAsState().value.toList()
-    val allLab = roomvm.allLabRooms.collectAsState().value.toList()
-    var scrollState = rememberScrollState()
-
     val dayList = listOf(
         "Saturday",
         "Sunday",

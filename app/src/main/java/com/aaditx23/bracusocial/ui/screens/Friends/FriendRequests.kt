@@ -161,31 +161,35 @@ fun RequestRow(friend: ProfileProxy, friendvm: FriendsVM, trigger: () -> Unit){
                     fontSize = 15.sp
                 )
             }
-            IconButton(
-                onClick = {
-                    friendvm.addFriend(friend.studentId)
-                    Toast.makeText(context, "${friend.studentName} Added", Toast.LENGTH_SHORT).show()
-                    trigger()
-                },
-            ) {
+            Row{
+                IconButton(
+                    onClick = {
+                        friendvm.addFriend(friend.studentId)
+                        Toast.makeText(context, "${friend.studentName} Added", Toast.LENGTH_SHORT)
+                            .show()
+                        trigger()
+                    },
+                ) {
                     Icon(
                         imageVector = Icons.Filled.PersonAdd,
                         contentDescription = "Add",
                         tint = palette7Blue1
                     )
-            }
-            IconButton(
-                onClick = {
-                    friendvm.cancelRequest(friend.studentId)
-                    Toast.makeText(context, "${friend.studentName} Removed", Toast.LENGTH_SHORT).show()
-                    trigger()
-                },
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.PersonAddDisabled,
-                    contentDescription = "Cancel Request",
-                    tint = palette7Blue1
-                )
+                }
+                IconButton(
+                    onClick = {
+                        friendvm.cancelRequest(friend.studentId)
+                        Toast.makeText(context, "${friend.studentName} Removed", Toast.LENGTH_SHORT)
+                            .show()
+                        trigger()
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.PersonAddDisabled,
+                        contentDescription = "Cancel Request",
+                        tint = palette7Blue1
+                    )
+                }
             }
         }
     }

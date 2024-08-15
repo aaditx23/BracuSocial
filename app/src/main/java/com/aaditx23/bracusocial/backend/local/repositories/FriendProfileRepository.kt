@@ -67,11 +67,11 @@ class FriendProfileRepository @Inject constructor(
                 results.list.toList()
             }
     }
-    fun getAllFriendCourses() : List<String> {
+    suspend fun getAllFriendCourses(): Map<String, String> {
         return realm
             .query<FriendProfile>()
             .find()
-            .map { it.enrolledCourses }
+            .associate { it.studentName to it.enrolledCourses }
     }
     suspend fun getFriendCourses(id: String): String {
         val friendProfile = realm

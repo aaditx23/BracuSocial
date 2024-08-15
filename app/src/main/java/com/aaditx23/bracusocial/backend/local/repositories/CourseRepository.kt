@@ -109,4 +109,18 @@ class CourseRepository @Inject constructor(
 
     }
 
+    suspend fun courseToString(course: Course): List<String>{
+        val cs = "${course.courseName}.${course.section}"
+        var cls = "$cs.${course.classTime}.${course.classDay}.${course.classRoom}"
+        var lab =
+            if(course.labRoom != "-") "$cs.${course.labTime}.${course.labDay}.${course.labRoom}"
+            else ""
+        // coursename.section.time.day.room
+
+        return listOf(
+            cls,
+            lab
+        )
+    }
+
 }
