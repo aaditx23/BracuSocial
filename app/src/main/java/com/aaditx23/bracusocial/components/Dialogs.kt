@@ -68,7 +68,7 @@ fun CloseButtonDialog(
     title: String,
     message: String,
     total: Int,
-    done: Int
+    done: Int,
 ) {
     // Correct progress calculation
     val progress = remember(done, total) {

@@ -8,6 +8,7 @@ import com.aaditx23.bracusocial.backend.local.repositories.SavedRoutineRepositor
 import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository
 import com.aaditx23.bracusocial.backend.remote.UsisCrawler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -77,16 +78,18 @@ open class CourseVM @Inject constructor(
         }
     }
 
-    suspend fun populateDb(
+    private suspend fun populateDb(
         onSet: (s: String) -> Unit,
         setSize: (Int) -> Unit,
         setProgress: (Int) -> Unit
     ){
         onSet("Fetching data from website")
-        val allCoursesJson: MutableList<JSONObject> = uc.executeAsyncTask(setSize)
+        val allCoursesJson: MutableList<JSONObject> = uc.executeAsyncTask()
 //            val allCoursesJson = courseArray
+        val size = allCoursesJson.size
+        setSize(size)
         onSet("Data fetching Complete")
-        allCoursesJson.forEachIndexed { i, course ->
+        allCoursesJson.forEachIndexed { idx, course ->
             val lab = course.getBoolean("Lab")
             val classArray = course.getJSONArray("ClassDay")
             var classRoom = course.optString("ClassRoom")
@@ -130,7 +133,11 @@ open class CourseVM @Inject constructor(
             }
             courseR.createCourse(courseInfo)
             onSet("Creating: ${courseInfo[0]} - ${courseInfo[1]}")
-            setProgress(i)
+            setProgress(idx)
+            if (idx == size/2) {
+                onSet("Waiting 1s before continuing")
+                delay(1000)
+            }
         }
         onSet("Database Updated")
         sessionR.dbStatusUpdate(true)

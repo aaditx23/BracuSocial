@@ -220,7 +220,8 @@ fun SavedRoutine(
 
             Routine(
                 courseList = courseList,
-                topPadding = 10.dp
+                topPadding = 10.dp,
+                getClash = {}
             )
 
 

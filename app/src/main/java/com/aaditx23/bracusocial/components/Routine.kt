@@ -50,9 +50,29 @@ import com.aaditx23.bracusocial.ui.theme.palette3paste
 
 val celHeight = 45.dp
 
+private fun findClash(tableData: MutableList<MutableList<MutableState<MutableList<Course>>>>): Boolean {
+    var hasClash = false
+
+    for (row in tableData) {
+        for (cell in row) {
+            if (cell.value.size > 1) {
+                hasClash = true
+                break
+            }
+        }
+        if (hasClash) break
+    }
+
+    return hasClash
+}
+
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun Routine(courseList: MutableList<Course>, topPadding: Dp = 350.dp ){
+fun Routine(
+    courseList: MutableList<Course>,
+    topPadding: Dp = 350.dp ,
+    getClash: (Boolean) -> Unit
+){
 
     val tableData: MutableList<MutableList<MutableState<MutableList<Course>>>> = MutableList(8) { row ->
         MutableList(7) { column ->
@@ -88,7 +108,7 @@ fun Routine(courseList: MutableList<Course>, topPadding: Dp = 350.dp ){
 
 
     }
-
+    getClash(findClash(tableData))
     Table(data = tableData, topPadding)
 
 

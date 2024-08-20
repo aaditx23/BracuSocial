@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,10 +40,14 @@ fun SearchBar(
     paddingStart: Dp = 8.dp,
     paddingEnd: Dp = 8.dp,
     cornerRadius: Dp = 5.dp,
-    textSize: TextUnit = 15.sp,
-    ){
+    textSize: TextUnit = 15.sp
+) {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     action(searchQuery)
+
+    val textColor = MaterialTheme.colorScheme.onSurface
+    val placeholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) // Slightly lighter for placeholder
+
     BasicTextField(
         value = searchQuery,
         onValueChange = { newValue -> searchQuery = newValue },
@@ -52,7 +57,8 @@ fun SearchBar(
             .border(1.dp, Color.Gray, RoundedCornerShape(cornerRadius))
             .padding(8.dp),
         textStyle = TextStyle(
-            fontSize = textSize
+            fontSize = textSize,
+            color = textColor // Set the text color based on the theme
         ),
         decorationBox = { innerTextField ->
             if (searchQuery.text.isEmpty()) {
@@ -60,11 +66,11 @@ fun SearchBar(
                     modifier = Modifier
                         .fillMaxSize(),
                     contentAlignment = Alignment.CenterStart
-                ){
+                ) {
                     Text(
                         text = "Search Courses",
-                        color = Color.Gray,
-                        fontSize = textSize,
+                        color = placeholderColor, // Set the placeholder color based on the theme
+                        fontSize = textSize
                     )
                 }
             }
@@ -73,7 +79,7 @@ fun SearchBar(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxHeight()
-            ){
+            ) {
                 innerTextField()
                 IconButton(
                     onClick = { searchQuery = TextFieldValue("") }
@@ -85,7 +91,6 @@ fun SearchBar(
                     )
                 }
             }
-
         }
     )
 }

@@ -38,31 +38,27 @@ import com.aaditx23.bracusocial.backend.viewmodels.SessionVM
 import com.aaditx23.bracusocial.components.CloseButtonDialog
 import com.aaditx23.bracusocial.components.FilterCourseList
 import com.aaditx23.bracusocial.components.SearchBar
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun CourseScreen(dbStatus: Boolean){
-    val sessionvm: SessionVM = hiltViewModel()
     val courseVM: CourseVM = hiltViewModel()
 
     val allCourses by courseVM.allCourses.collectAsState()
-    val allSessions by sessionvm.allSessions.collectAsState()
     var status by rememberSaveable {
         mutableStateOf("")
-    }
-    var isSessionReady by rememberSaveable {
-        mutableStateOf(false)
     }
     var isLoading by rememberSaveable {
         mutableStateOf(false)
     }
-
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var filteredCourseList by remember { mutableStateOf(allCourses) }
     var isFiltering by remember { mutableStateOf(false) }
     var totalCourses by remember { mutableIntStateOf(0) }
     var addedCourses by remember { mutableIntStateOf(0) }
+
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -97,7 +93,7 @@ fun CourseScreen(dbStatus: Boolean){
     }
 
 
-    LaunchedEffect(key1 = allSessions) {
+    LaunchedEffect(dbStatus) {
         coroutineScope.launch {
             if (!dbStatus){
                 refresh()

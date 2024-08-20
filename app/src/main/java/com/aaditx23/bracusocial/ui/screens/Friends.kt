@@ -19,16 +19,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.aaditx23.bracusocial.backend.local.models.Course
-import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.backend.viewmodels.FriendsVM
 import com.aaditx23.bracusocial.components.BottomNavigation
 import com.aaditx23.bracusocial.components.models.BottomNavItem
 import com.aaditx23.bracusocial.ui.screens.Friends.FindFriends
 import com.aaditx23.bracusocial.ui.screens.Friends.FriendRequests
 import com.aaditx23.bracusocial.ui.screens.Friends.MyFriends
-import com.aaditx23.bracusocial.ui.screens.PrePreReg.MakeRoutine
-import com.aaditx23.bracusocial.ui.screens.PrePreReg.SavedRoutine
+
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

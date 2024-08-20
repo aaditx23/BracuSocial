@@ -34,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +49,7 @@ import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.components.FilterCourseList
 import com.aaditx23.bracusocial.components.Routine
 import com.aaditx23.bracusocial.components.SearchBar
+import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen2
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -66,7 +68,9 @@ fun MakeRoutine(
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var filteredCourseList by remember { mutableStateOf(courseList) }
     var isFiltering by remember { mutableStateOf(false) }
-
+    var hasClash by rememberSaveable {
+        mutableStateOf(false)
+    }
     val coroutineScope = rememberCoroutineScope()
 
     // Filtering logic within a coroutine
@@ -135,10 +139,14 @@ fun MakeRoutine(
             //Selected Courses
             Box(
                 modifier = Modifier
-                    .padding(top = 40.dp,start = 5.dp)
+                    .padding(top = 40.dp, start = 5.dp)
                     .size(height = 230.dp, width = 150.dp)
 
-                    .border(1.dp, Color.Red, RoundedCornerShape(5.dp))
+                    .border(1.dp,
+                        if (hasClash) Color.Red
+                        else if(selectedCourseList.size ==0) Color.Gray
+                        else paletteDarkGreen2,
+                        RoundedCornerShape(5.dp))
             ) {
                 LazyColumn {
                     items(selectedCourseList) { course ->
@@ -194,7 +202,12 @@ fun MakeRoutine(
     Box(
         modifier = Modifier.padding(top = 10.dp)
         ){
-        Routine(courseList = selectedCourseList)
+        Routine(
+            courseList = selectedCourseList,
+            getClash = {clash ->
+                hasClash = clash
+            }
+        )
     }
 
 
