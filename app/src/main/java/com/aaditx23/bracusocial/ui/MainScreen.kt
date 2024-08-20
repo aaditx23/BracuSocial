@@ -101,6 +101,9 @@ fun Main(){
     var selectedCourses by remember {
         mutableStateOf(mutableListOf<Course>())
     }
+    var dbStatus by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     val navController = rememberNavController()
     var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -113,6 +116,10 @@ fun Main(){
             delay(1000)
             if(allSessions.isEmpty()){
                 sessionvm.createSession()
+
+            }
+            else{
+                dbStatus = allSessions[0].dbStatus
             }
             if(allProfiles.isEmpty()){
                 demoProfiles.forEachIndexed { _, data ->
@@ -163,7 +170,7 @@ fun Main(){
                         Routine()
                     }
                     composable("All Courses") {
-                        CourseScreen()
+                        CourseScreen(dbStatus)
                     }
                     composable("PrePreReg") {
                         PrePreReg()

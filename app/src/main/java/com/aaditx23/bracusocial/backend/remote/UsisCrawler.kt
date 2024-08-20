@@ -211,7 +211,7 @@ class UsisCrawler{
     }
 
 
-    suspend fun executeAsyncTask(): MutableList<JSONObject> {
+    suspend fun executeAsyncTask(setSize: (Int) -> Unit): MutableList<JSONObject> {
         return withContext(Dispatchers.IO) {
             val url =
                 "https://usis.bracu.ac.bd/academia/admissionRequirement/getAvailableSeatStatus"
@@ -219,6 +219,7 @@ class UsisCrawler{
             val rows: Elements = doc.select("tr")
             val courses = dataFormat(rows)
             val courseList = mutableListOf<JSONObject>()
+            setSize(courses.length())
             for (i in 0 until courses.length()) {
                 val jsonObject = courses.getJSONObject(i)
                 courseList.add(jsonObject)

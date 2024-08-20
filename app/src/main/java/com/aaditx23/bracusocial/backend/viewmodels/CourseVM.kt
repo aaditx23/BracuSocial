@@ -77,10 +77,16 @@ open class CourseVM @Inject constructor(
         }
     }
 
-    suspend fun populateDb(onSet: (s: String) -> Unit){
-        val allCoursesJson: MutableList<JSONObject> = uc.executeAsyncTask()
+    suspend fun populateDb(
+        onSet: (s: String) -> Unit,
+        setSize: (Int) -> Unit,
+        setProgress: (Int) -> Unit
+    ){
+        onSet("Fetching data from website")
+        val allCoursesJson: MutableList<JSONObject> = uc.executeAsyncTask(setSize)
 //            val allCoursesJson = courseArray
-        allCoursesJson.forEachIndexed { _, course ->
+        onSet("Data fetching Complete")
+        allCoursesJson.forEachIndexed { i, course ->
             val lab = course.getBoolean("Lab")
             val classArray = course.getJSONArray("ClassDay")
             var classRoom = course.optString("ClassRoom")
@@ -124,6 +130,7 @@ open class CourseVM @Inject constructor(
             }
             courseR.createCourse(courseInfo)
             onSet("Creating: ${courseInfo[0]} - ${courseInfo[1]}")
+            setProgress(i)
         }
         onSet("Database Updated")
         sessionR.dbStatusUpdate(true)
@@ -131,11 +138,17 @@ open class CourseVM @Inject constructor(
     }
 
 
-    fun refreshDB(onSet: (s: String) -> Unit, status: (b: Boolean) -> Unit){
+    fun refreshDB(
+        onSet: (s: String) -> Unit,
+        status: (b: Boolean) -> Unit,
+        setSize: (Int) -> Unit,
+        setProgress: (Int) -> Unit
+    )
+    {
         viewModelScope.launch {
             status(true)
             courseR.deleteAllCourses()
-            populateDb(onSet)
+            populateDb(onSet, setSize, setProgress)
             status(false)
         }
     }

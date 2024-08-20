@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,14 +35,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.backend.viewmodels.SessionVM
+import com.aaditx23.bracusocial.components.CloseButtonDialog
 import com.aaditx23.bracusocial.components.FilterCourseList
-import com.aaditx23.bracusocial.components.NoButtonDialog
 import com.aaditx23.bracusocial.components.SearchBar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun CourseScreen(){
+fun CourseScreen(dbStatus: Boolean){
     val sessionvm: SessionVM = hiltViewModel()
     val courseVM: CourseVM = hiltViewModel()
 
@@ -60,6 +61,8 @@ fun CourseScreen(){
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var filteredCourseList by remember { mutableStateOf(allCourses) }
     var isFiltering by remember { mutableStateOf(false) }
+    var totalCourses by remember { mutableIntStateOf(0) }
+    var addedCourses by remember { mutableIntStateOf(0) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -71,6 +74,12 @@ fun CourseScreen(){
             },
             status = {b->
                 isLoading = b
+            },
+            setSize = {size ->
+                totalCourses = size
+            },
+            setProgress = {progress ->
+                addedCourses = progress
             }
 
         )
@@ -89,120 +98,77 @@ fun CourseScreen(){
 
 
     LaunchedEffect(key1 = allSessions) {
-        println(allSessions)
         coroutineScope.launch {
-            delay(500)
-            isSessionReady = true
-            val firstSession = allSessions[0]
-            if (!firstSession.dbStatus){
+            if (!dbStatus){
                 refresh()
             }
-//            if(allSessions.isEmpty()){
-//                sessionvm.createSession()
-//            }
         }
 
     }
-    if(isSessionReady){
 
-        Column(modifier = Modifier.padding(top = 80.dp)) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
+    Column(modifier = Modifier.padding(top = 80.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Button(
+                onClick = {
+                    refresh()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(8.dp),
+                shape = RoundedCornerShape(5.dp)
             ) {
-                Button(
-                    onClick = {
-                        refresh()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    shape = RoundedCornerShape(5.dp)
-                ) {
-                    Text(text = "Refresh DB")
-                }
+                Text(text = "Refresh DB")
             }
-            SearchBar(action = {query ->
-                    searchQuery = query
-                },
-                width = LocalConfiguration.current.screenWidthDp.dp,
-                height = 40.dp,
-                textSize = 16.sp
-            )
-            if (isFiltering){
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-
-                ){
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ){
-                        Text(text = "Searching Course ${searchQuery.text}")
-                        CircularProgressIndicator()
-                    }
-                }
-            }
-            else if(isLoading){
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxSize(),
-//                    contentAlignment = Alignment.Center
-//
-//                ){
-//                    Column(
-//                        horizontalAlignment = Alignment.CenterHorizontally
-//                    ){
-//                        Text(text = "Updating Database, please wait")
-//                        CircularProgressIndicator()
-//                    }
-//                }
-                NoButtonDialog(
-                    title = "Collecting courses",
-                    message = "Please wait\n$status"
-                )
-            }
-            else{
-                LazyColumn() {
-                    items(
-                        if(searchQuery.text == ""){
-                            allCourses
-                        }
-                        else{
-                            filteredCourseList
-                        }
-                    ){course ->
-                        CourseItem(course = course)
-                    }
-                }
-            }
-
-
-
         }
+        SearchBar(action = {query ->
+                searchQuery = query
+            },
+            width = LocalConfiguration.current.screenWidthDp.dp,
+            height = 40.dp,
+            textSize = 16.sp
+        )
+        if (isFiltering){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
 
-        
-    }
-    else{
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-
-        ){
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
             ){
-                Text(text = "Checking Session")
-                CircularProgressIndicator()
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Text(text = "Searching Course ${searchQuery.text}")
+                    CircularProgressIndicator()
+                }
             }
         }
-
+        else if(isLoading){
+            CloseButtonDialog(
+                title = "Collecting courses",
+                message = "Please wait\n$status",
+                total = totalCourses,
+                done = addedCourses
+            )
+        }
+        else{
+            LazyColumn() {
+                items(
+                    if(searchQuery.text == ""){
+                        allCourses
+                    }
+                    else{
+                        filteredCourseList
+                    }
+                ){course ->
+                    CourseItem(course = course)
+                }
+            }
+        }
     }
-
-        
 }
 
 @Composable
