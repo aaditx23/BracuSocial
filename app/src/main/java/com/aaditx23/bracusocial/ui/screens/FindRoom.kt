@@ -127,6 +127,7 @@ fun FindRoom(){
                 time = timeList[selectedIndexTime],
                 day = dayList[selectedIndexDay].slice(0..1)
             )
+            delay(200)
             showLoading = false
         }
     }
@@ -137,11 +138,11 @@ fun FindRoom(){
                 time = labTimeList[selectedIndexTimeLab],
                 day = dayList[selectedIndexDay].slice(0..1)
             )
-//            delay(200)
+            delay(200)
             showLoading = false
         }
     }
-    
+
     @Composable
     fun classCard(i: Int, room: String){
         Card(
@@ -178,23 +179,21 @@ fun FindRoom(){
                 }
             }
             else{
-                if (isLab){
-                    itemsIndexed(emptyLab) { index, item ->
-                        classCard(i = index, room =item)
-                    }
-                }
-                else{
-                    itemsIndexed(emptyClasses) { index, item ->
-                        classCard(i = index, room = item)
-                    }
+                itemsIndexed(
+                    if (isLab) emptyLab
+                    else emptyClasses
+                ) { index, item ->
+                    classCard(i = index, room =item)
                 }
             }
-
         }
     }
 
-    LaunchedEffect(Unit) {
-        if(selectedIndexDay != 8) getClasses()
+    LaunchedEffect(emptyClasses) {
+        if(selectedIndexDay != 8) {
+            getClasses()
+
+        }
     }
 
     Column{
@@ -202,44 +201,53 @@ fun FindRoom(){
         CustomNavBar(
             list = dayList,
             selectedIndex = selectedIndexDay,
-        ) {i ->
-            selectedIndexDay = i
-            if (timeList[selectedIndexTime] != "Closed" && timeList[selectedIndexTime] != "Break"){
-                getClasses()
+            onClick = {i ->
+                var t = selectedIndexTime
+                var slot = timeList
+                if (isLab){
+                    t = selectedIndexTimeLab
+                    slot = labTimeList
+                }
+                selectedIndexDay = i
+                if (slot[t] != "Closed" && slot[t] != "Break"){
+                    if (isLab) getLabs()
+                    else getClasses()
+                }
+                else{
+                    if (isLab) emptyClasses = mutableListOf()
+                    else emptyLab = mutableListOf()
+                }
             }
-            else{
-                emptyClasses = mutableListOf()
-            }
-        }
+        )
         // for time slot
         Row{
             if (isLab) {
                 CustomNavDrawer(
                     list = labTimeList,
                     selectedIndex = selectedIndexTimeLab,
-                ) { i ->
-                    selectedIndexTimeLab = i
-                    val t = labTimeList[selectedIndexTimeLab]
-                    if (t != "Closed" && t != "Break") {
-                        getLabs()
-                    } else {
-                        emptyLab = mutableListOf()
+                    onClick = { i ->
+                        selectedIndexTimeLab = i
+                        val t = labTimeList[selectedIndexTimeLab]
+                        if (t != "Closed" && t != "Break") {
+                            getLabs()
+                        } else {
+                            emptyLab = mutableListOf()
+                        }
                     }
-                }
-
-
+                )
             } else {
                 CustomNavDrawer(
                     list = timeList,
                     selectedIndex = selectedIndexTime,
-                ) { i ->
-                    selectedIndexTime = i
-                    if (timeList[selectedIndexTime] != "Closed" && timeList[selectedIndexTime] != "Break") {
-                        getClasses()
-                    } else {
-                        emptyClasses = mutableListOf()
+                    onClick = { i ->
+                        selectedIndexTime = i
+                        if (timeList[selectedIndexTime] != "Closed" && timeList[selectedIndexTime] != "Break") {
+                            getClasses()
+                        } else {
+                            emptyClasses = mutableListOf()
+                        }
                     }
-                }
+                )
 
             }
             showClasses()
@@ -327,10 +335,10 @@ fun CustomNavDrawer(
 fun CustomNavBar(
     list: List<String>,
     selectedIndex: Int,
-    selectedColor: Color = MaterialTheme.colorScheme.inversePrimary,
-    unselectedColor: Color = MaterialTheme.colorScheme.primary,
     onClick: (i: Int)-> Unit
 ){
+    val selectedColor: Color = MaterialTheme.colorScheme.inversePrimary
+    val unselectedColor: Color = MaterialTheme.colorScheme.primary
     Box(
         modifier = Modifier
             .fillMaxWidth(),
@@ -357,7 +365,7 @@ fun CustomNavBar(
                     },
                     modifier = Modifier
                         .padding(10.dp)
-                        .size(width = 50.dp, height = 35.dp)
+                        .size(width = 40.dp, height = 35.dp)
                     ) {
                     Box(
                         contentAlignment = Alignment.Center,

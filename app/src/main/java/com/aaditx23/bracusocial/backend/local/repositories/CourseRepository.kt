@@ -1,12 +1,15 @@
 package com.aaditx23.bracusocial.backend.local.repositories
 
+import androidx.lifecycle.viewModelScope
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.local.models.Session
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import org.mongodb.kbson.ObjectId
 import javax.inject.Inject
 
@@ -45,25 +48,24 @@ class CourseRepository @Inject constructor(
         return realm
             .query<Course>()
             .asFlow()
-            .map { course ->
-                course.list
-                    .map { "${it.classRoom}" }
-                    .toSet()
-                    .sortedBy { it ?: "" }
+            .map { results ->
+                val data = results.list.map { "${it.classRoom}" }.toSet().sortedBy { it ?: "" }
+                data
             }
     }
-    fun getAllLab(): Flow<List<String?>> {
+    fun getAllLab(): Flow<List<String>> {
         return realm
             .query<Course>()
             .asFlow()
             .map { course ->
                 course.list
-                    .filter { it.labRoom != "-" && it.labRoom!!.slice(0..1) != "FT" }
-                    .map { it.labRoom }
+                    .filter { it.labRoom != null && it.labRoom != "-" && !it.labRoom!!.startsWith("FT") }
+                    .map { it.labRoom!! }
                     .toSet()
-                    .sortedBy { it ?: "" }
+                    .sorted()
             }
     }
+
     fun findOccupiedClass(time: String, day: String): List<String>{
         println("Time: $time day : $day")
         return realm
@@ -72,15 +74,19 @@ class CourseRepository @Inject constructor(
             )
             .find()
             .map { it.classRoom.toString() }
+            .toSet()
+            .toList()
     }
     fun findOccupiedLab(time: String, day: String): List<String>{
         println("Time: $time day : $day")
         return realm
             .query<Course>(
-                "labTime == $0 AND labDay CONTAINS $1", time, day
+                "labTime == $0 AND labDay CONTAINS $1", time.trim(), day.trim()
             )
             .find()
             .map { it.labRoom.toString() }
+            .toSet()
+            .toList()
     }
 
     suspend fun deleteCourse(id: ObjectId){

@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -157,7 +158,8 @@ fun RoutineRow(
                     fontWeight = FontWeight.Normal,
                     text = t,
 //                    fontSize = 10.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = Color.Black
                 )
             }
         }
@@ -187,14 +189,16 @@ fun RoutineRow(
                             modifier = Modifier
                                 .padding(5.dp),
                             fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
-                            text = name
+                            text = name,
+                            color = Color.Black
                         )
                     } else {
                         Text(
                             modifier = Modifier
                                 .padding(5.dp),
                             fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
-                            text = t
+                            text = t,
+                            color = Color.Black
                         )
                     }
                 }
@@ -208,7 +212,8 @@ fun RoutineRow(
                         modifier = Modifier
                             .padding(5.dp),
                         fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
-                        text = course
+                        text = course,
+                        color = Color.Black
                     )
                 }
                 Box(
@@ -221,7 +226,8 @@ fun RoutineRow(
                         modifier = Modifier
                             .padding(5.dp),
                         fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
-                        text = section
+                        text = section,
+                        color = Color.Black
                     )
                 }
                 Box(
@@ -234,7 +240,8 @@ fun RoutineRow(
                         modifier = Modifier
                             .padding(5.dp),
                         fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
-                        text = room
+                        text = room,
+                        color = Color.Black
                     )
                 }
             }
@@ -280,6 +287,7 @@ fun DayCard(day: String){
                     text = d,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
             }
         }

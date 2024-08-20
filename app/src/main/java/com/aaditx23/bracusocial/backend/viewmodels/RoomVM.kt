@@ -7,6 +7,7 @@ import com.aaditx23.bracusocial.timeSlots
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -20,27 +21,6 @@ import javax.inject.Inject
 open class RoomVM @Inject constructor(
     private val courseR: CourseRepository,
 ): ViewModel() {
-
-    val allCourses = courseR.getAllCourses()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(),
-            emptyList()
-        )
-
-    val allClassRooms = courseR.getAllClass()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(),
-            emptySet()
-        )
-    val allLabRooms = courseR.getAllLab()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(),
-            emptySet()
-        )
-
 
     fun getCurrentTime(): String{
         val currentTime = LocalDateTime.now()
@@ -62,7 +42,8 @@ open class RoomVM @Inject constructor(
             courseR.findOccupiedClass(time, day)
         }
         val newList = mutableListOf<String>()
-        allClassRooms.value.forEachIndexed { _, s ->
+        val allClassRooms = courseR.getAllClass().first()
+        allClassRooms.forEachIndexed { _, s ->
             if (!courseList.contains(s)) {
                 newList.add(s.toString())
             }
@@ -70,16 +51,17 @@ open class RoomVM @Inject constructor(
         return newList
     }
     suspend fun getEmptyLab(time: String, day: String): MutableList<String> {
-        val courseList = withContext(Dispatchers.IO) {
+        val occupiedLabs = withContext(Dispatchers.IO) {
             courseR.findOccupiedLab(time, day)
         }
-        val newList = mutableListOf<String>()
-        allLabRooms.value.forEachIndexed { _, s ->
-            if (!courseList.contains(s)) {
-                newList.add(s.toString())
+        val emptyLabs = mutableListOf<String>()
+        val allLabRooms = courseR.getAllLab().first()
+        allLabRooms.forEachIndexed { _, s ->
+            if (!occupiedLabs.contains(s)) {
+                emptyLabs.add(s.toString())
             }
         }
-        return newList
+        return emptyLabs
     }
 
     fun compareTime(t1: String, t2: String): Int{
