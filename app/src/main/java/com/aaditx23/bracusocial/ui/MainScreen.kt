@@ -88,20 +88,10 @@ fun Main(){
     val navDrawerItemList by rememberSaveable {
         mutableStateOf(NavDrawerItem.navDrawerItems)
     }
-    val selectedMap by remember {
-        mutableStateOf(mutableMapOf<String, Boolean>())
-    }
-
-    var allCourses by remember {
-        mutableStateOf(courseList)
-    }
-    var availableCourses by remember {
-        mutableStateOf(courseList)
-    }
-    var selectedCourses by remember {
-        mutableStateOf(mutableListOf<Course>())
-    }
     var dbStatus by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var loginStatus by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -120,6 +110,7 @@ fun Main(){
             }
             else{
                 dbStatus = allSessions[0].dbStatus
+                loginStatus = allSessions[0].loginStatus
             }
             if(allProfiles.isEmpty()){
                 demoProfiles.forEachIndexed { _, data ->
@@ -173,7 +164,7 @@ fun Main(){
                         CourseScreen(dbStatus)
                     }
                     composable("PrePreReg") {
-                        PrePreReg()
+                        PrePreReg(loginStatus)
                     }
 
                     composable("Find Room") {

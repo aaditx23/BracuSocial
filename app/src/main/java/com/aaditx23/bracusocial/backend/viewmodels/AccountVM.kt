@@ -107,6 +107,15 @@ open class AccountVM @Inject constructor(
         }
     }
 
+    fun addCourses(courses: String){
+        viewModelScope.launch {
+            val me = profileR.getFirstProfile()
+           if (me != null){
+               profileR.updateCourses(me.studentId, courses)
+               ppR.updateCourses(me.studentId, courses)
+           }
+        }
+    }
 }
 
 

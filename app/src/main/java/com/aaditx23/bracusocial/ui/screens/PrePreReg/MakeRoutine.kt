@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -40,11 +41,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.components.FilterCourseList
 import com.aaditx23.bracusocial.components.Routine
@@ -61,9 +65,11 @@ fun MakeRoutine(
     selectedMap: MutableMap<String, Boolean>,
     addCourse: (course: Course) -> Unit,
     removeCourse: (course: Course) -> Unit,
-    clearRoutine: () -> Unit
+    clearRoutine: () -> Unit,
+    loginStatus: Boolean
 
 ){
+    val accountvm: AccountVM = hiltViewModel()
     val context = LocalContext.current
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var filteredCourseList by remember { mutableStateOf(courseList) }
@@ -72,6 +78,42 @@ fun MakeRoutine(
         mutableStateOf(false)
     }
     val coroutineScope = rememberCoroutineScope()
+
+
+    fun saveOrSetCourse(save: Boolean){
+        if (selectedCourseList.isEmpty()) {
+            Toast.makeText(
+                context,
+                "Empty routine cannot be saved",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            var savedRoutine = ""
+            var sortedList = mutableListOf<String>()
+            selectedCourseList.forEachIndexed { _, course ->
+                sortedList.add("${course.courseName} ${course.section}")
+            }
+            sortedList.sort()
+            sortedList.forEachIndexed { i, string ->
+                savedRoutine = if (i == 0) {
+                    string
+                } else {
+                    "$savedRoutine,$string"
+                }
+            }
+            if (save){
+                coursevm.addSavedRoutine(savedRoutine)
+                Toast.makeText(context, "Routine Saved", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                accountvm.addCourses(savedRoutine)
+                Toast.makeText(context, "Routine Added to Profile", Toast.LENGTH_SHORT).show()
+
+            }
+            clearRoutine()
+
+        }
+    }
 
     // Filtering logic within a coroutine
     LaunchedEffect(searchQuery) {
@@ -137,23 +179,40 @@ fun MakeRoutine(
             }
 
             //Selected Courses
-            Box(
-                modifier = Modifier
-                    .padding(top = 40.dp, start = 5.dp)
-                    .size(height = 230.dp, width = 150.dp)
+            Column{
+                //40dp
+                Box(
+                    modifier = Modifier
+                        .height(40.dp)
+                        .width(150.dp)
+                        .padding(start = 5.dp, end = 5.dp),
+                    contentAlignment = Alignment.Center
+                ){
+                    Text(
+                        text = if (hasClash) "Clash" else "",
+                        color = Color.Red
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .padding(start = 5.dp)
+                        .size(height = 230.dp, width = 150.dp)
 
-                    .border(1.dp,
-                        if (hasClash) Color.Red
-                        else if(selectedCourseList.size ==0) Color.Gray
-                        else paletteDarkGreen2,
-                        RoundedCornerShape(5.dp))
-            ) {
-                LazyColumn {
-                    items(selectedCourseList) { course ->
-                        CourseCard(
-                            course = course,
-                            courseAction = removeCourse
+                        .border(
+                            1.dp,
+                            if (hasClash) Color.Red
+                            else if (selectedCourseList.size == 0) Color.Gray
+                            else paletteDarkGreen2,
+                            RoundedCornerShape(5.dp)
                         )
+                ) {
+                    LazyColumn {
+                        items(selectedCourseList) { course ->
+                            CourseCard(
+                                course = course,
+                                courseAction = removeCourse
+                            )
+                        }
                     }
                 }
             }
@@ -164,36 +223,31 @@ fun MakeRoutine(
             ) {
                 Button(onClick =
                 {
-                    if (selectedCourseList.isEmpty()) {
-                        Toast.makeText(
-                            context,
-                            "Empty routine cannot be saved",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        var savedRoutine = ""
-                        var sortedList = mutableListOf<String>()
-                        selectedCourseList.forEachIndexed { _, course ->
-                            sortedList.add("${course.courseName} ${course.section}")
-                        }
-                        sortedList.sort()
-                        sortedList.forEachIndexed { i, string ->
-                            if (i == 0) {
-                                savedRoutine = string
-                            } else {
-                                savedRoutine = "$savedRoutine,$string"
-                            }
-                        }
-                        coursevm.addSavedRoutine(savedRoutine)
-                        Toast.makeText(context, "Routine Saved", Toast.LENGTH_SHORT).show()
-                        clearRoutine()
-                    }
+                    saveOrSetCourse(save = true)
                 }
                 ) {
                     Text(text = "Save")
                 }
                 Button(onClick = { clearRoutine() }) {
                     Text(text = "Clear")
+                }
+                if(loginStatus){
+                    Button(onClick = {
+                        if(hasClash){
+                            Toast.makeText(
+                                context,
+                                "Resolve clash to add to profile",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        else{
+                            saveOrSetCourse(save = false)
+                        }
+
+                        }
+                    ) {
+                        Text(text = "Set")
+                    }
                 }
             }
         }

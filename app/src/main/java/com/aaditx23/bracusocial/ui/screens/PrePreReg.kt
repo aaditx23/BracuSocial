@@ -27,7 +27,7 @@ import com.aaditx23.bracusocial.ui.screens.PrePreReg.SavedRoutine
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "MutableCollectionMutableState")
 @Composable
-fun PrePreReg(){
+fun PrePreReg(loginStatus: Boolean){
     var selectedIndexBotNav by rememberSaveable {
         mutableIntStateOf(0)
     }
@@ -89,7 +89,8 @@ fun PrePreReg(){
                         clearRoutine = {
                             selectedMap = mutableMapOf<String, Boolean>()
                             selectedCourses = mutableListOf<Course>()
-                        }
+                        },
+                        loginStatus = loginStatus
                     )
                 }
             }

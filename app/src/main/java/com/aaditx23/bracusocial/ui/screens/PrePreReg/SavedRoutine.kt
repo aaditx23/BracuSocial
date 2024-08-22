@@ -215,7 +215,6 @@ fun SavedRoutine(
                 shape = RectangleShape
             ) {
                 Text(text = "Delete Routine")
-                Icon(imageVector = Icons.Filled.Cancel, contentDescription = "Unfriend")
             }
 
             Routine(
