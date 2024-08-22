@@ -66,7 +66,7 @@ fun MakeRoutine(
     addCourse: (course: Course) -> Unit,
     removeCourse: (course: Course) -> Unit,
     clearRoutine: () -> Unit,
-    loginStatus: Boolean
+    fromProfile: Boolean = false
 
 ){
     val accountvm: AccountVM = hiltViewModel()
@@ -221,17 +221,7 @@ fun MakeRoutine(
                 modifier = Modifier
                     .padding(top = 50.dp, start = 5.dp)
             ) {
-                Button(onClick =
-                {
-                    saveOrSetCourse(save = true)
-                }
-                ) {
-                    Text(text = "Save")
-                }
-                Button(onClick = { clearRoutine() }) {
-                    Text(text = "Clear")
-                }
-                if(loginStatus){
+                if(fromProfile){
                     Button(onClick = {
                         if(hasClash){
                             Toast.makeText(
@@ -246,7 +236,15 @@ fun MakeRoutine(
 
                         }
                     ) {
-                        Text(text = "Set")
+                        Text(text = "Add")
+                    }
+                }
+                else{
+                    Button(onClick = { saveOrSetCourse(save = true) }) {
+                        Text(text = "Save")
+                    }
+                    Button(onClick = { clearRoutine() }) {
+                        Text(text = "Clear")
                     }
                 }
             }

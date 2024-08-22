@@ -28,13 +28,11 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 
-import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.local.models.demoProfiles
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
@@ -44,14 +42,12 @@ import com.aaditx23.bracusocial.components.NavDrawer
 import com.aaditx23.bracusocial.components.TopActionBar
 import com.aaditx23.bracusocial.components.models.BottomNavItem
 import com.aaditx23.bracusocial.components.models.NavDrawerItem
-import com.aaditx23.bracusocial.ui.screens.Account.Login
 import com.aaditx23.bracusocial.ui.screens.Account.Logout
 import com.aaditx23.bracusocial.ui.screens.CourseScreen
 import com.aaditx23.bracusocial.ui.screens.FindRoom
 import com.aaditx23.bracusocial.ui.screens.PrePreReg
 import com.aaditx23.bracusocial.ui.screens.Profile
 import com.aaditx23.bracusocial.ui.screens.SessionInfo
-import com.aaditx23.bracusocial.ui.screens.Account.Signup
 import com.aaditx23.bracusocial.ui.screens.Friends
 import com.aaditx23.bracusocial.ui.screens.Login_Signup
 import com.aaditx23.bracusocial.ui.screens.Routine
@@ -155,7 +151,7 @@ fun Main(){
                 NavHost(navController = navController, startDestination = "All Courses") {
                     // Routes
                     composable("Profile") {
-                        Profile(accountvm, accountproxyvm)
+                        Profile(accountvm, accountproxyvm, navController)
                     }
                     composable("Routine"){
                         Routine()
@@ -164,7 +160,10 @@ fun Main(){
                         CourseScreen(dbStatus)
                     }
                     composable("PrePreReg") {
-                        PrePreReg(loginStatus)
+                        PrePreReg()
+                    }
+                    composable("AddCourseFromProfile") {
+                        PrePreReg(true)
                     }
 
                     composable("Find Room") {

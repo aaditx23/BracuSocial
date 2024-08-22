@@ -27,7 +27,7 @@ import com.aaditx23.bracusocial.ui.screens.PrePreReg.SavedRoutine
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "MutableCollectionMutableState")
 @Composable
-fun PrePreReg(loginStatus: Boolean){
+fun PrePreReg(fromProfile: Boolean = false){
     var selectedIndexBotNav by rememberSaveable {
         mutableIntStateOf(0)
     }
@@ -43,62 +43,72 @@ fun PrePreReg(loginStatus: Boolean){
     val coursevm : CourseVM = hiltViewModel()
     val courseList by coursevm.allCourses.collectAsState()
     val navController = rememberNavController()
-    var scrollState = rememberScrollState()
     val context = LocalContext.current
 
-    Scaffold(
-        bottomBar = {
-            BottomNavigation(
-                items = bottomNavList,
-                selectedIndex = selectedIndexBotNav
-            ) { index ->
-                println("Selected index $index size ${bottomNavList.size}")
-                selectedIndexBotNav = index
-                navController.navigate(bottomNavList[index].title)
+    @Composable
+    fun CallMakeRoutine(flag: Boolean){
+        MakeRoutine(
+            coursevm = coursevm,
+            courseList = courseList,
+            selectedCourseList = selectedCourses,
+            selectedMap = selectedMap,
+            addCourse = { course ->
+                if (selectedMap[course.courseName] != true) {
+                    selectedMap[course.courseName] = true
+                    selectedCourses =
+                        selectedCourses.toMutableList().apply { add(course) }
+                } else {
+                    Toast.makeText(
+                        context,
+                        "${course.courseName} Already Added",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            },
+            removeCourse = { course ->
+                selectedMap.remove(course.courseName)
+                selectedCourses =
+                    selectedCourses.toMutableList().apply { remove(course) }
+            },
+            clearRoutine = {
+                selectedMap = mutableMapOf<String, Boolean>()
+                selectedCourses = mutableListOf<Course>()
+            },
+            fromProfile = flag
+        )
+    }
 
-            }
-        }
-    ) {
-        NavHost(navController = navController, startDestination = "PrePreReg" ){
-            composable("PrePreReg"){
-                Box(
-                ){
-                    MakeRoutine(
-                        coursevm = coursevm,
-                        courseList = courseList,
-                        selectedCourseList = selectedCourses,
-                        selectedMap = selectedMap,
-                        addCourse = { course ->
-                            if (selectedMap[course.courseName] != true) {
-                                selectedMap[course.courseName] = true
-                                selectedCourses =
-                                    selectedCourses.toMutableList().apply { add(course) }
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "${course.courseName} Already Added",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        },
-                        removeCourse = { course ->
-                            selectedMap.remove(course.courseName)
-                            selectedCourses =
-                                selectedCourses.toMutableList().apply { remove(course) }
-                        },
-                        clearRoutine = {
-                            selectedMap = mutableMapOf<String, Boolean>()
-                            selectedCourses = mutableListOf<Course>()
-                        },
-                        loginStatus = loginStatus
-                    )
+    if (fromProfile){
+        CallMakeRoutine(true)
+    }
+    else{
+        Scaffold(
+            bottomBar = {
+                BottomNavigation(
+                    items = bottomNavList,
+                    selectedIndex = selectedIndexBotNav
+                ) { index ->
+                    println("Selected index $index size ${bottomNavList.size}")
+                    selectedIndexBotNav = index
+                    navController.navigate(bottomNavList[index].title)
+
                 }
             }
-            composable("Saved Routine"){
-                SavedRoutine(coursevm)
+        ) {
+            NavHost(navController = navController, startDestination = "PrePreReg" ){
+                composable("PrePreReg"){
+                    Box {
+                        CallMakeRoutine(false)
+                    }
+                }
+                composable("Saved Routine"){
+                    SavedRoutine(coursevm)
 
+                }
             }
-        }
 
+        }
     }
+
+
 }
