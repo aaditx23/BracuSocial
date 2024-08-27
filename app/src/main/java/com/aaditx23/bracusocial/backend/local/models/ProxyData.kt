@@ -112,42 +112,45 @@ val courseArray =
         ),
     )
 
-val demoProfiles =
+val demoProfiles = listOf(
     listOf(
-        listOf(
-            "21201618",
-            "Demo 1",
-            "123",
-            "CSE221 02,SOC101 02,CSE489 01"
-
-        ),
-        listOf(
-            "21201617",
-            "Demo 2",
-            "123",
-            "CSE221 02,SOC101 02,CSE489 01"
-
-            ),
-        listOf(
-            "21201616",
-            "Demo 3",
-            "123",
-            "ACT201 02,ANT101 02,BIO101 02"
-
-            ),
-        listOf(
-            "21201615",
-            "Demo 4",
-            "123",
-            "BUS102 01,CHE110 01,CSE110 19"
-
-            ),
-        listOf(
-            "21201614",
-            "Demo 5",
-            "123",
-            "CSE220 25,CSE230 20,CSE250 21"
-
-            ),
-
+        "21201618", // Profile 1
+        "123",
+        "Demo 1",
+        "CSE221 02,SOC101 02,CSE489 01",
+        "21201617", // Added Friends: Demo 2
+        "21201616"  // Friend Requests: Demo 3 sent a request to Demo 1
+    ),
+    listOf(
+        "21201617", // Profile 2
+        "123",
+        "Demo 2",
+        "CSE221 02,SOC101 02,CSE489 01",
+        "21201618,21201616", // Added Friends: Demo 1 and Demo 3
+        ""            // No pending friend requests
+    ),
+    listOf(
+        "21201616", // Profile 3
+        "123",
+        "Demo 3",
+        "ACT201 02,ANT101 02,BIO101 02",
+        "21201617", // Added Friends: Demo 2
+        "21201618"  // Friend Requests: Demo 1 sent a request to Demo 3
+    ),
+    listOf(
+        "21201615", // Profile 4
+        "123",
+        "Demo 4",
+        "BUS102 01,CHE110 01,CSE110 19",
+        "",         // No friends yet
+        "21201614"  // Friend Requests: Demo 5 sent a request to Demo 4
+    ),
+    listOf(
+        "21201614", // Profile 5
+        "123",
+        "Demo 5",
+        "CSE220 25,CSE230 20,CSE250 21",
+        "",         // No friends yet
+        ""          // No pending friend requests
     )
+)

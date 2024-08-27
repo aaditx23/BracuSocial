@@ -20,9 +20,9 @@ class ProfileRepository @Inject constructor(
         sid: String,
         name: String,
         pass: String,
-        courses: String = "",
-        friends: String = "",
-        requests: String = ""
+        courses: String,
+        friends: String,
+        requests: String
 
     ){
         realm.write {

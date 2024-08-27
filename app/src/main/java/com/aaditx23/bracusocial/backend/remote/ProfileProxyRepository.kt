@@ -18,7 +18,9 @@ class ProfileProxyRepository @Inject constructor(
         sid: String,
         name: String,
         pass: String,
-        courses: String
+        courses: String,
+        friends: String,
+        requests: String
 
     ){
         realm.write {
@@ -27,6 +29,8 @@ class ProfileProxyRepository @Inject constructor(
                 studentName = name
                 password = pass
                 enrolledCourses = courses
+                addedFriends = friends
+                friendRequests = requests
             }
             copyToRealm(profileData, updatePolicy = UpdatePolicy.ALL)
         }

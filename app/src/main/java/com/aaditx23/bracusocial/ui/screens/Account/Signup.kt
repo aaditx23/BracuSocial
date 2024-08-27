@@ -136,8 +136,11 @@ fun Signup(
                         accountvm.createProfile(
                             listOf(
                                 id,
+                                pass,
                                 name,
-                                pass
+                                "",
+                                "",
+                                "",
                             ),
                             ifRepeat = { result ->
 

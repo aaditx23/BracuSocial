@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aaditx23.bracusocial.backend.local.repositories.ProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository
+import com.aaditx23.bracusocial.component6
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -33,12 +34,15 @@ open class AccountProxyVM @Inject constructor(
 
 
     fun createProfile(profileData: List<String>) {
+        val (id,password,name,courses,addedFriends,friendRequests) = profileData
         viewModelScope.launch {
             ppR.createProfile(
-                sid = profileData[0],
-                name = profileData[1],
-                pass = profileData[2],
-                courses = profileData[3]
+                sid = id,
+                name = name,
+                pass = password,
+                courses = courses,
+                friends = addedFriends,
+                requests = friendRequests
             )
         }
     }

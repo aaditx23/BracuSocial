@@ -1,5 +1,7 @@
 package com.aaditx23.bracusocial
 
+
+operator fun <T> List<T>.component6(): T = get(5)
 val timeSlots = arrayOf(
     "08:00 AM - 09:20 AM",
     "08:00 AM - 10:50 AM", //lab
