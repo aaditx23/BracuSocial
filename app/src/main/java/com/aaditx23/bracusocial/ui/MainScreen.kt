@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 import com.aaditx23.bracusocial.backend.local.models.demoProfiles
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
@@ -95,6 +96,23 @@ fun Main(){
     var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var scope = rememberCoroutineScope()
     var scrollState = rememberScrollState()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+// Update `selectedIndexDrawer` when the destination changes
+    LaunchedEffect(navBackStackEntry?.destination) {
+        when (navBackStackEntry?.destination?.route) {
+            "Profile" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "Profile" }
+            "Routine" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "Routine" }
+            "All Courses" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "All Courses" }
+            "PrePreReg" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "PrePreReg" }
+            "Find Room" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "Find Room" }
+            "About App" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "About App" }
+            "Signup/Login" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "Signup/Login" }
+            "Logout" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "Logout" }
+            "Friends" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "Friends" }
+            // Add other routes here if needed
+        }
+    }
 
     LaunchedEffect(allSessions) {
         println(allSessions)
@@ -154,7 +172,7 @@ fun Main(){
                         Profile(accountvm, accountproxyvm, navController)
                     }
                     composable("Routine"){
-                        Routine()
+                        Routine(navController)
                     }
                     composable("All Courses") {
                         CourseScreen(dbStatus)

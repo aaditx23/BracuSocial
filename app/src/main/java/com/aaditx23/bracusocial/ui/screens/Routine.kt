@@ -11,21 +11,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aaditx23.bracusocial.backend.viewmodels.RoutineVM
 import com.aaditx23.bracusocial.components.BottomNavigation
 import com.aaditx23.bracusocial.components.models.BottomNavItem
-import com.aaditx23.bracusocial.ui.screens.Friends.FindFriends
-import com.aaditx23.bracusocial.ui.screens.Friends.FriendRequests
-import com.aaditx23.bracusocial.ui.screens.Friends.MyFriends
 import com.aaditx23.bracusocial.ui.screens.Routine.FriendRoutine
 import com.aaditx23.bracusocial.ui.screens.Routine.MyRoutine
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Routine(){
+fun Routine(navControllerOld: NavHostController) {
     val routinevm: RoutineVM = hiltViewModel()
 
 
@@ -54,7 +52,7 @@ fun Routine(){
     ) {
         NavHost(navController = navController, startDestination = "My Routine" ){
             composable("My Routine"){
-                MyRoutine(routinevm)
+                MyRoutine(routinevm, navControllerOld)
             }
             composable("Friends' Routine"){
                 FriendRoutine(routinevm = routinevm)

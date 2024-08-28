@@ -44,19 +44,26 @@ open class RoutineVM @Inject constructor(
             val me = profileR.getMyProfile()
             if (me != null){
                 val temp = me.enrolledCourses.split(",")
-                val courseList = mutableListOf<Course>()
-                temp.forEach { s ->
-//                    println("My course $s")
-                    val cTemp = s.split(" ")
-                    val name = cTemp[0].trim()
-                    val sec = cTemp[1].trim()
-                    val course = courseR.findCourse(name, sec)
-                    if (course != null){
-                        courseList.add(course)
-//                        println("My course object ${course._id}")
-                    }
+                if (temp.isEmpty() || temp.all { it == "" }){
+                    setMyCourseList(listOf())
                 }
-                setMyCourseList(courseList.toList())
+                else{
+                    val courseList = mutableListOf<Course>()
+                    temp.forEach { s ->
+//                    println("My course $s")
+                        val cTemp = s.split(" ")
+                        val name = cTemp[0].trim()
+                        val sec = cTemp[1].trim()
+                        val course = courseR.findCourse(name, sec)
+                        if (course != null){
+                            courseList.add(course)
+//                        println("My course object ${course._id}")
+                        }
+                    }
+                    setMyCourseList(courseList.toList())
+                }
+
+
             }
         }
     }

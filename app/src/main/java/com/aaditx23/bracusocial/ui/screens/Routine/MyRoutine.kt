@@ -1,66 +1,32 @@
 package com.aaditx23.bracusocial.ui.screens.Routine
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.aaditx23.bracusocial.backend.local.models.Course
-import com.aaditx23.bracusocial.backend.local.repositories.getClassSlot
-import com.aaditx23.bracusocial.backend.local.repositories.getCurrentTime
-import com.aaditx23.bracusocial.backend.local.repositories.getLabSlot
-import com.aaditx23.bracusocial.backend.local.repositories.getTimeSlot
 import com.aaditx23.bracusocial.backend.local.repositories.getToday
 import com.aaditx23.bracusocial.backend.viewmodels.RoutineVM
 import com.aaditx23.bracusocial.components.Day
-import com.aaditx23.bracusocial.components.DayCard
-import com.aaditx23.bracusocial.components.RoutineRow
-import com.aaditx23.bracusocial.ui.theme.palette3paste
-import com.aaditx23.bracusocial.ui.theme.palette5HintOfGreen
-import com.aaditx23.bracusocial.ui.theme.palette6LightIndigo
-import com.aaditx23.bracusocial.ui.theme.palette6LightSlateBlue1
-import com.aaditx23.bracusocial.ui.theme.palette6MagicMint
-import com.aaditx23.bracusocial.ui.theme.palette6PalePink
-import com.aaditx23.bracusocial.ui.theme.palette6PowderBlue
-import com.aaditx23.bracusocial.ui.theme.palette7Green2
-import com.aaditx23.bracusocial.ui.theme.palette7Paste1
-import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen
-import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen2
-import com.aaditx23.bracusocial.ui.theme.paletteGreen
-import com.aaditx23.bracusocial.ui.theme.paletteLightPurple
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -89,7 +55,7 @@ val days = listOf(
 )
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun MyRoutine(routinevm: RoutineVM){
+fun MyRoutine(routinevm: RoutineVM, navController: NavHostController, ){
 
     var isLoading by rememberSaveable {
         mutableStateOf(true)
@@ -98,6 +64,9 @@ fun MyRoutine(routinevm: RoutineVM){
         mutableStateOf(getToday().slice(0..1))
     }
     var isLabToday by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var noCourses by rememberSaveable {
         mutableStateOf(false)
     }
     val map by rememberSaveable {
@@ -157,6 +126,10 @@ fun MyRoutine(routinevm: RoutineVM){
                 isLoading = false
                 listState.animateScrollToItem(days.indexOf(currentDay))
             }
+            else{
+                isLoading = false
+                noCourses = true
+            }
         }
 
     }
@@ -169,8 +142,24 @@ fun MyRoutine(routinevm: RoutineVM){
             CircularProgressIndicator()
         }
     }
-    else{
+    else if (noCourses){
 
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Text(text = "No courses added yet")
+            Button(onClick = {
+                navController.navigate("AddCourseFromProfile")
+            }) {
+                Text(text = "Add courses")
+            }
+        }
+
+    }
+    else{
         println(nonEmpty.sorted())
         LazyColumn(
             modifier = Modifier
