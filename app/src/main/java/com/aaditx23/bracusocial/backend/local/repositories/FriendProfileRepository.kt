@@ -32,6 +32,7 @@ class FriendProfileRepository @Inject constructor(
                 addedFriends = friends
             }
             copyToRealm(profileData, updatePolicy = UpdatePolicy.ALL)
+            println("Created friend profile $sid fprR, createFP")
         }
     }
 
@@ -67,7 +68,7 @@ class FriendProfileRepository @Inject constructor(
                 results.list.toList()
             }
     }
-    suspend fun getAllFriendCourses(): Map<String, String> {
+    fun getAllFriendCourses(): Map<String, String> {
         return realm
             .query<FriendProfile>()
             .find()

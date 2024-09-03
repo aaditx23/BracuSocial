@@ -194,7 +194,6 @@ fun Main(){
                         fun login(){
                             selectedIndexDrawer = 0
                             navController.navigate("Profile")
-                            accountvm.createFriends()
                         }
                         Login_Signup(
                             accountvm = accountvm,

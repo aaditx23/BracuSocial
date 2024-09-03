@@ -12,6 +12,7 @@ import com.aaditx23.bracusocial.timeSlots
 import com.aaditx23.bracusocial.ui.screens.Routine.days
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -89,10 +90,9 @@ open class RoutineVM @Inject constructor(
                     }
                 }
             } // {Day: {Time: Name-Course-Sec-Room} }
-            val map = fpr.getAllFriendCourses() // Name: "Courses"
+            val map = async{ fpr.getAllFriendCourses() }.await() // Name: "Courses"
 //            println("MAP $map")
             if (map.isEmpty()){
-                delay(200)
                 setEmpty(true)
                 setLoading(false)
             }

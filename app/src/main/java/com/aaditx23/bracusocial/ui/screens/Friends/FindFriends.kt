@@ -64,7 +64,7 @@ fun FindFriends(friendsvm: FriendsVM){
             verticalArrangement = Arrangement.Top
         ) {
             items(allAccounts){ profile ->
-                if(me!!.studentId != profile.studentId && !me.addedFriends.contains(profile.studentId)) {
+                if(me.studentId != profile.studentId && !me.addedFriends.contains(profile.studentId)) {
                     AddFriendRow(friend = profile, friendvm = friendsvm)
                 }
 

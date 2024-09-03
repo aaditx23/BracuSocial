@@ -42,7 +42,7 @@ open class FriendsVM @Inject constructor(
             SharingStarted.WhileSubscribed(),
             emptyList()
         )
-//    val firstProfile = profileR.getFirstProfile()
+//    val firstProfile = profileR.getMyProfile()
 
     fun addFriend(friend: String){
         viewModelScope.launch {
@@ -57,7 +57,7 @@ open class FriendsVM @Inject constructor(
                     courses = remoteProfile.enrolledCourses,
                     friends = remoteProfile.addedFriends
                 )
-                val me = profileR.getFirstProfile()
+                val me = profileR.getMyProfile()
                 ppR.updateFriend(me!!.studentId, friend)
                 // add me to friend's profile
 
@@ -72,14 +72,14 @@ open class FriendsVM @Inject constructor(
         viewModelScope.launch {
             profileR.removeFriend(friend)   //remove friend from profile
             fpR.deleteFriendProfile(friend) // remove friend from local
-            val me = profileR.getFirstProfile()
+            val me = profileR.getMyProfile()
             ppR.updateFriend(me!!.studentId, friend, add = false)
         }
     }
 
     fun sendRequest(friend: String){
         viewModelScope.launch {
-            val me = profileR.getFirstProfile()
+            val me = profileR.getMyProfile()
             ppR.sendFriendRequest(
                 from = me!!.studentId,
                 to = friend
@@ -90,7 +90,7 @@ open class FriendsVM @Inject constructor(
     fun isInRequest(friend: String, result: (Boolean) -> Unit){
         viewModelScope.launch {
             val friendProfile = ppR.getProfileProxy(friend)
-            val me = profileR.getFirstProfile()
+            val me = profileR.getMyProfile()
 
             println("FOUND FRIEND ${friendProfile!!.studentId}")
             if (me != null){
@@ -111,7 +111,7 @@ open class FriendsVM @Inject constructor(
     }
     fun cancelRequest(friend: String){
         viewModelScope.launch {
-            val meLocal = profileR.getFirstProfile()
+            val meLocal = profileR.getMyProfile()
             if(meLocal != null){
                 ppR.cancelRequest(friend, meLocal.studentId)
                 profileR.cancelRequest(friend)
@@ -123,7 +123,7 @@ open class FriendsVM @Inject constructor(
 
     fun cancelSentRequest(friend: String){
         viewModelScope.launch {
-            val meLocal = profileR.getFirstProfile()
+            val meLocal = profileR.getMyProfile()
             if (meLocal != null){
                 ppR.cancelRequest( meLocal.studentId, friend)
             }

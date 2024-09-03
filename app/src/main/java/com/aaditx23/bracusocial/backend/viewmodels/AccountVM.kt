@@ -8,6 +8,7 @@ import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository
 import com.aaditx23.bracusocial.backend.remote.ProfileProxyRepository
 import com.aaditx23.bracusocial.component6
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -72,15 +73,17 @@ open class AccountVM @Inject constructor(
         }
     }
 
-    fun createFriends(){
+    suspend fun createFriends(){
         viewModelScope.launch {
-            val me = allProfiles.value[0]
+            val me = async{ profileR.getMyProfile() }.await()
             if(me != null){
                 println("PROFILE FOUND")
                 me.addedFriends.split(",").forEachIndexed { _, s ->
                     println("FRIEND NEEDED $s")
                     if(s!=""){
-                        val friend = ppR.getProfileProxy(s.trim())
+                        val friend = async {
+                            ppR.getProfileProxy(s.trim())
+                        }.await()
                         if (friend != null) {
                             fpR.createFriendProfile(
                                 sid = friend.studentId,
@@ -120,7 +123,7 @@ open class AccountVM @Inject constructor(
 
     fun addCourses(courses: String){
         viewModelScope.launch {
-            val me = profileR.getFirstProfile()
+            val me = profileR.getMyProfile()
            if (me != null){
                profileR.updateCourses(me.studentId, courses)
                ppR.updateCourses(me.studentId, courses)

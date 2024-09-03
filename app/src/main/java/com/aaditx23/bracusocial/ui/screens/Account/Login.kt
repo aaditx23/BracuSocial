@@ -104,18 +104,23 @@ fun Login(accountvm: AccountVM, loginSuccess: () -> Unit){
                                 result = {match, found ->
                                     isSuccess = match
                                     gotProfile = found
+
+                                    if(!isSuccess){
+                                        if(gotProfile){
+                                            Toast.makeText(context, "Wrong Password", Toast.LENGTH_SHORT).show()
+                                        }
+                                        else{
+                                            Toast.makeText(context, "Wrong ID", Toast.LENGTH_SHORT).show()
+                                        }
+
+                                    }
                                 }
                             )
+//                            if(isSuccess){
+//                                accountvm.createFriends()
+//                            }
                             isLoading = false
-                            if(!isSuccess){
-                                if(gotProfile){
-                                    Toast.makeText(context, "Wrong Password", Toast.LENGTH_SHORT).show()
-                                }
-                                else{
-                                    Toast.makeText(context, "Wrong ID", Toast.LENGTH_SHORT).show()
-                                }
 
-                            }
                         }
                     }
                 }

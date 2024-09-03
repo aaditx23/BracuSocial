@@ -35,6 +35,7 @@ class ProfileRepository @Inject constructor(
                 friendRequests = requests
             }
             copyToRealm(profileData, updatePolicy = UpdatePolicy.ALL)
+            println("Profile created (profile repository, create profile)")
         }
     }
 
@@ -177,10 +178,7 @@ class ProfileRepository @Inject constructor(
                 results.list.toList()
             }
     }
-    suspend fun getFirstProfile(): Profile?{
-        return realm.query<Profile>().first().find()
-    }
-    suspend fun getMyProfile(): Profile?{
+    fun getMyProfile(): Profile?{
         return realm.query<Profile>().first().find()
     }
 
