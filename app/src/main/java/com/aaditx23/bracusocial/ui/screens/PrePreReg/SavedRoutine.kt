@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,6 +47,13 @@ import com.aaditx23.bracusocial.backend.viewmodels.SavedRoutineVM
 import com.aaditx23.bracusocial.components.Routine
 import com.aaditx23.bracusocial.ui.theme.palette3paste
 import com.aaditx23.bracusocial.ui.theme.palette4green
+import com.aaditx23.bracusocial.ui.theme.paletteBlue1
+import com.aaditx23.bracusocial.ui.theme.paletteBlue2
+import com.aaditx23.bracusocial.ui.theme.paletteBlue3
+import com.aaditx23.bracusocial.ui.theme.paletteBlue5
+import com.aaditx23.bracusocial.ui.theme.paletteBlue7
+import com.aaditx23.bracusocial.ui.theme.paletteBlue8
+import com.aaditx23.bracusocial.ui.theme.paletteBlue9
 import com.aaditx23.bracusocial.ui.theme.paletteGreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -80,8 +88,8 @@ fun SavedRoutine(
         CoroutineScope(Dispatchers.IO).launch {
 //            isLoading = true
             delay(500)
-            if (!allCourses.isEmpty()){
-                allCourses.forEachIndexed { index, course ->
+            if (allCourses.isNotEmpty()){
+                allCourses.forEachIndexed { _, course ->
                     val key = "${course.courseName} ${course.section}"
                     courseMap[key] = course
                 }
@@ -140,7 +148,7 @@ fun SavedRoutine(
                             defaultElevation = 5.dp,
                         ),
                         shape = RoundedCornerShape(5.dp),
-                        colors = CardDefaults.cardColors(palette4green)
+                        colors = CardDefaults.cardColors(paletteBlue1)
                     ){
                         Box(
                             modifier = Modifier
@@ -151,7 +159,8 @@ fun SavedRoutine(
                             Text(
                                 text = "Added\nCourses",
                                 textAlign = TextAlign.Center,
-                                color = Color.Black
+                                color = paletteBlue9,
+                                fontWeight = FontWeight.Bold
                             )
                         }
 
@@ -163,7 +172,7 @@ fun SavedRoutine(
                             defaultElevation = 5.dp,
                         ),
                         shape = RoundedCornerShape(5.dp),
-                        colors = CardDefaults.cardColors(palette3paste)
+                        colors = CardDefaults.cardColors(paletteBlue9)
                     ){
                         LazyColumn {
                             items(courseList) { course ->
@@ -245,7 +254,7 @@ fun CourseItem(course: Course) {
             .fillMaxWidth()
             .padding(5.dp),
         shape = RoundedCornerShape(5.dp),
-        colors = CardDefaults.cardColors(paletteGreen)
+        colors = CardDefaults.cardColors(paletteBlue5)
     ) {
         Text(
             text = "${course.courseName}, Section: ${course.section}",

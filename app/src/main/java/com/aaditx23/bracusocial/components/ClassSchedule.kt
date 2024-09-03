@@ -25,6 +25,15 @@ import com.aaditx23.bracusocial.backend.local.repositories.getLabSlot
 import com.aaditx23.bracusocial.ui.screens.Routine.timeSlots
 import com.aaditx23.bracusocial.ui.theme.palette3paste
 import com.aaditx23.bracusocial.ui.theme.palette6MagicMint
+import com.aaditx23.bracusocial.ui.theme.paletteBlue1
+import com.aaditx23.bracusocial.ui.theme.paletteBlue2
+import com.aaditx23.bracusocial.ui.theme.paletteBlue3
+import com.aaditx23.bracusocial.ui.theme.paletteBlue4
+import com.aaditx23.bracusocial.ui.theme.paletteBlue5
+import com.aaditx23.bracusocial.ui.theme.paletteBlue6
+import com.aaditx23.bracusocial.ui.theme.paletteBlue7
+import com.aaditx23.bracusocial.ui.theme.paletteBlue8
+import com.aaditx23.bracusocial.ui.theme.paletteBlue9
 import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen
 import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen2
 import com.aaditx23.bracusocial.ui.theme.paletteGreen
@@ -62,8 +71,8 @@ fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean){
             defaultElevation = 5.dp,
         ),
         colors = CardDefaults.cardColors(
-            if (isToday) palette6MagicMint
-            else palette3paste
+            if (isToday) paletteBlue7
+            else paletteBlue9
         )
 
     ) {
@@ -72,7 +81,7 @@ fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean){
                 .fillMaxWidth()
                 .padding(5.dp)
         ) {
-            DayCard(day = day)
+            DayCard(day = day, isToday = isToday)
             RoutineRow()
             timeSlots.forEach { key ->
                 if(map[key] != null && map[key] != ""){
@@ -121,6 +130,11 @@ fun RoutineRow(
     section = "Sec"
     room = "Room"
     t = "Class Time"
+    val infoFontColor =  if (time == "") paletteBlue8 else paletteBlue1
+    val rowColor = if (time == "") CardDefaults.cardColors(paletteBlue2)
+    else if (isNow) CardDefaults.cardColors(paletteBlue9)
+    else CardDefaults.cardColors(paletteBlue5)
+
 
     if (time != ""){
         if (temp.size != 3){
@@ -168,10 +182,7 @@ fun RoutineRow(
                 .fillMaxWidth()
                 .padding(5.dp),
             shape = RoundedCornerShape(5.dp),
-            colors =
-            if (time == "") CardDefaults.cardColors(paletteDarkGreen)
-            else if (isNow) CardDefaults.cardColors(paletteLightPurple)
-            else CardDefaults.cardColors(paletteGreen),
+            colors = rowColor,
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 2.dp,
             )
@@ -190,7 +201,7 @@ fun RoutineRow(
                                 .padding(5.dp),
                             fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
                             text = name,
-                            color = Color.Black
+                            color = infoFontColor
                         )
                     } else {
                         Text(
@@ -198,7 +209,7 @@ fun RoutineRow(
                                 .padding(5.dp),
                             fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
                             text = t,
-                            color = Color.Black
+                            color = infoFontColor
                         )
                     }
                 }
@@ -213,7 +224,7 @@ fun RoutineRow(
                             .padding(5.dp),
                         fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
                         text = course,
-                        color = Color.Black
+                        color = infoFontColor
                     )
                 }
                 Box(
@@ -227,7 +238,7 @@ fun RoutineRow(
                             .padding(5.dp),
                         fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
                         text = section,
-                        color = Color.Black
+                        color = infoFontColor
                     )
                 }
                 Box(
@@ -241,7 +252,7 @@ fun RoutineRow(
                             .padding(5.dp),
                         fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
                         text = room,
-                        color = Color.Black
+                        color = infoFontColor
                     )
                 }
             }
@@ -251,7 +262,7 @@ fun RoutineRow(
 }
 
 @Composable
-fun DayCard(day: String){
+fun DayCard(day: String, isToday: Boolean){
     val d = when(day) {
         "Su" -> "Sunday"
         "Mo" -> "Monday"
@@ -262,6 +273,7 @@ fun DayCard(day: String){
         "Sa" -> "Saturday"
         else -> "Unknown" // Handle unexpected inputs
     }
+    val infoFontColor =  paletteBlue9
 
     ElevatedCard(
         modifier = Modifier
@@ -271,7 +283,7 @@ fun DayCard(day: String){
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp,
         ),
-        colors = CardDefaults.cardColors(paletteDarkGreen2)
+        colors = CardDefaults.cardColors(paletteBlue1)
     ){
         Row(
             modifier = Modifier
@@ -287,7 +299,7 @@ fun DayCard(day: String){
                     text = d,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = infoFontColor
                 )
             }
         }
