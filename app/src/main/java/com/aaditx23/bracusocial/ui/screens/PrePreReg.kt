@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
@@ -19,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.components.BottomNavigation
 import com.aaditx23.bracusocial.components.models.BottomNavItem
@@ -41,29 +43,41 @@ fun PrePreReg(fromProfile: Boolean = false){
         mutableStateOf(mutableMapOf<String, Boolean>())
     }
     val coursevm : CourseVM = hiltViewModel()
+    val accountvm: AccountVM = hiltViewModel()
     val courseList by coursevm.allCourses.collectAsState()
     val navController = rememberNavController()
     val context = LocalContext.current
 
+    fun addCourse(course: Course){
+        if (selectedMap[course.courseName] != true) {
+            selectedMap[course.courseName] = true
+            selectedCourses =
+                selectedCourses.toMutableList().apply { add(course) }
+        } else {
+            Toast.makeText(
+                context,
+                "${course.courseName} Already Added",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
     @Composable
     fun CallMakeRoutine(flag: Boolean){
+        if (flag){
+            accountvm.getMyCourses { myCourseList ->
+                myCourseList.forEach{ c ->
+                    addCourse(c)
+                }
+            }
+        }
         MakeRoutine(
             coursevm = coursevm,
             courseList = courseList,
             selectedCourseList = selectedCourses,
             selectedMap = selectedMap,
             addCourse = { course ->
-                if (selectedMap[course.courseName] != true) {
-                    selectedMap[course.courseName] = true
-                    selectedCourses =
-                        selectedCourses.toMutableList().apply { add(course) }
-                } else {
-                    Toast.makeText(
-                        context,
-                        "${course.courseName} Already Added",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                addCourse(course)
             },
             removeCourse = { course ->
                 selectedMap.remove(course.courseName)

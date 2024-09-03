@@ -2,6 +2,8 @@ package com.aaditx23.bracusocial.backend.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.backend.local.repositories.CourseRepository
 import com.aaditx23.bracusocial.backend.local.repositories.FriendProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.ProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository
@@ -19,7 +21,8 @@ open class AccountVM @Inject constructor(
     private val profileR: ProfileRepository,
     private val sessionR: SessionRepository,
     private val fpR: FriendProfileRepository,
-    private val ppR: ProfileProxyRepository
+    private val ppR: ProfileProxyRepository,
+    private val courseR: CourseRepository
 ): ViewModel() {
 
     val allSessions = sessionR.getAllSession()
@@ -123,11 +126,32 @@ open class AccountVM @Inject constructor(
 
     fun addCourses(courses: String){
         viewModelScope.launch {
-            val me = profileR.getMyProfile()
+            val me = async{ profileR.getMyProfile() }.await()
            if (me != null){
                profileR.updateCourses(me.studentId, courses)
                ppR.updateCourses(me.studentId, courses)
            }
+        }
+    }
+
+    fun getMyCourses(setCourses: (MutableList<Course>) -> Unit){
+        viewModelScope.launch {
+            val me = async{ profileR.getMyProfile() }.await()
+            if (me != null){
+                val courseStringList = me.enrolledCourses.split(",")
+                val courseList = mutableListOf<Course>()
+                courseStringList.forEachIndexed { _, s ->
+                    if (s != ""){
+                        println("$s is the course, accountvm getmuycourses")
+                        val (name, seciton) =  s.split(" ")
+                        val course = courseR.findCourse(name.trim(), seciton.trim())
+                        if (course != null){
+                            courseList.add(course)
+                        }
+                    }
+                }
+                setCourses(courseList)
+            }
         }
     }
 }

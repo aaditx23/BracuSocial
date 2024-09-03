@@ -114,12 +114,10 @@ fun MakeRoutine(
 
         }
     }
-
     // Filtering logic within a coroutine
     LaunchedEffect(searchQuery) {
         coroutineScope.launch {
             isFiltering = true
-            delay(500) // Optional delay to simulate processing time
             filteredCourseList = FilterCourseList(list = courseList, searchQuery = searchQuery.text)
             isFiltering = false
 
@@ -268,7 +266,7 @@ fun MakeRoutine(
 @Composable
 fun CourseCard(
     course: Course,
-    selectedMap: MutableMap<String, Boolean> = mutableMapOf<String, Boolean>(),
+    selectedMap: MutableMap<String, Boolean> = mutableMapOf(),
     courseAction: (course: Course) -> Unit,
     left: Boolean = false
     ){

@@ -1,5 +1,6 @@
 package com.aaditx23.bracusocial.backend.local.repositories
 
+import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.local.models.Profile
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import io.realm.kotlin.Realm
@@ -190,5 +191,4 @@ class ProfileRepository @Inject constructor(
         }
         return temp
     }
-
 }
