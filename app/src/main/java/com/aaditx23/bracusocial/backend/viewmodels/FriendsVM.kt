@@ -42,7 +42,7 @@ open class FriendsVM @Inject constructor(
             SharingStarted.WhileSubscribed(),
             emptyList()
         )
-    val firstProfile = profileR.getFirstProfile()
+//    val firstProfile = profileR.getFirstProfile()
 
     fun addFriend(friend: String){
         viewModelScope.launch {

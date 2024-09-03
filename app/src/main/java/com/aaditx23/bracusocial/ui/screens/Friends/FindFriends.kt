@@ -52,9 +52,11 @@ fun FindFriends(friendsvm: FriendsVM){
     val accountproxyvm : AccountProxyVM = hiltViewModel()
     val allAccounts by accountproxyvm.allProfiles.collectAsState()
     val accountvm: AccountVM = hiltViewModel()
-    val me = accountvm.firstProfile
+    val profiles = accountvm.allProfiles.collectAsState()
+
 
     if (allAccounts.isNotEmpty()){
+        val me = profiles.value[0]
         LazyColumn(
             modifier = Modifier
                 .padding(top = 70.dp)

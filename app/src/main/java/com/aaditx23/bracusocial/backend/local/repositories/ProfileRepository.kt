@@ -177,7 +177,7 @@ class ProfileRepository @Inject constructor(
                 results.list.toList()
             }
     }
-    fun getFirstProfile(): Profile?{
+    suspend fun getFirstProfile(): Profile?{
         return realm.query<Profile>().first().find()
     }
     suspend fun getMyProfile(): Profile?{
