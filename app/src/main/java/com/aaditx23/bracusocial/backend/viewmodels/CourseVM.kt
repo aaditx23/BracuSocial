@@ -45,33 +45,6 @@ open class CourseVM @Inject constructor(
             emptySet()
         )
 
-    fun createCourseDB(
-        courseName: String,
-        section: String,
-        classDay: String,
-        classTime: String,
-        classRoom: String,
-        labDay: String,
-        labTime: String,
-        labRoom: String
-
-        ){
-        viewModelScope.launch {
-            courseR.createCourse(
-                listOf(
-                    courseName,
-                    section,
-                    classDay,
-                    classTime,
-                    classRoom,
-                    labDay,
-                    labTime,
-                    labRoom
-                )
-            )
-        }
-    }
-
     fun deleteCourse(id: ObjectId){
         viewModelScope.launch {
             courseR.deleteCourse(id)
@@ -116,7 +89,8 @@ open class CourseVM @Inject constructor(
                     classRoom,
                     labDay,
                     course.optString("LabTime"),
-                    course.optString("LabRoom")
+                    course.optString("LabRoom"),
+                    course.optString("Faculty")
                 )
             } else {
                 courseInfo = listOf(
@@ -128,7 +102,8 @@ open class CourseVM @Inject constructor(
                     classRoom,
                     "-",
                     "-",
-                    "-"
+                    "-",
+                    course.optString("Faculty")
                 )
             }
             courseR.createCourse(courseInfo)

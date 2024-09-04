@@ -29,6 +29,7 @@ class CourseRepository @Inject constructor(
                 labDay = course[5]
                 labTime = course[6]
                 labRoom = course[7]
+                faculty = course[8]
 
             }
             copyToRealm(courseData, updatePolicy = UpdatePolicy.ALL)

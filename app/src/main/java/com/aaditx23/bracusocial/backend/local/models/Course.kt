@@ -9,6 +9,7 @@ class Course: RealmObject{
     @PrimaryKey var _id: ObjectId = BsonObjectId()
     var courseName: String = ""
     var section: String = ""
+    var faculty: String = "TBA"
     var classDay: String? = null
     var classTime: String? = null
     var classRoom: String? = null

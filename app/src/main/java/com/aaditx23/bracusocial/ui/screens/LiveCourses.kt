@@ -53,7 +53,7 @@ fun LiveFeed(){
         mutableStateOf(mutableListOf<JSONObject>())
     }
     var hasInternet by remember{
-        mutableStateOf(false)
+        mutableStateOf(checkInternetConnection(context))
     }
 
     var toggleRefresh by remember {
@@ -89,7 +89,7 @@ fun LiveFeed(){
 
     Column(
         modifier = Modifier
-            .padding(top = 80.dp)
+            .padding(top = 80.dp, bottom = 30.dp)
     ){
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,

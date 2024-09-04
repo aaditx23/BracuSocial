@@ -17,6 +17,7 @@ import org.json.JSONObject
 fun CourseItemJson(courseJson: JSONObject) {
     val courseName = courseJson.optString("Course", "N/A")
     val section = courseJson.optString("Section", "N/A")
+    val faculty = courseJson.optString("Faculty", "TBA")
     val classTime = courseJson.optString("ClassTime", "N/A")
     val classDays = courseJson.optJSONArray("ClassDay")?.let { jsonArray ->
         (0 until jsonArray.length()).joinToString(" ") { index ->
@@ -46,6 +47,7 @@ fun CourseItemJson(courseJson: JSONObject) {
     ) {
         Text(text = "Course: $courseName")
         Text(text = "Section: $section")
+        Text(text = "Faculty: $faculty")
         Text(text = "Class Time: $classTime")
         Text(text = "Class Days: $classDays")
         Text(text = "Class Room: $classRoom")
@@ -69,6 +71,7 @@ fun CourseItem(course: Course) {
     ) {
         Text(text = "Course: ${course.courseName}")
         Text(text = "Section: ${course.section}")
+        Text(text = "Faculty: ${course.faculty}")
         Text(text = "Class Time: ${course.classTime}")
         Text(text = "Class Day: ${course.classDay}")
         Text(text = "Class Room: ${course.classRoom}")

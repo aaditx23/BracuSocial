@@ -164,6 +164,7 @@ class UsisCrawler{
             val data = row.select("td")
             if (data.size >= 10) {
                 val courseCode = data[1].text().trim()
+                val faculty = data[3].text().trim()
                 if (courseCode.contains("TSL") || courseCode.contains("PSM") || courseCode.contains("HUM103")
                     || courseCode.contains("LAW101") || courseCode.contains("LAW203") || courseCode.contains("ENG102")
                     || courseCode.contains("EMB101") || courseCode.contains("BNG103") || courseCode.contains("PHR")
@@ -179,7 +180,7 @@ class UsisCrawler{
                 courseInfo.put("Section", section)
                 courseInfo.put("ClassTime", timings)
                 courseInfo.put("Lab", labFlag)
-                courseInfo.put("Selected", false)
+                courseInfo.put("Faculty", faculty)
                 val timeCheckFlag = timeFormat(courseInfo)
                 if(!courseInfo.has("ClassDay")){
                     continue
