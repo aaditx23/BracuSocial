@@ -50,6 +50,7 @@ import com.aaditx23.bracusocial.ui.screens.PrePreReg
 import com.aaditx23.bracusocial.ui.screens.Profile
 import com.aaditx23.bracusocial.ui.screens.SessionInfo
 import com.aaditx23.bracusocial.ui.screens.Friends
+import com.aaditx23.bracusocial.ui.screens.LiveFeed
 import com.aaditx23.bracusocial.ui.screens.Login_Signup
 import com.aaditx23.bracusocial.ui.screens.Routine
 import kotlinx.coroutines.CoroutineScope
@@ -166,7 +167,7 @@ fun Main(){
 
                 topBar = { TopActionBar(drawerState = drawerState, scope = scope) }
             ) {
-                NavHost(navController = navController, startDestination = "All Courses") {
+                NavHost(navController = navController, startDestination = "All Courses (Offline)") {
                     // Routes
                     composable("Profile") {
                         Profile(accountvm, accountproxyvm, navController)
@@ -174,8 +175,12 @@ fun Main(){
                     composable("Routine"){
                         Routine(navController)
                     }
-                    composable("All Courses") {
+                    composable("All Courses (Offline)") {
                         CourseScreen(dbStatus)
+
+                    }
+                    composable("All Courses (Online)"){
+                        LiveFeed()
                     }
                     composable("PrePreReg") {
                         PrePreReg()

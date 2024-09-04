@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aaditx23.bracusocial.backend.local.models.Course
+import org.json.JSONObject
 
 @Composable
 fun SearchBar(
@@ -102,6 +103,21 @@ fun FilterCourseList(list: List<Course>, searchQuery: String): List<Course>{
             1 -> course.courseName.contains(query[0].trim(), ignoreCase = true)
             2 -> course.courseName.contains(query[0].trim(), ignoreCase = true) &&
                     course.section.contains(query[1].trim(), ignoreCase = true)
+            else -> false
+        }
+    }
+}
+
+fun FilterCourseListJson(list: List<JSONObject>, searchQuery: String): List<JSONObject> {
+    return list.filter { courseJson ->
+        val query = searchQuery.trim().split("-")
+        val courseName = courseJson.optString("Course", "")
+        val section = courseJson.optString("Section", "")
+
+        when (query.size) {
+            1 -> courseName.contains(query[0].trim(), ignoreCase = true)
+            2 -> courseName.contains(query[0].trim(), ignoreCase = true) &&
+                    section.contains(query[1].trim(), ignoreCase = true)
             else -> false
         }
     }

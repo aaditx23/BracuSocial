@@ -34,11 +34,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
-import com.aaditx23.bracusocial.backend.viewmodels.SessionVM
-import com.aaditx23.bracusocial.components.CloseButtonDialog
+import com.aaditx23.bracusocial.components.CourseItem
+import com.aaditx23.bracusocial.components.NoButtonDialog
 import com.aaditx23.bracusocial.components.FilterCourseList
 import com.aaditx23.bracusocial.components.SearchBar
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -56,6 +55,7 @@ fun CourseScreen(dbStatus: Boolean){
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var filteredCourseList by remember { mutableStateOf(allCourses) }
     var isFiltering by remember { mutableStateOf(false) }
+
     var totalCourses by remember { mutableIntStateOf(0) }
     var addedCourses by remember { mutableIntStateOf(0) }
 
@@ -85,7 +85,6 @@ fun CourseScreen(dbStatus: Boolean){
     LaunchedEffect(searchQuery) {
         coroutineScope.launch {
             isFiltering = true
-            delay(300) // Optional delay to simulate processing time
             filteredCourseList = FilterCourseList(list = allCourses, searchQuery = searchQuery.text)
             isFiltering = false
 
@@ -143,7 +142,7 @@ fun CourseScreen(dbStatus: Boolean){
             }
         }
         else if(isLoading){
-            CloseButtonDialog(
+            NoButtonDialog(
                 title = "Collecting courses",
                 message = "Please wait\n$status",
                 total = totalCourses,
@@ -167,26 +166,3 @@ fun CourseScreen(dbStatus: Boolean){
     }
 }
 
-@Composable
-fun CourseItem(course: Course) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(5.dp))
-            .padding(8.dp)
-    ) {
-        Text(text = "Course: ${course.courseName}")
-        Text(text = "Section: ${course.section}")
-        Text(text = "Class Time: ${course.classTime}")
-        Text(text = "Class Day: ${course.classDay}")
-        Text(text = "Class Room: ${course.classRoom}")
-
-        if (course.labDay != "-") {
-            Text(text = "Lab Day: ${course.labDay}")
-            Text(text = "Lab Time: ${course.labTime}")
-            Text(text = "Lab Time: ${course.labRoom}")
-        }
-
-    }
-}

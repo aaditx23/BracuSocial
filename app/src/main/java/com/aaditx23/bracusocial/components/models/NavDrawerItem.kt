@@ -60,7 +60,13 @@ sealed class NavDrawerItem(
     object AllCourses: NavDrawerItem(
         selectedIcon = "filled_auto_awesome_mosaic",
         unselectedIcon = "outlined_auto_awesome_mosaic",
-        title = "All Courses"
+        title = "All Courses (Offline)"
+    )
+    @Parcelize
+    object AllCoursesLive: NavDrawerItem(
+        selectedIcon = "filled_cloud_sync",
+        unselectedIcon = "outlined_cloud_sync",
+        title = "All Courses (Online)"
     )
     @Parcelize
     object PrePreReg: NavDrawerItem(
@@ -109,6 +115,7 @@ sealed class NavDrawerItem(
             Routine,
             Friends,
             AllCourses,
+            AllCoursesLive,
             PrePreReg,
             FindRoom,
             AboutApp,

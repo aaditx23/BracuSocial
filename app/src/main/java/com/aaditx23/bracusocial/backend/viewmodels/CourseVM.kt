@@ -166,6 +166,14 @@ open class CourseVM @Inject constructor(
         }
     }
 
+    suspend fun liveData(setLoading: (Boolean) -> Unit): MutableList<JSONObject> {
+        setLoading(true)
+        val allCoursesJson: MutableList<JSONObject> = uc.executeAsyncTask()
+        setLoading(false)
+        return allCoursesJson
+
+    }
+
 
 
 }

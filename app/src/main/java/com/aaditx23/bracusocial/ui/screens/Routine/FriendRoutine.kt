@@ -2,19 +2,15 @@ package com.aaditx23.bracusocial.ui.screens.Routine
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -22,12 +18,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.aaditx23.bracusocial.backend.local.repositories.getCurrentTime
 import com.aaditx23.bracusocial.backend.local.repositories.getToday
 import com.aaditx23.bracusocial.backend.viewmodels.RoutineVM
 import com.aaditx23.bracusocial.components.Day
-import com.aaditx23.bracusocial.components.NoButtonDialog
-import com.aaditx23.bracusocial.ui.screens.getTimeSlot
+import com.aaditx23.bracusocial.components.NoButtonCircularLoadingDialog
 import kotlinx.coroutines.launch
 
 @SuppressLint("MutableCollectionMutableState")
@@ -79,7 +73,7 @@ fun FriendRoutine(routinevm: RoutineVM){
     }
 
     if (isLoading){
-        NoButtonDialog(title = "Friends' Schedule", message = "Please wait while your friends' courses are being arranged...")
+        NoButtonCircularLoadingDialog(title = "Friends' Schedule", message = "Please wait while your friends' courses are being arranged...")
     }
     else{
         if (isEmpty){

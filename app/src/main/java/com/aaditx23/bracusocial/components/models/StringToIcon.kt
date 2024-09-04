@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.AppRegistration
 import androidx.compose.material.icons.filled.AutoAwesomeMosaic
 import androidx.compose.material.icons.filled.BackupTable
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Person
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.outlined.AppRegistration
 import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
 import androidx.compose.material.icons.outlined.BackupTable
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.Groups
@@ -50,6 +52,7 @@ val map = mutableMapOf(
     "filled_routine" to Icons.Filled.CalendarMonth,
     "filled_my_routine" to Icons.Filled.TableChart,
     "filled_friend_routine" to Icons.Filled.StackedBarChart,
+    "filled_cloud_sync" to Icons.Filled.CloudSync,
 
     "outlined_app_registration" to Icons.Outlined.AppRegistration,
     "outlined_backup_table" to Icons.Outlined.BackupTable,
@@ -65,7 +68,8 @@ val map = mutableMapOf(
     "auto_mirrored_outlined_logout" to Icons.AutoMirrored.Outlined.Logout,
     "outlined_routine" to Icons.Outlined.CalendarMonth,
     "outlined_my_routine" to Icons.Outlined.TableChart,
-    "outlined_friends_routine" to Icons.Outlined.StackedBarChart
+    "outlined_friends_routine" to Icons.Outlined.StackedBarChart,
+    "outlined_cloud_sync" to Icons.Outlined.CloudSync,
 )
 
 fun IconMap(icon: String): ImageVector{

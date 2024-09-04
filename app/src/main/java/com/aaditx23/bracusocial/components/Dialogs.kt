@@ -14,10 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -27,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
 @Composable
-fun NoButtonDialog(
+fun NoButtonCircularLoadingDialog(
     title: String,
     message: String
 ){
@@ -64,7 +61,7 @@ fun NoButtonDialog(
 }
 
 @Composable
-fun CloseButtonDialog(
+fun NoButtonDialog(
     title: String,
     message: String,
     total: Int,
