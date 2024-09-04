@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -64,10 +65,12 @@ fun PrePreReg(fromProfile: Boolean = false){
 
     @Composable
     fun CallMakeRoutine(flag: Boolean){
-        if (flag){
-            accountvm.getMyCourses { myCourseList ->
-                myCourseList.forEach{ c ->
-                    addCourse(c)
+        LaunchedEffect(flag){
+            if (flag) {
+                accountvm.getMyCourses { myCourseList ->
+                    myCourseList.forEach { c ->
+                        addCourse(c)
+                    }
                 }
             }
         }

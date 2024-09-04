@@ -237,14 +237,15 @@ fun MakeRoutine(
                         Text(text = "Add")
                     }
                 }
-                else{
+                else {
                     Button(onClick = { saveOrSetCourse(save = true) }) {
                         Text(text = "Save")
                     }
-                    Button(onClick = { clearRoutine() }) {
-                        Text(text = "Clear")
-                    }
                 }
+                Button(onClick = { clearRoutine() }) {
+                    Text(text = "Clear")
+                }
+
             }
         }
     }
