@@ -1,9 +1,11 @@
 package com.aaditx23.bracusocial.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -119,3 +121,37 @@ fun NoButtonDialog(
         }
     }
 }
+
+@Composable
+fun CircularLoadingBasic(text: String = ""){
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+
+    ){
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Text(text = text)
+            CircularProgressIndicator()
+        }
+    }
+}
+
+@Composable
+fun EmptyScreenText(text: String){
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+
+    ){
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Text(text = text)
+        }
+    }
+}
+

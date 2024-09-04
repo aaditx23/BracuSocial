@@ -23,13 +23,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
+import com.aaditx23.bracusocial.checkInternetConnection
 import com.aaditx23.bracusocial.components.CourseItemJson
+import com.aaditx23.bracusocial.components.EmptyScreenText
 import com.aaditx23.bracusocial.components.FilterCourseList
 import com.aaditx23.bracusocial.components.FilterCourseListJson
 import com.aaditx23.bracusocial.components.NoButtonCircularLoadingDialog
@@ -41,13 +44,16 @@ import org.json.JSONObject
 @Composable
 fun LiveFeed(){
     val coursevm: CourseVM = hiltViewModel()
-
+    val context = LocalContext.current
     var isLoading by rememberSaveable {
         mutableStateOf(true)
     }
 
     var courseJsonList by remember{
         mutableStateOf(mutableListOf<JSONObject>())
+    }
+    var hasInternet by remember{
+        mutableStateOf(false)
     }
 
     var toggleRefresh by remember {
@@ -69,55 +75,65 @@ fun LiveFeed(){
 
     LaunchedEffect(toggleRefresh) {
         scope.launch {
-            courseJsonList = coursevm.liveData { loading ->
-                println("Loading $loading")
-                isLoading = loading
+            if(hasInternet){
+                courseJsonList = coursevm.liveData { loading ->
+                    println("Loading $loading")
+                    isLoading = loading
+                }
+            }
+            else{
+                isLoading = false
             }
         }
     }
 
-    if (isLoading){
-        NoButtonCircularLoadingDialog(
-            title = "Connecting to BRACU",
-            message = "Please wait while loading data from website"
-        )
-    }
-    else{
-        Column(
+    Column(
+        modifier = Modifier
+            .padding(top = 80.dp)
+    ){
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .padding(top = 80.dp)
-        ){
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
+                .fillMaxWidth()
+        ) {
+            Button(
+                onClick = {
+                    toggleRefresh = !toggleRefresh
+                    hasInternet = checkInternetConnection(context)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(8.dp),
+                shape = RoundedCornerShape(5.dp)
             ) {
-                Button(
-                    onClick = {
-                        toggleRefresh = !toggleRefresh
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    shape = RoundedCornerShape(5.dp)
-                ) {
-                    Text(text = "Refresh")
-                }
+                Text(text = "Refresh")
             }
-            SearchBar(action = {query ->
+        }
+        SearchBar(
+            action = { query ->
                 searchQuery = query
             },
-                width = LocalConfiguration.current.screenWidthDp.dp,
-                height = 40.dp,
-                textSize = 16.sp
+            width = LocalConfiguration.current.screenWidthDp.dp,
+            height = 40.dp,
+            textSize = 16.sp
+        )
+        if (isLoading) {
+            NoButtonCircularLoadingDialog(
+                title = "Connecting to BRACU",
+                message = "Please wait while loading data from website"
             )
+        } else if (!hasInternet) {
+            println("Entered !hasInternet")
+            EmptyScreenText("Please connect to the internet and refresh...")
+        } else {
             LazyColumn {
-                items(if(searchQuery.text == ""){
-                    courseJsonList
-                }
-                else{
-                    filteredCourseList
-                }) { course ->
+                items(
+                    if (searchQuery.text == "") {
+                        courseJsonList
+                    } else {
+                        filteredCourseList
+                    }
+                ) { course ->
                     CourseItemJson(course)
                 }
             }

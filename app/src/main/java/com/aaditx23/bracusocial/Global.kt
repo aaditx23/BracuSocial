@@ -1,5 +1,11 @@
 package com.aaditx23.bracusocial
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
+
 
 operator fun <T> List<T>.component6(): T = get(5)
 val timeSlots = arrayOf(
@@ -46,3 +52,16 @@ val labTimeList = listOf(
     "05:00 PM - 08:00 PM",
     "Closed"
 )
+
+@SuppressLint("ServiceCast")
+fun checkInternetConnection(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val network = connectivityManager.activeNetwork ?: return false
+    val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+    return when {
+        activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+        activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+        activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+        else -> false
+    }
+}

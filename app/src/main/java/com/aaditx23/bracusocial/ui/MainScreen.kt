@@ -39,6 +39,7 @@ import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.backend.viewmodels.SessionVM
+import com.aaditx23.bracusocial.components.CircularLoadingBasic
 import com.aaditx23.bracusocial.components.NavDrawer
 import com.aaditx23.bracusocial.components.TopActionBar
 import com.aaditx23.bracusocial.components.models.BottomNavItem
@@ -230,18 +231,6 @@ fun Main(){
         }
     }
     else{
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-
-        ){
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Text(text = "Checking Session")
-                CircularProgressIndicator()
-            }
-        }
+        CircularLoadingBasic("Checking Session...")
     }
 }
