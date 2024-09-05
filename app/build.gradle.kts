@@ -1,3 +1,5 @@
+import kotlin.script.experimental.jvm.util.classpathFromClass
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -86,6 +88,10 @@ dependencies {
 
     implementation("com.github.CanHub:Android-Image-Cropper:4.0.0")
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
+
+
+
 
     ksp("com.google.dagger:hilt-compiler:2.49")
 }

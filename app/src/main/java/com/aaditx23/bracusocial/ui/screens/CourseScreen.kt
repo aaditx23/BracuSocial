@@ -28,12 +28,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
+import com.aaditx23.bracusocial.checkInternetConnection
 import com.aaditx23.bracusocial.components.CourseItem
 import com.aaditx23.bracusocial.components.NoButtonDialog
 import com.aaditx23.bracusocial.components.FilterCourseList
@@ -44,6 +46,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CourseScreen(dbStatus: Boolean){
     val courseVM: CourseVM = hiltViewModel()
+    val context = LocalContext.current
 
     val allCourses by courseVM.allCourses.collectAsState()
     var status by rememberSaveable {
@@ -58,6 +61,9 @@ fun CourseScreen(dbStatus: Boolean){
 
     var totalCourses by remember { mutableIntStateOf(0) }
     var addedCourses by remember { mutableIntStateOf(0) }
+    var hasInternet by remember{
+        mutableStateOf(checkInternetConnection(context))
+    }
 
 
     val coroutineScope = rememberCoroutineScope()
@@ -94,10 +100,11 @@ fun CourseScreen(dbStatus: Boolean){
 
     LaunchedEffect(dbStatus) {
         coroutineScope.launch {
-            if (!dbStatus){
+            if (!dbStatus && hasInternet){
                 refresh()
             }
         }
+        println("HAS INTERNET $hasInternet")
 
     }
 
@@ -145,6 +152,15 @@ fun CourseScreen(dbStatus: Boolean){
             NoButtonDialog(
                 title = "Collecting courses",
                 message = "Please wait\n$status",
+                total = totalCourses,
+                done = addedCourses
+            )
+        }
+        else if(!hasInternet){
+            println("NO INTERNET")
+            NoButtonDialog(
+                title = "No Internet",
+                message = "Please connect to the internet and restart the application.",
                 total = totalCourses,
                 done = addedCourses
             )

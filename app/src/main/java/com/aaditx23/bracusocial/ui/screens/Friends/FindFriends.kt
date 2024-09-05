@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.models.FriendProfile
+import com.aaditx23.bracusocial.backend.local.models.Profile
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
@@ -60,13 +62,26 @@ import com.aaditx23.bracusocial.ui.theme.paletteBlue5
 import com.aaditx23.bracusocial.ui.theme.paletteBlue6
 import com.aaditx23.bracusocial.ui.theme.paletteBlue7
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun FindFriends(friendsvm: FriendsVM){
     val accountproxyvm : AccountProxyVM = hiltViewModel()
     val allAccounts by accountproxyvm.allProfiles.collectAsState()
     val accountvm: AccountVM = hiltViewModel()
-    val profiles = accountvm.allProfiles.collectAsState()
+    var isLoading by remember { mutableStateOf(true) }
+
+    val profiles = remember { mutableStateOf(emptyList<Profile>()) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            accountvm.allProfiles.collect { profileList ->
+                profiles.value = profileList // Set the collected profiles
+                isLoading = false
+            }
+        }
+    }
 
 
     if (allAccounts.isNotEmpty()){

@@ -96,7 +96,8 @@ fun Signup(
                 label = { Text(text = "Email") },
                 modifier = Modifier
                     .padding(10.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                
             )
             TextField(
                 value = pass,
