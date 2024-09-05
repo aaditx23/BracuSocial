@@ -104,7 +104,9 @@ open class AccountProxyVM @Inject constructor(
                                     sid = s,
                                     name = friend.studentName,
                                     courses = friend.enrolledCourses,
-                                    friends = friend.addedFriends
+                                    friends = friend.addedFriends,
+                                    pic = friend.profilePicture,
+                                    emailData = friend.email
                                 )
                             }
                         }

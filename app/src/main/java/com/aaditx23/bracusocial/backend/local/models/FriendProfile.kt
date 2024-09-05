@@ -9,4 +9,6 @@ class FriendProfile: RealmObject {
     var studentName: String = ""
     var enrolledCourses: String = ""
     var addedFriends: String = ""
+    var profilePicture: String = ""
+    var email: String = ""
 }

@@ -57,6 +57,7 @@ import com.aaditx23.bracusocial.MainActivity
 import com.aaditx23.bracusocial.R
 import com.aaditx23.bracusocial.components.CircularLoadingBasic
 import com.aaditx23.bracusocial.components.ImagePicker
+import com.aaditx23.bracusocial.components.bitmapToString
 import com.aaditx23.bracusocial.components.drawableToBitmap
 import com.aaditx23.bracusocial.components.stringToBitmap
 import com.aaditx23.bracusocial.ui.theme.paletteBlue5
@@ -149,19 +150,13 @@ fun ProfilePage(
     var enableImageSelect by remember {
         mutableStateOf(true)
     }
-    var isLoading by rememberSaveable {
+    val isLoading by rememberSaveable {
         mutableStateOf(false)
     }
     var profileImage by remember { mutableStateOf(stringToBitmap(profile.profilePicture)!!) }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        scope.launch {
-//            isLoading = true
-//            profileImage = async { stringToBitmap(profile.profilePicture) }.await()
-//            isLoading = false
-        }
-    }
+
     if(isLoading){
         CircularLoadingBasic("Loading profile...")
     }
@@ -247,11 +242,14 @@ fun ProfilePage(
 
     if (showImagePicker){
         ImagePicker {image ->
-            println("CALLED IMAGE PICKER $showImagePicker")
-            profileImage = image
-            println("$image FOUND")
-            enableImageSelect = true
-            showImagePicker = false
+            scope.launch{
+                println("CALLED IMAGE PICKER $showImagePicker")
+                profileImage = image
+                accountvm.updatePic(bitmapToString(profileImage))
+                println("$image FOUND")
+                enableImageSelect = true
+                showImagePicker = false
+            }
         }
     }
 }

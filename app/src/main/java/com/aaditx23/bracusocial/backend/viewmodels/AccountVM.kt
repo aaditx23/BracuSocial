@@ -99,7 +99,9 @@ open class AccountVM @Inject constructor(
                                 sid = friend.studentId,
                                 name = friend.studentName,
                                 courses = friend.enrolledCourses,
-                                friends = friend.addedFriends
+                                friends = friend.addedFriends,
+                                pic = friend.profilePicture,
+                                emailData = friend.email
                             )
                         }
                     }
@@ -135,7 +137,7 @@ open class AccountVM @Inject constructor(
         viewModelScope.launch {
             val me = async{ profileR.getMyProfile() }.await()
            if (me != null){
-               profileR.updateCourses(me.studentId, courses)
+               profileR.updateCourses(courses)
                ppR.updateCourses(me.studentId, courses)
            }
         }
@@ -166,8 +168,17 @@ open class AccountVM @Inject constructor(
         viewModelScope.launch {
             val me = async{ profileR.getMyProfile() }.await()
             if (me != null){
-                profileR.updateName(sid = me.studentId, name = name)
+                profileR.updateName(name = name)
                 ppR.updateName(me.studentId, name = name)
+            }
+        }
+    }
+    suspend fun updatePic(pic: String){
+        viewModelScope.launch {
+            val me = async{ profileR.getMyProfile() }.await()
+            if (me != null){
+                profileR.updatePic(pic = pic)
+                ppR.updatePic(me.studentId, pic = pic)
             }
         }
     }

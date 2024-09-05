@@ -44,18 +44,27 @@ class ProfileRepository @Inject constructor(
         }
     }
 
-    suspend fun updateName(sid: String, name: String){
+    suspend fun updateName(name: String){
         realm.write {
-            val profileData = query<Profile>("studentId == $0", sid).first().find()
+            val profileData = query<Profile>().first().find()
             if (profileData != null) {
                 profileData.studentName = name
             }
         }
         println("Name updated to $name")
     }
-    suspend fun updateCourses(sid: String, courses: String){
+    suspend fun updatePic(pic: String){
         realm.write {
-            val profileData = query<Profile>("studentId == $0", sid).first().find()
+            val profileData = query<Profile>().first().find()
+            if (profileData != null) {
+                profileData.profilePicture = pic
+            }
+        }
+        println("Name updated to $pic")
+    }
+    suspend fun updateCourses(courses: String){
+        realm.write {
+            val profileData = query<Profile>().first().find()
             if (profileData != null) {
                 profileData.enrolledCourses = courses
             }

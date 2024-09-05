@@ -50,6 +50,15 @@ class ProfileProxyRepository @Inject constructor(
         }
         println("Name updated to $name")
     }
+    suspend fun updatePic(sid: String, pic: String){
+        realm.write {
+            val profileData = query<ProfileProxy>("studentId == $0", sid).first().find()
+            if (profileData != null) {
+                profileData.profilePicture = pic
+            }
+        }
+        println("Name updated to $pic")
+    }
     suspend fun updateCourses(sid: String, courses: String){
         realm.write {
             val profileData = query<ProfileProxy>("studentId == $0", sid).first().find()

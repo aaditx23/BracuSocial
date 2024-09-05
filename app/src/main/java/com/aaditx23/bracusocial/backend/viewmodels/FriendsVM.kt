@@ -55,7 +55,9 @@ open class FriendsVM @Inject constructor(
                     sid = remoteProfile.studentId,
                     name = remoteProfile.studentName,
                     courses = remoteProfile.enrolledCourses,
-                    friends = remoteProfile.addedFriends
+                    friends = remoteProfile.addedFriends,
+                    pic = remoteProfile.profilePicture,
+                    emailData = remoteProfile.email
                 )
                 val me = profileR.getMyProfile()
                 ppR.updateFriend(me!!.studentId, friend)

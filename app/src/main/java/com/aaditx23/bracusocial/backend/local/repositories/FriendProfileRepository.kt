@@ -21,7 +21,9 @@ class FriendProfileRepository @Inject constructor(
         sid: String,
         name: String,
         courses: String,
-        friends: String
+        friends: String,
+        pic: String,
+        emailData: String
 
     ){
         realm.write {
@@ -30,6 +32,8 @@ class FriendProfileRepository @Inject constructor(
                 studentName = name
                 enrolledCourses = courses
                 addedFriends = friends
+                profilePicture = pic
+                email = emailData
             }
             copyToRealm(profileData, updatePolicy = UpdatePolicy.ALL)
             println("Created friend profile $sid fprR, createFP")
