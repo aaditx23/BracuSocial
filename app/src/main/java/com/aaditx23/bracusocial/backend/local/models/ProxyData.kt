@@ -1,6 +1,12 @@
 package com.aaditx23.bracusocial.backend.local.models
 
+import android.graphics.Bitmap
+import com.aaditx23.bracusocial.MainActivity
+import com.aaditx23.bracusocial.components.bitmapToString
 import org.json.JSONObject
+
+var emptiProfile = MainActivity.EmptyImage.emptyProfileImage
+val emptyProfileString = bitmapToString(emptiProfile)
 
 val courseArray =
     arrayOf(
@@ -119,7 +125,9 @@ val demoProfiles = listOf(
         "Demo 1",
         "CSE221 02,SOC101 01,CSE489 01",
         "21201617", // Added Friends: Demo 2
-        "21201616"  // Friend Requests: Demo 3 sent a request to Demo 1
+        "21201616",  // Friend Requests: Demo 3 sent a request to Demo 1,
+        emptyProfileString,
+        "amir.ul.islam@g.bracu.ac.bd"
     ),
     listOf(
         "21201617", // Profile 2
@@ -127,7 +135,10 @@ val demoProfiles = listOf(
         "Demo 2",
         "CSE221 02,SOC101 01,CSE489 01",
         "21201618,21201616", // Added Friends: Demo 1 and Demo 3
-        ""            // No pending friend requests
+        "",            // No pending friend requests
+        emptyProfileString,
+        "amir.ul.islam@g.bracu.ac.bd"
+
     ),
     listOf(
         "21201616", // Profile 3
@@ -135,7 +146,9 @@ val demoProfiles = listOf(
         "Demo 3",
         "ACT201 02,ANT101 02,BIO101 02",
         "21201617", // Added Friends: Demo 2
-        "21201618"  // Friend Requests: Demo 1 sent a request to Demo 3
+        "21201618",  // Friend Requests: Demo 1 sent a request to Demo 3
+        emptyProfileString,
+        "amir.ul.islam@g.bracu.ac.bd"
     ),
     listOf(
         "21201615", // Profile 4
@@ -143,7 +156,9 @@ val demoProfiles = listOf(
         "Demo 4",
         "BUS102 01,CHE110 01,CSE110 19",
         "",         // No friends yet
-        "21201614"  // Friend Requests: Demo 5 sent a request to Demo 4
+        "21201614",  // Friend Requests: Demo 5 sent a request to Demo 4
+        emptyProfileString,
+        "amir.ul.islam@g.bracu.ac.bd"
     ),
     listOf(
         "21201614", // Profile 5
@@ -151,6 +166,8 @@ val demoProfiles = listOf(
         "Demo 5",
         "CSE220 25,CSE230 20,CSE250 21",
         "",         // No friends yet
-        ""          // No pending friend requests
+        "",          // No pending friend requests
+        emptyProfileString,
+        "amir.ul.islam@g.bracu.ac.bd"
     )
 )

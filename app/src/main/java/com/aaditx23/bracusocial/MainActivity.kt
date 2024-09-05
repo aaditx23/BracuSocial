@@ -1,6 +1,7 @@
 package com.aaditx23.bracusocial
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.aaditx23.bracusocial.components.drawableToBitmap
 import com.aaditx23.bracusocial.ui.Main
 import com.aaditx23.bracusocial.ui.theme.BracuSocialTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,10 +21,15 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    object EmptyImage{
+        lateinit var emptyProfileImage: Bitmap
+    }
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val drawableEmptyProfile = this.getDrawable(R.drawable.baseline_person_24)
+        EmptyImage.emptyProfileImage = drawableToBitmap(drawableEmptyProfile!!)
         setContent {
             BracuSocialTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {  innerPadding ->

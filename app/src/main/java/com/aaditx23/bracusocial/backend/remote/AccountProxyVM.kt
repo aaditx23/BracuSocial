@@ -6,6 +6,8 @@ import com.aaditx23.bracusocial.backend.local.repositories.FriendProfileReposito
 import com.aaditx23.bracusocial.backend.local.repositories.ProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository
 import com.aaditx23.bracusocial.component6
+import com.aaditx23.bracusocial.component7
+import com.aaditx23.bracusocial.component8
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -38,7 +40,7 @@ open class AccountProxyVM @Inject constructor(
 
 
     fun createProfile(profileData: List<String>) {
-        val (id,password,name,courses,addedFriends,friendRequests) = profileData
+        val (id,password,name,courses,addedFriends,friendRequests, profilePic, email) = profileData
         viewModelScope.launch {
             ppR.createProfile(
                 sid = id,
@@ -46,7 +48,9 @@ open class AccountProxyVM @Inject constructor(
                 pass = password,
                 courses = courses,
                 friends = addedFriends,
-                requests = friendRequests
+                requests = friendRequests,
+                pic = profilePic,
+                emailData = email
             )
         }
     }
@@ -83,7 +87,9 @@ open class AccountProxyVM @Inject constructor(
                         pass = profile.password,
                         friends = profile.addedFriends,
                         courses = profile.enrolledCourses,
-                        requests = profile.friendRequests
+                        requests = profile.friendRequests,
+                        pic = profile.profilePicture,
+                        emailData = profile.email
                     )
 
                     profile.addedFriends.split(",").forEachIndexed{_, s ->

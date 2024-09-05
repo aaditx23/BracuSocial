@@ -1,7 +1,6 @@
 package com.aaditx23.bracusocial.ui.screens
 
 import android.content.Context
-import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -38,7 +37,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -49,18 +47,20 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.aaditx23.bracusocial.MainActivity
 import com.aaditx23.bracusocial.R
+import com.aaditx23.bracusocial.components.CircularLoadingBasic
 import com.aaditx23.bracusocial.components.ImagePicker
 import com.aaditx23.bracusocial.components.drawableToBitmap
-import com.aaditx23.bracusocial.ui.theme.paletteBlue1
+import com.aaditx23.bracusocial.components.stringToBitmap
 import com.aaditx23.bracusocial.ui.theme.paletteBlue5
+import kotlinx.coroutines.async
 
 @Composable
 fun Profile(
@@ -101,7 +101,6 @@ fun Profile(
                 profile = allProfile[0],
                 navController = navController,
                 accountvm = accountvm,
-                context =  LocalContext.current
             )
             HorizontalDivider()
 
@@ -112,6 +111,8 @@ fun Profile(
                     Text(text = allProfile[0].enrolledCourses.split(",").toString())
                     Text(text = allProfile[0].addedFriends.split(",").toString())
                     Text(text = allProfile[0].friendRequests.split(",").toString())
+//                    Text(text = allProfile[0].profilePicture)
+                    Text(text = allProfile[0].email)
                     HorizontalDivider()
                     allProxyProfile.forEachIndexed { _, profile ->
                         Text(text = profile.studentId.toString())
@@ -119,6 +120,8 @@ fun Profile(
                         Text(text = profile.enrolledCourses.split(",").toString())
                         Text(text = profile.addedFriends.split(",").toString())
                         Text(text = profile.friendRequests.split(",").toString())
+//                        Text(text = profile.profilePicture)
+                        Text(text = profile.email)
                     }
                     HorizontalDivider()
                 }
@@ -132,8 +135,7 @@ fun Profile(
 fun ProfilePage(
     profile: Profile,
     navController: NavHostController,
-    accountvm: AccountVM,
-    context: Context
+    accountvm: AccountVM
 ) {
     val (isEditing, setEditing) = remember { mutableStateOf(false) }
     val (name, setName) = remember { mutableStateOf(profile.studentName) }
@@ -147,86 +149,102 @@ fun ProfilePage(
     var enableImageSelect by remember {
         mutableStateOf(true)
     }
-    val drawableEmptyProfile = context.getDrawable(R.drawable.baseline_person_24)
-    var profileImage by remember { mutableStateOf(drawableToBitmap(drawableEmptyProfile!!)) }
+    var isLoading by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var profileImage by remember { mutableStateOf(stringToBitmap(profile.profilePicture)!!) }
     val scope = rememberCoroutineScope()
 
-    Column(
-        modifier = Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column {
-                Image(
-                    painter = BitmapPainter(image = profileImage.asImageBitmap()),
-                    contentDescription = name,
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
-                        .border(
-                            1.dp,
-                            color = paletteBlue5,
-                            shape = CircleShape
-                        ),
-                    contentScale = ContentScale.FillWidth,
-                )
-                TextButton(
-                    onClick = {
-                        showImagePicker = true
-                        enableImageSelect = false
-                    },
-                    enabled = enableImageSelect
-                ) {
-                    Text("Edit Image")
-                }
-            }
-
-            if (isEditing) {
-                TextField(
-                    value = name,
-                    onValueChange = { setName(it) },
-                    modifier = Modifier.weight(1f),
-                    label = { Text("Student Name") }
-                )
-                IconButton(onClick = {
-                    setEditing(false)
-                    scope.launch {
-                        updatingName = true
-                        accountvm.updateName(name)
-                        updatingName = false
-                    }
-                    // Save action to be handled later
-                }) {
-                    Icon(Icons.Filled.Save, contentDescription = "Save")
-                }
-            } else {
-                if (updatingName){
-                    CircularProgressIndicator()
-                }
-                else{
-                    Text(
-                        text = name,
-                        fontSize = 20.sp,
-                        modifier = Modifier.weight(1f)
-                    )
-                    IconButton(onClick = { setEditing(true) }) {
-                        Icon(Icons.Filled.Edit, contentDescription = "Edit")
-                    }
-                }
-            }
+    LaunchedEffect(Unit) {
+        scope.launch {
+//            isLoading = true
+//            profileImage = async { stringToBitmap(profile.profilePicture) }.await()
+//            isLoading = false
         }
-
-        ElevatedCardSection(
-            title = "Enrolled Courses",
-            items = profile.enrolledCourses.split(","),
-            navController = navController
-        )
-        ElevatedCardSection(title = "Friends", items = profile.addedFriends.split(","))
     }
+    if(isLoading){
+        CircularLoadingBasic("Loading profile...")
+    }
+    else{
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column {
+                    Image(
+                        painter = BitmapPainter(image = profileImage.asImageBitmap() ),
+                        contentDescription = name,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .border(
+                                1.dp,
+                                color = paletteBlue5,
+                                shape = CircleShape
+                            ),
+                        contentScale = ContentScale.FillWidth,
+                    )
+                    TextButton(
+                        onClick = {
+                            showImagePicker = true
+                            enableImageSelect = false
+                        },
+                        enabled = enableImageSelect
+                    ) {
+                        Text("Edit Image")
+                    }
+                }
+
+                if (isEditing) {
+                    TextField(
+                        value = name,
+                        onValueChange = { setName(it) },
+                        modifier = Modifier.weight(1f),
+                        label = { Text("Student Name") }
+                    )
+                    IconButton(onClick = {
+                        setEditing(false)
+                        scope.launch {
+                            updatingName = true
+                            accountvm.updateName(name)
+                            updatingName = false
+                        }
+                        // Save action to be handled later
+                    }) {
+                        Icon(Icons.Filled.Save, contentDescription = "Save")
+                    }
+                } else {
+                    if (updatingName){
+                        CircularProgressIndicator()
+                    }
+                    else{
+                        Text(
+                            text = name,
+                            fontSize = 20.sp,
+                            modifier = Modifier.weight(1f)
+                        )
+                        IconButton(onClick = { setEditing(true) }) {
+                            Icon(Icons.Filled.Edit, contentDescription = "Edit")
+                        }
+                    }
+                }
+            }
+
+            ElevatedCardSection(
+                title = "Enrolled Courses",
+                items = profile.enrolledCourses.split(","),
+                navController = navController
+            )
+            ElevatedCardSection(title = "Friends", items = profile.addedFriends.split(","))
+        }
+    }
+
+
     if (showImagePicker){
         ImagePicker {image ->
             println("CALLED IMAGE PICKER $showImagePicker")

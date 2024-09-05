@@ -10,6 +10,8 @@ import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import com.aaditx23.bracusocial.backend.remote.ProfileProxyRepository
 import com.aaditx23.bracusocial.component6
+import com.aaditx23.bracusocial.component7
+import com.aaditx23.bracusocial.component8
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.SharingStarted
@@ -50,7 +52,7 @@ open class AccountVM @Inject constructor(
     ) {
 
         viewModelScope.launch {
-            val (id,password,name,courses,addedFriends,friendRequests) = profileData
+            val (id,password,name,courses,addedFriends,friendRequests, profilePic, email) = profileData
             val remoteProfile = ppR.getProfileProxy(id)
             if (remoteProfile == null) {
                 profileR.createProfile(
@@ -59,7 +61,9 @@ open class AccountVM @Inject constructor(
                     pass = password,
                     courses = courses,
                     friends = addedFriends,
-                    requests = friendRequests
+                    requests = friendRequests,
+                    pic = profilePic,
+                    emailData = email
                 )
                 sessionR.loginStatusUpdate(true)
                 ppR.createProfile(
@@ -68,7 +72,9 @@ open class AccountVM @Inject constructor(
                     pass = password,
                     courses = courses,
                     friends = addedFriends,
-                    requests = friendRequests
+                    requests = friendRequests,
+                    pic = profilePic,
+                    emailData = email
                 )
             }
             else{

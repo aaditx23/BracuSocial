@@ -11,4 +11,6 @@ class Profile: RealmObject{
     var enrolledCourses: String = ""
     var addedFriends: String = ""
     var friendRequests: String = ""
+    var profilePicture: String = ""
+    var email: String = ""
 }

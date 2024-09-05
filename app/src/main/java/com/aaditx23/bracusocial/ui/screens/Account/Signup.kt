@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.aaditx23.bracusocial.backend.local.models.emptyProfileString
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.ui.theme.palette2DarkRed
 import com.aaditx23.bracusocial.ui.theme.palette4green
@@ -45,6 +46,7 @@ fun Signup(
     val context = LocalContext.current
     val (id, setId) = rememberSaveable { mutableStateOf("") }
     val (name, setName) = rememberSaveable { mutableStateOf("") }
+    val (email, setEmail) = rememberSaveable { mutableStateOf("") }
     val (pass, setPass) = rememberSaveable { mutableStateOf("") }
     val (confirmPass, setConfirmPass) = rememberSaveable { mutableStateOf("") }
 
@@ -84,6 +86,14 @@ fun Signup(
                 value = name,
                 onValueChange = {setName(it)},
                 label = { Text(text = "Name") },
+                modifier = Modifier
+                    .padding(10.dp)
+                    .fillMaxWidth()
+            )
+            TextField(
+                value = email,
+                onValueChange = {setEmail(it)},
+                label = { Text(text = "Email") },
                 modifier = Modifier
                     .padding(10.dp)
                     .fillMaxWidth()
@@ -134,6 +144,8 @@ fun Signup(
                                 "",
                                 "",
                                 "",
+                                emptyProfileString,
+                                email
                             ),
                             ifRepeat = { result ->
 

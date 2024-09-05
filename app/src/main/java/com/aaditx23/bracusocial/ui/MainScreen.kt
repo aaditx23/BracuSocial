@@ -28,13 +28,13 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.aaditx23.bracusocial.R
 
 import com.aaditx23.bracusocial.backend.local.models.demoProfiles
+
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
@@ -42,6 +42,7 @@ import com.aaditx23.bracusocial.backend.viewmodels.SessionVM
 import com.aaditx23.bracusocial.components.CircularLoadingBasic
 import com.aaditx23.bracusocial.components.NavDrawer
 import com.aaditx23.bracusocial.components.TopActionBar
+import com.aaditx23.bracusocial.components.drawableToBitmap
 import com.aaditx23.bracusocial.components.models.BottomNavItem
 import com.aaditx23.bracusocial.components.models.NavDrawerItem
 import com.aaditx23.bracusocial.ui.screens.Account.Logout
@@ -66,11 +67,12 @@ fun Main(){
     val sessionvm: SessionVM = hiltViewModel()
     val accountvm: AccountVM = hiltViewModel()
     val accountproxyvm: AccountProxyVM = hiltViewModel()
-    val courseList by coursevm.allCourses.collectAsState()
     val allSessions by sessionvm.allSessions.collectAsState()
     val allProfiles by accountproxyvm.allProfiles.collectAsState()
     val session by sessionvm.firstSession.collectAsState(initial = null)
     val context = LocalContext.current
+    val drawableEmptyProfile = context.getDrawable(R.drawable.baseline_person_24)
+    val emptyProfileImage = drawableToBitmap(drawableEmptyProfile!!)
 
     var isSessionReady by rememberSaveable {
         mutableStateOf(false)
