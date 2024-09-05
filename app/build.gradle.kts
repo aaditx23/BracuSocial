@@ -84,5 +84,8 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.49")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
+    implementation("com.github.CanHub:Android-Image-Cropper:4.0.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
     ksp("com.google.dagger:hilt-compiler:2.49")
 }

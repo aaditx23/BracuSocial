@@ -34,11 +34,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
@@ -53,6 +55,7 @@ fun Profile(
     var isLoading by rememberSaveable {
         mutableStateOf(true)
     }
+    val scope = rememberCoroutineScope()
     LaunchedEffect(allProfile) {
         CoroutineScope(Dispatchers.IO).launch { 
             delay(200)
@@ -78,7 +81,8 @@ fun Profile(
 
             ProfilePage(
                 profile = allProfile[0],
-                navController = navController
+                navController = navController,
+                accountvm = accountvm
             )
             HorizontalDivider()
 
@@ -106,9 +110,17 @@ fun Profile(
 }
 
 @Composable
-fun ProfilePage(profile: Profile, navController: NavHostController) {
+fun ProfilePage(
+    profile: Profile,
+    navController: NavHostController,
+    accountvm: AccountVM
+) {
     val (isEditing, setEditing) = remember { mutableStateOf(false) }
     val (name, setName) = remember { mutableStateOf(profile.studentName) }
+    var updatingName by remember {
+        mutableStateOf(false)
+    }
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier.padding(16.dp),
@@ -128,18 +140,28 @@ fun ProfilePage(profile: Profile, navController: NavHostController) {
                 )
                 IconButton(onClick = {
                     setEditing(false)
+                    scope.launch {
+                        updatingName = true
+                        accountvm.updateName(name)
+                        updatingName = false
+                    }
                     // Save action to be handled later
                 }) {
                     Icon(Icons.Filled.Save, contentDescription = "Save")
                 }
             } else {
-                Text(
-                    text = name,
-                    fontSize = 20.sp,
-                    modifier = Modifier.weight(1f)
-                )
-                IconButton(onClick = { setEditing(true) }) {
-                    Icon(Icons.Filled.Edit, contentDescription = "Edit")
+                if (updatingName){
+                    CircularProgressIndicator()
+                }
+                else{
+                    Text(
+                        text = name,
+                        fontSize = 20.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(onClick = { setEditing(true) }) {
+                        Icon(Icons.Filled.Edit, contentDescription = "Edit")
+                    }
                 }
             }
         }

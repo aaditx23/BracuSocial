@@ -7,6 +7,7 @@ import com.aaditx23.bracusocial.backend.local.repositories.CourseRepository
 import com.aaditx23.bracusocial.backend.local.repositories.FriendProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.ProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository
+import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import com.aaditx23.bracusocial.backend.remote.ProfileProxyRepository
 import com.aaditx23.bracusocial.component6
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -154,7 +155,19 @@ open class AccountVM @Inject constructor(
             }
         }
     }
+
+    suspend fun updateName(name: String){
+        viewModelScope.launch {
+            val me = async{ profileR.getMyProfile() }.await()
+            if (me != null){
+                profileR.updateName(sid = me.studentId, name = name)
+                ppR.updateName(me.studentId, name = name)
+            }
+        }
+    }
 }
+
+
 
 
 
