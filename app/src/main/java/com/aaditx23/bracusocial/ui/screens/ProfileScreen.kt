@@ -64,6 +64,7 @@ import com.aaditx23.bracusocial.components.drawableToBitmap
 import com.aaditx23.bracusocial.components.stringToBitmap
 import com.aaditx23.bracusocial.ui.theme.paletteBlue5
 import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 
 @Composable
 fun Profile(
@@ -153,15 +154,16 @@ fun ProfilePage(
         mutableStateOf(true)
     }
     var isLoading by rememberSaveable {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
     var profileImage by remember { mutableStateOf(MainActivity.EmptyImage.emptyProfileImage) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         scope.launch {
-            isLoading = true
-            profileImage = async{ stringToBitmap(profile.profilePicture)!! }.await()
+            profileImage = withContext(Dispatchers.IO){
+                stringToBitmap(profile.profilePicture)!!
+            }
             isLoading = false
         }
     }

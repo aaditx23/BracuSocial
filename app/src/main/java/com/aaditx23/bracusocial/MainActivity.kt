@@ -13,10 +13,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import com.aaditx23.bracusocial.components.drawableToBitmap
 import com.aaditx23.bracusocial.ui.Main
 import com.aaditx23.bracusocial.ui.theme.BracuSocialTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -29,10 +33,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val drawableEmptyProfile = this.getDrawable(R.drawable.baseline_person_24)
-        EmptyImage.emptyProfileImage = drawableToBitmap(drawableEmptyProfile!!)
+        lifecycleScope.launch(Dispatchers.IO) {
+            // Perform the bitmap conversion in the background
+            EmptyImage.emptyProfileImage = drawableToBitmap(drawableEmptyProfile!!)
+        }
         setContent {
             BracuSocialTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) {  innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize()) {
                     Main()
                 }
             }
