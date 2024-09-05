@@ -1,5 +1,9 @@
 package com.aaditx23.bracusocial.ui.screens
 
+import android.content.Context
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,19 +34,33 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.aaditx23.bracusocial.R
+import com.aaditx23.bracusocial.components.ImagePicker
+import com.aaditx23.bracusocial.components.drawableToBitmap
+import com.aaditx23.bracusocial.ui.theme.paletteBlue1
+import com.aaditx23.bracusocial.ui.theme.paletteBlue5
 
 @Composable
 fun Profile(
@@ -82,7 +100,8 @@ fun Profile(
             ProfilePage(
                 profile = allProfile[0],
                 navController = navController,
-                accountvm = accountvm
+                accountvm = accountvm,
+                context =  LocalContext.current
             )
             HorizontalDivider()
 
@@ -113,13 +132,23 @@ fun Profile(
 fun ProfilePage(
     profile: Profile,
     navController: NavHostController,
-    accountvm: AccountVM
+    accountvm: AccountVM,
+    context: Context
 ) {
     val (isEditing, setEditing) = remember { mutableStateOf(false) }
     val (name, setName) = remember { mutableStateOf(profile.studentName) }
+
     var updatingName by remember {
         mutableStateOf(false)
     }
+    var showImagePicker by remember {
+        mutableStateOf(false)
+    }
+    var enableImageSelect by remember {
+        mutableStateOf(true)
+    }
+    val drawableEmptyProfile = context.getDrawable(R.drawable.baseline_person_24)
+    var profileImage by remember { mutableStateOf(drawableToBitmap(drawableEmptyProfile!!)) }
     val scope = rememberCoroutineScope()
 
     Column(
@@ -131,6 +160,31 @@ fun ProfilePage(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
+            Column {
+                Image(
+                    painter = BitmapPainter(image = profileImage.asImageBitmap()),
+                    contentDescription = name,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .border(
+                            1.dp,
+                            color = paletteBlue5,
+                            shape = CircleShape
+                        ),
+                    contentScale = ContentScale.FillWidth,
+                )
+                TextButton(
+                    onClick = {
+                        showImagePicker = true
+                        enableImageSelect = false
+                    },
+                    enabled = enableImageSelect
+                ) {
+                    Text("Edit Image")
+                }
+            }
+
             if (isEditing) {
                 TextField(
                     value = name,
@@ -172,6 +226,15 @@ fun ProfilePage(
             navController = navController
         )
         ElevatedCardSection(title = "Friends", items = profile.addedFriends.split(","))
+    }
+    if (showImagePicker){
+        ImagePicker {image ->
+            println("CALLED IMAGE PICKER $showImagePicker")
+            profileImage = image
+            println("$image FOUND")
+            enableImageSelect = true
+            showImagePicker = false
+        }
     }
 }
 
