@@ -50,12 +50,15 @@ import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.FriendsVM
+import com.aaditx23.bracusocial.components.Pic_Name_ID
 import com.aaditx23.bracusocial.components.stringToBitmap
 import com.aaditx23.bracusocial.ui.theme.palette2DarkRed
 import com.aaditx23.bracusocial.ui.theme.palette7Blue1
 import com.aaditx23.bracusocial.ui.theme.palette7Green2
 import com.aaditx23.bracusocial.ui.theme.palette7Paste1
 import com.aaditx23.bracusocial.ui.theme.paletteBlue5
+import com.aaditx23.bracusocial.ui.theme.paletteBlue6
+import com.aaditx23.bracusocial.ui.theme.paletteBlue7
 import kotlinx.coroutines.delay
 
 @Composable
@@ -92,7 +95,6 @@ fun AddFriendRow(friend: ProfileProxy, friendvm: FriendsVM){
     var sentAlready by rememberSaveable {
         mutableStateOf(false)
     }
-    val profileImage by remember { mutableStateOf(stringToBitmap(friend.profilePicture)!!) }
     friendvm.isInRequest(
         friend = friend.studentId,
         result = { r ->
@@ -108,7 +110,7 @@ fun AddFriendRow(friend: ProfileProxy, friendvm: FriendsVM){
         elevation = CardDefaults.cardElevation(
             defaultElevation = 5.dp,
         ),
-        colors = CardDefaults.cardColors(palette7Paste1)
+        colors = CardDefaults.cardColors(paletteBlue6)
     ) {
         Row(
             modifier = Modifier
@@ -116,40 +118,11 @@ fun AddFriendRow(friend: ProfileProxy, friendvm: FriendsVM){
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Image(
-                    painter = BitmapPainter(image = profileImage.asImageBitmap()),
-                    contentDescription = friend.studentName,
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape)
-                        .border(
-                            1.dp,
-                            color = paletteBlue5,
-                            shape = CircleShape
-                        ),
-                    contentScale = ContentScale.FillWidth,
-                )
-                Column(
-                    modifier = Modifier
-                        .padding(10.dp)
-                ) {
-                    Text(
-                        text = friend.studentName,
-                        color = palette7Green2,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = friend.studentId,
-                        color = palette7Green2,
-                        fontSize = 15.sp
-                    )
-                }
-            }
+            Pic_Name_ID(
+                name = friend.studentName,
+                id = friend.studentId,
+                pic = friend.profilePicture
+            )
 
             if(sentAlready){
                 IconButton(

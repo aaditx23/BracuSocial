@@ -1,6 +1,7 @@
 package com.aaditx23.bracusocial.ui.screens
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -47,6 +48,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
@@ -150,11 +152,19 @@ fun ProfilePage(
     var enableImageSelect by remember {
         mutableStateOf(true)
     }
-    val isLoading by rememberSaveable {
+    var isLoading by rememberSaveable {
         mutableStateOf(false)
     }
-    var profileImage by remember { mutableStateOf(stringToBitmap(profile.profilePicture)!!) }
+    var profileImage by remember { mutableStateOf(MainActivity.EmptyImage.emptyProfileImage) }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            isLoading = true
+            profileImage = async{ stringToBitmap(profile.profilePicture)!! }.await()
+            isLoading = false
+        }
+    }
 
 
     if(isLoading){
@@ -166,11 +176,13 @@ fun ProfilePage(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Image(
                         painter = BitmapPainter(image = profileImage.asImageBitmap() ),
                         contentDescription = name,
@@ -195,11 +207,14 @@ fun ProfilePage(
                     }
                 }
 
+                val mod = Modifier
+                    .padding(start = 10.dp, top = 15.dp)
+                    .weight(1f)
                 if (isEditing) {
                     TextField(
                         value = name,
                         onValueChange = { setName(it) },
-                        modifier = Modifier.weight(1f),
+                        modifier = mod,
                         label = { Text("Student Name") }
                     )
                     IconButton(onClick = {
@@ -218,17 +233,29 @@ fun ProfilePage(
                         CircularProgressIndicator()
                     }
                     else{
-                        Text(
-                            text = name,
-                            fontSize = 20.sp,
-                            modifier = Modifier.weight(1f)
-                        )
+                        Column(
+                            modifier = mod
+                        ){
+                            Text(
+                                text = name,
+                                fontSize = 22.sp,
+                                modifier = Modifier
+                                    .padding(4.dp)
+                            )
+                            Text(
+                                text = profile.studentId,
+                                fontSize = 15.sp,
+                                modifier = Modifier
+                                    .padding(5.dp)
+                            )
+                        }
                         IconButton(onClick = { setEditing(true) }) {
                             Icon(Icons.Filled.Edit, contentDescription = "Edit")
                         }
                     }
                 }
             }
+
 
             ElevatedCardSection(
                 title = "Enrolled Courses",
