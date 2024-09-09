@@ -93,7 +93,7 @@ fun FriendRoutine(routinevm: RoutineVM){
             ) {
                 items(days){ key ->
                     if (nonEmpty.contains(key)){
-                        Day(key, (map[key]!!), key == currentDay)
+                        Day(key, (map[key]!!), key == currentDay, myRoutine = false)
                     }
 
                 }

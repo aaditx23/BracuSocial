@@ -41,7 +41,7 @@ import com.aaditx23.bracusocial.ui.theme.paletteLightPurple
 
 
 @Composable
-fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean){
+fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean, myRoutine: Boolean = true){
     val combinedSlots = listOf(
         getClassSlot(),
         getLabSlot()
@@ -82,7 +82,7 @@ fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean){
                 .padding(5.dp)
         ) {
             DayCard(day = day, isToday = isToday)
-            RoutineRow()
+            RoutineRow(myRoutine = myRoutine)
             timeSlots.forEach { key ->
                 if(map[key] != null && map[key] != ""){
                     val isNow = getCurrentSlot(key) && isToday
@@ -116,7 +116,8 @@ fun RoutineRow(
     time: String = "",
     data: String = "",
     isNow: Boolean = false,
-    showTime: Boolean = false
+    showTime: Boolean = false,
+    myRoutine: Boolean = true
 ){
     val temp = data.split(",")
     var name: String
@@ -134,6 +135,8 @@ fun RoutineRow(
     val rowColor = if (time == "") CardDefaults.cardColors(paletteBlue2)
     else if (isNow) CardDefaults.cardColors(paletteBlue9)
     else CardDefaults.cardColors(paletteBlue5)
+
+
 
 
     if (time != ""){
@@ -161,7 +164,7 @@ fun RoutineRow(
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        if(temp.size != 3 && t != "Class Time" && showTime){
+        if(temp.size != 3  && showTime){
             Box(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -196,14 +199,16 @@ fun RoutineRow(
 //                    .border(1.dp, Color.Black)
                 ) {
                     if (temp.size != 3) {
+                        println("CLASS SCHEDULE ${temp.size} $temp $t")
                         Text(
                             modifier = Modifier
                                 .padding(5.dp),
                             fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
-                            text = name,
+                            text = if (myRoutine) t else name,
                             color = infoFontColor
                         )
                     } else {
+
                         Text(
                             modifier = Modifier
                                 .padding(5.dp),
