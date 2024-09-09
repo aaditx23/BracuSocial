@@ -2,6 +2,7 @@ package com.aaditx23.bracusocial.ui.screens.Routine
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,16 +13,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.aaditx23.bracusocial.backend.local.repositories.getToday
 import com.aaditx23.bracusocial.backend.viewmodels.RoutineVM
 import com.aaditx23.bracusocial.components.Day
 import com.aaditx23.bracusocial.components.NoButtonCircularLoadingDialog
+import com.aaditx23.bracusocial.components.SearchBar
+import com.aaditx23.bracusocial.components.SearchBarDropDown
 import kotlinx.coroutines.launch
 
 @SuppressLint("MutableCollectionMutableState")
@@ -48,6 +55,8 @@ fun FriendRoutine(routinevm: RoutineVM){
             nonEmpty.add(entry)
         }
     }
+
+    var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     val scope = rememberCoroutineScope()
     var listState = rememberLazyListState()
 
@@ -86,16 +95,30 @@ fun FriendRoutine(routinevm: RoutineVM){
             }
         }
         else{
-            LazyColumn(
+            Column(
                 modifier = Modifier
-                    .padding(top = 100.dp, bottom = 130.dp),
-                state = listState
-            ) {
-                items(days){ key ->
-                    if (nonEmpty.contains(key)){
-                        Day(key, (map[key]!!), key == currentDay, myRoutine = false)
-                    }
+                    .padding(top = 70.dp)
+            ){
+//                SearchBarDropDown(
+//                    action = { query ->
+//                        searchQuery = query
+//                    },
+//                    width = (LocalConfiguration.current.screenWidthDp - 150).dp,
+//                    height = 40.dp,
+//                    textSize = 16.sp,
+//                    dropDown =
+//                )
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(top = 10.dp,bottom = 130.dp),
+                    state = listState
+                ) {
+                    items(days) { key ->
+                        if (nonEmpty.contains(key)) {
+                            Day(key, (map[key]!!), key == currentDay, myRoutine = false)
+                        }
 
+                    }
                 }
             }
         }
