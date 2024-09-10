@@ -32,7 +32,12 @@ import com.aaditx23.bracusocial.ui.theme.paletteBlue9
 
 
 @Composable
-fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean, myRoutine: Boolean = true){
+fun Day(day: String,
+        map: MutableMap<String, String>,
+        isToday: Boolean,
+        myRoutine: Boolean = true,
+        selectedFriend: String = "All Friends"
+){
     val combinedSlots = listOf(
         getClassSlot(),
         getLabSlot()
@@ -77,7 +82,7 @@ fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean, myRoutin
             timeSlots.forEach { key ->
                 if(map[key] != null && map[key] != ""){
                     val isNow = getCurrentSlot(key) && isToday
-                    RowProcessor(time = key, data = map[key]!!, isNow, myRoutine)
+                    RowProcessor(time = key, data = map[key]!!, isNow, myRoutine, selectedFriend)
 
                 }
             }
@@ -89,18 +94,46 @@ fun RowProcessor(
     time: String = "",
     data: String = "",
     isNow: Boolean = false,
-    myRoutine: Boolean
+    myRoutine: Boolean,
+    selectedFriend: String = "All Friends"
 ){
     if (data.contains("|")){
         val temp = data.split("|")
         temp.forEachIndexed {index, info ->
+            @Composable
+            fun callRoutineRow(myRoutine: Boolean){
+                RoutineRow(
+                    time = time,
+                    data = info,
+                    isNow = isNow,
+                    showTime = index == 1,
+                    myRoutine = myRoutine
+                )
+            }
             if(info != ""){
-                RoutineRow(time, info, isNow, index==1, myRoutine)
+                if(!myRoutine){
+                    if(selectedFriend == "All Friends"){
+                        callRoutineRow(false)
+                    }
+                    else{
+                        if (info.split(".")[0].trim() == selectedFriend){
+                            callRoutineRow(false)
+                        }
+                    }
+
+                }
+                else{
+                    callRoutineRow(true)
+                }
             }
         }
     }
     else{
-        RoutineRow(time, data, isNow, true, myRoutine)
+        RoutineRow(time = time,
+            data = data,
+            isNow = isNow,
+            showTime = true,
+            myRoutine = myRoutine)
     }
 }
 @Composable

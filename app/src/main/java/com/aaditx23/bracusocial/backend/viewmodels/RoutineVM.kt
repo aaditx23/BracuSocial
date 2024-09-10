@@ -1,8 +1,10 @@
 package com.aaditx23.bracusocial.backend.viewmodels
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.backend.local.models.FriendProfile
 import com.aaditx23.bracusocial.backend.local.repositories.CourseRepository
 import com.aaditx23.bracusocial.backend.local.repositories.FriendProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.ProfileRepository
@@ -10,6 +12,8 @@ import com.aaditx23.bracusocial.days
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,6 +23,13 @@ open class RoutineVM @Inject constructor(
     private val fpr: FriendProfileRepository,
     private val profileR: ProfileRepository
 ): ViewModel() {
+
+    val allFriendProfiles = fpr.getAllFriendProfile()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            emptyList()
+        )
 
     fun getCourse(courseId: String, setCourse: (Course) -> Unit){
         val temp = courseId.split(" ")
@@ -67,6 +78,7 @@ open class RoutineVM @Inject constructor(
         }
     }
 
+
     fun friendsAndCourses(
         setLoading: (Boolean) -> Unit,
         setData: (MutableMap<String, MutableMap<String, String>>) -> Unit,
@@ -74,7 +86,8 @@ open class RoutineVM @Inject constructor(
         addNonEmpty: (String) -> Unit
     ){
         viewModelScope.launch {
-            var finalMap = mutableMapOf<String, MutableMap<String, String>>().apply {
+            val friendList = mutableListOf<FriendProfile>()
+            val finalMap = mutableMapOf<String, MutableMap<String, String>>().apply {
                 days.forEach { day ->
                     this[day] = mutableMapOf<String, String>().apply {
                         com.aaditx23.bracusocial.ui.screens.Routine.timeSlots.forEach { time -> this[time] = "" }
@@ -140,6 +153,13 @@ open class RoutineVM @Inject constructor(
                 setData(finalMap)
             }
 
+        }
+    }
+
+    fun friendList(setList: (List<FriendProfile>) -> Unit){
+        viewModelScope.launch {
+            val list = async { fpr.friendProfile() }.await()
+            setList(list)
         }
     }
 

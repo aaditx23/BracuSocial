@@ -197,6 +197,7 @@ fun SearchBarDropDown(
 //        DropdownSample()
         DropDownCard(
             dropdownItems = dropDown,
+            endPadding = 10.dp
 
         ) {
 
@@ -209,6 +210,8 @@ fun DropDownCard(
     dropdownItems: List<String>,
     height: Dp = 40.dp,
     width: Dp = 150.dp,
+    startPadding: Dp = 0.dp,
+    endPadding: Dp = 0.dp,
     onItemClick: (String) -> Unit,
 ) {
     var isContextMenuVisible by rememberSaveable {
@@ -231,8 +234,8 @@ fun DropDownCard(
     Card(
 //        elevation = 4.dp,
         modifier = Modifier
-            .padding(end = 10.dp)
-            .height(40.dp)
+            .padding(start = startPadding, end = endPadding)
+            .size(height = height, width = width)
             .onSizeChanged {
                 itemHeight = with(density) { it.height.toDp() }
             },
@@ -267,7 +270,8 @@ fun DropDownCard(
                 isContextMenuVisible = false
             },
             modifier = Modifier
-                .width(140.dp),
+                .width(width)
+                .padding(start = startPadding, end = endPadding),
             offset = DpOffset(0.dp, 10.dp)
         ) {
             dropdownItems.forEach {
@@ -280,7 +284,9 @@ fun DropDownCard(
                     text = {
                         Text(
                             text = it,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
                         )
                     }
                 )

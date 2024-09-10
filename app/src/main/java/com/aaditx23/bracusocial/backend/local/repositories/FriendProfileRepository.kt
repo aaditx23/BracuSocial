@@ -72,6 +72,12 @@ class FriendProfileRepository @Inject constructor(
                 results.list.toList()
             }
     }
+
+    fun friendProfile() : List<FriendProfile> {
+        return realm
+            .query<FriendProfile>().find().toList()
+
+    }
     fun getAllFriendCourses(): Map<String, String> {
         return realm
             .query<FriendProfile>()
