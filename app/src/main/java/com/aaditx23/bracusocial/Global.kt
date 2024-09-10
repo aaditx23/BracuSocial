@@ -35,6 +35,15 @@ val days = listOf(
     "Th",
     "Fr"
 )
+val dayList = listOf(
+    "Saturday",
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday"
+)
 
 val classTimeList = listOf(
     "08:00 AM - 09:20 AM",

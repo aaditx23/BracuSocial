@@ -27,6 +27,7 @@ import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.local.repositories.getToday
 import com.aaditx23.bracusocial.backend.viewmodels.RoutineVM
 import com.aaditx23.bracusocial.components.Day
+import com.aaditx23.bracusocial.days
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -44,15 +45,15 @@ val timeSlots = arrayOf(
     "05:00 PM - 08:00 PM", //lab
     "06:30 PM - 08:00 PM"
 )
-val days = listOf(
-    "Sa",
-    "Su",
-    "Mo",
-    "Tu",
-    "We",
-    "Th",
-    "Fr"
-)
+//val days = listOf(
+//    "Sa",
+//    "Su",
+//    "Mo",
+//    "Tu",
+//    "We",
+//    "Th",
+//    "Fr"
+//)
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun MyRoutine(routinevm: RoutineVM, navController: NavHostController, ){
