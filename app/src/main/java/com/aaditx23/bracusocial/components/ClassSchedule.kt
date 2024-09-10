@@ -23,21 +23,12 @@ import androidx.compose.ui.unit.sp
 import com.aaditx23.bracusocial.backend.local.repositories.getClassSlot
 import com.aaditx23.bracusocial.backend.local.repositories.getLabSlot
 import com.aaditx23.bracusocial.ui.screens.Routine.timeSlots
-import com.aaditx23.bracusocial.ui.theme.palette3paste
-import com.aaditx23.bracusocial.ui.theme.palette6MagicMint
 import com.aaditx23.bracusocial.ui.theme.paletteBlue1
 import com.aaditx23.bracusocial.ui.theme.paletteBlue2
-import com.aaditx23.bracusocial.ui.theme.paletteBlue3
-import com.aaditx23.bracusocial.ui.theme.paletteBlue4
 import com.aaditx23.bracusocial.ui.theme.paletteBlue5
-import com.aaditx23.bracusocial.ui.theme.paletteBlue6
 import com.aaditx23.bracusocial.ui.theme.paletteBlue7
 import com.aaditx23.bracusocial.ui.theme.paletteBlue8
 import com.aaditx23.bracusocial.ui.theme.paletteBlue9
-import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen
-import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen2
-import com.aaditx23.bracusocial.ui.theme.paletteGreen
-import com.aaditx23.bracusocial.ui.theme.paletteLightPurple
 
 
 @Composable
@@ -86,7 +77,7 @@ fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean, myRoutin
             timeSlots.forEach { key ->
                 if(map[key] != null && map[key] != ""){
                     val isNow = getCurrentSlot(key) && isToday
-                    RowProcessor(time = key, data = map[key]!!, isNow)
+                    RowProcessor(time = key, data = map[key]!!, isNow, myRoutine)
 
                 }
             }
@@ -97,18 +88,19 @@ fun Day(day: String, map: MutableMap<String, String>, isToday: Boolean, myRoutin
 fun RowProcessor(
     time: String = "",
     data: String = "",
-    isNow: Boolean = false
+    isNow: Boolean = false,
+    myRoutine: Boolean
 ){
     if (data.contains("|")){
         val temp = data.split("|")
         temp.forEachIndexed {index, info ->
             if(info != ""){
-                RoutineRow(time, info, isNow, index==1)
+                RoutineRow(time, info, isNow, index==1, myRoutine)
             }
         }
     }
     else{
-        RoutineRow(time, data, isNow, true)
+        RoutineRow(time, data, isNow, true, myRoutine)
     }
 }
 @Composable
