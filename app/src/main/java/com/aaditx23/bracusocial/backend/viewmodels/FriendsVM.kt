@@ -13,6 +13,7 @@ import com.aaditx23.bracusocial.backend.local.repositories.SavedRoutineRepositor
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import com.aaditx23.bracusocial.backend.remote.ProfileProxyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -65,7 +66,7 @@ open class FriendsVM @Inject constructor(
 
             }
             else{
-                println("No such friend $friend in server")
+//                println("No such friend $friend in server")
             }
         }
     }
@@ -91,13 +92,13 @@ open class FriendsVM @Inject constructor(
 
     fun isInRequest(friend: String, result: (Boolean) -> Unit){
         viewModelScope.launch {
-            val friendProfile = ppR.getProfileProxy(friend)
-            val me = profileR.getMyProfile()
+            val friendProfile = async{ ppR.getProfileProxy(friend) }.await()
+            val me = async{ profileR.getMyProfile() }.await()
 
-            println("FOUND FRIEND ${friendProfile!!.studentId}")
-            if (me != null){
-                if(friendProfile.friendRequests.contains(me.studentId)){
-                    println("${ friendProfile.friendRequests } here")
+//            println("FOUND FRIEND ${friendProfile!!.studentId}")
+            if (friendProfile != null ){
+                if(friendProfile.friendRequests.contains(me!!.studentId)){
+//                    println("${ friendProfile.friendRequests } here")
                     result(true)
                 }
                 else{

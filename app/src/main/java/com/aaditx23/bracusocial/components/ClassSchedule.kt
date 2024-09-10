@@ -13,6 +13,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +36,29 @@ import com.aaditx23.bracusocial.ui.theme.paletteBlue7
 import com.aaditx23.bracusocial.ui.theme.paletteBlue8
 import com.aaditx23.bracusocial.ui.theme.paletteBlue9
 
+fun checkEmptyDayForFriend(
+    name:String,
+    map: MutableMap<String, String>
+): Boolean{
+    var result = true
+    if(name == "All Friends") return false
+
+    println("map $map")
+
+    for ((key, value) in map){
+       val temp = value.split("|")
+        println("Temp $temp")
+       temp.forEachIndexed { _, s ->
+           if (s.contains(name)){
+               println(s)
+               result = false
+           }
+       }
+    }
+
+
+    return result
+}
 
 @Composable
 fun Day(day: String,
@@ -42,6 +71,12 @@ fun Day(day: String,
         getClassSlot(),
         getLabSlot()
     )
+    var isEmpty by remember {
+        mutableStateOf(checkEmptyDayForFriend(selectedFriend, map))
+    }
+    LaunchedEffect(selectedFriend) {
+        isEmpty = checkEmptyDayForFriend(selectedFriend, map)
+    }
     fun getCurrentSlot(time: String): Boolean{
         if (combinedSlots.contains(time)){
             return true
@@ -72,20 +107,36 @@ fun Day(day: String,
         )
 
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp)
-        ) {
-            DayCard(day = day, isToday = isToday)
-            RoutineRow(myRoutine = myRoutine)
-            timeSlots.forEach { key ->
-                if(map[key] != null && map[key] != ""){
-                    val isNow = getCurrentSlot(key) && isToday
-                    RowProcessor(time = key, data = map[key]!!, isNow, myRoutine, selectedFriend)
+        @Composable
+        fun callUI(){
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+            ) {
+                DayCard(day = day, isToday = isToday)
+                RoutineRow(myRoutine = myRoutine)
+                timeSlots.forEach { key ->
+                    if(map[key] != null && map[key] != ""){
+                        val isNow = getCurrentSlot(key) && isToday
+                        RowProcessor(time = key, data = map[key]!!, isNow, myRoutine, selectedFriend)
 
+                    }
                 }
             }
+        }
+
+        if (!myRoutine){
+            if(!isEmpty){
+                println("day not empty $day")
+                callUI()
+            }
+            else{
+                println("day empty $day")
+            }
+        }
+        else{
+            callUI()
         }
     }
 }
@@ -167,7 +218,7 @@ fun RoutineRow(
     if (time != ""){
         if (temp.size != 3){
 
-            println("DATA $data")
+//            println("DATA $data")
             val friendData = data.split(".")
             name = friendData[0]
             course = friendData[1]
@@ -175,7 +226,7 @@ fun RoutineRow(
             room = friendData[5]
         }
         else{
-            println("else $temp")
+//            println("else $temp")
             course = temp[0]
             section = temp[1]
             room = temp[2]
@@ -224,7 +275,7 @@ fun RoutineRow(
 //                    .border(1.dp, Color.Black)
                 ) {
                     if (temp.size != 3) {
-                        println("CLASS SCHEDULE ${temp.size} $temp $t")
+//                        println("CLASS SCHEDULE ${temp.size} $temp $t")
                         Text(
                             modifier = Modifier
                                 .padding(5.dp),

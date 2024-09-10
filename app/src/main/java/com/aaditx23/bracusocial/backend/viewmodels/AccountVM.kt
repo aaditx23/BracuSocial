@@ -87,9 +87,9 @@ open class AccountVM @Inject constructor(
         viewModelScope.launch {
             val me = async{ profileR.getMyProfile() }.await()
             if(me != null){
-                println("PROFILE FOUND")
+//                println("PROFILE FOUND")
                 me.addedFriends.split(",").forEachIndexed { _, s ->
-                    println("FRIEND NEEDED $s")
+//                    println("FRIEND NEEDED $s")
                     if(s!=""){
                         val friend = async {
                             ppR.getProfileProxy(s.trim())
@@ -108,7 +108,7 @@ open class AccountVM @Inject constructor(
                 }
             }
             else{
-                println("PROFILE EMPTY")
+//                println("PROFILE EMPTY")
             }
         }
     }
@@ -151,7 +151,7 @@ open class AccountVM @Inject constructor(
                 val courseList = mutableListOf<Course>()
                 courseStringList.forEachIndexed { _, s ->
                     if (s != ""){
-                        println("$s is the course, accountvm getmuycourses")
+//                        println("$s is the course, accountvm getmuycourses")
                         val (name, seciton) =  s.split(" ")
                         val course = courseR.findCourse(name.trim(), seciton.trim())
                         if (course != null){

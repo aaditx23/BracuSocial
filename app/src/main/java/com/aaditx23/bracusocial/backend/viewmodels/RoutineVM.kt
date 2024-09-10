@@ -53,14 +53,14 @@ open class RoutineVM @Inject constructor(
                 else{
                     val courseList = mutableListOf<Course>()
                     temp.forEach { s ->
-//                    println("My course $s")
+////                    println("My course $s")
                         val cTemp = s.split(" ")
                         val name = cTemp[0].trim()
                         val sec = cTemp[1].trim()
                         val course = courseR.findCourse(name, sec)
                         if (course != null){
                             courseList.add(course)
-//                        println("My course object ${course._id}")
+////                        println("My course object ${course._id}")
                         }
                     }
                     setMyCourseList(courseList.toList())
@@ -95,7 +95,7 @@ open class RoutineVM @Inject constructor(
                 }
             } // {Day: {Time: Name-Course-Sec-Room} }
             val map = async{ fpr.getAllFriendCourses() }.await() // Name: "Courses"
-//            println("MAP $map")
+////            println("MAP $map")
             if (map.isEmpty()){
                 setEmpty(true)
                 setLoading(false)
@@ -120,13 +120,13 @@ open class RoutineVM @Inject constructor(
                         }
                     }
                 }   // dataMap populated
-//                println("DATAMAP $dataMap")
+////                println("DATAMAP $dataMap")
                 for ((name, course) in dataMap){
                     course.forEach { c->
                         val temp = c.split(",") // ["name.section.time.day.room"]
                         temp.forEach { courseString ->
                             val courseData = courseString.split(".")    // [name,section,time,day,room]
-//                            println("Temp $courseData")
+////                            println("Temp $courseData")
                             val day = courseData[3].split(" ")
                             val time = courseData[2]
                             day.forEach { d->
@@ -137,12 +137,12 @@ open class RoutineVM @Inject constructor(
                                 if (timeValue == null) {
                                     finalMap[key]?.set(time, value)
                                 } else {
-                                    println("PREV $timeValue")
+//                                    println("PREV $timeValue")
                                     finalMap[key]?.set(time, "$timeValue|$value")
                                 }
 
                                 addNonEmpty(d.trim())
-//                                println("$d: $time: $name.$c")
+////                                println("$d: $time: $name.$c")
                             }
                         }
 

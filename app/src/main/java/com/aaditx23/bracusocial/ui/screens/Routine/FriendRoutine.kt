@@ -152,7 +152,6 @@ fun FriendRoutine(routinevm: RoutineVM){
                                 myRoutine = false,
                                 selectedFriend = selectedFriend
                             )
-                            println("map key")
                         }
 
                     }

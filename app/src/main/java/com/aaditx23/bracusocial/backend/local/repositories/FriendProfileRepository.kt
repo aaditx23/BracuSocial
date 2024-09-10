@@ -36,7 +36,7 @@ class FriendProfileRepository @Inject constructor(
                 email = emailData
             }
             copyToRealm(profileData, updatePolicy = UpdatePolicy.ALL)
-            println("Created friend profile $sid fprR, createFP")
+//            println("Created friend profile $sid fprR, createFP")
         }
     }
 

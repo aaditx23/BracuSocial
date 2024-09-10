@@ -68,7 +68,7 @@ class CourseRepository @Inject constructor(
     }
 
     fun findOccupiedClass(time: String, day: String): List<String>{
-        println("Time: $time day : $day")
+//        println("Time: $time day : $day")
         return realm
             .query<Course>(
                 "classTime == $0 AND classDay CONTAINS $1", time, day
@@ -79,7 +79,7 @@ class CourseRepository @Inject constructor(
             .toList()
     }
     fun findOccupiedLab(time: String, day: String): List<String>{
-        println("Time: $time day : $day")
+//        println("Time: $time day : $day")
         return realm
             .query<Course>(
                 "labTime == $0 AND labDay CONTAINS $1", time.trim(), day.trim()
@@ -91,11 +91,11 @@ class CourseRepository @Inject constructor(
     }
 
     suspend fun deleteCourse(id: ObjectId){
-        println("deleteing course from repi")
+//        println("deleteing course from repi")
         realm.write {
             val courseObject = query<Course>("_id == $0", id).first().find()
             if (courseObject != null){
-                println("Found course")
+//                println("Found course")
                 delete(courseObject)
             }
         }

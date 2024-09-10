@@ -32,7 +32,7 @@ class SessionRepository @Inject constructor(
                 sessionData.dbStatus = status
             }
         }
-        println("DB status updated to $status")
+//        println("DB status updated to $status")
     }
 
 
@@ -43,7 +43,7 @@ class SessionRepository @Inject constructor(
                 sessionData.loginStatus = status
             }
         }
-        println("Login status updated to $status")
+//        println("Login status updated to $status")
     }
     suspend fun deleteSession(id: ObjectId){
         realm.write {

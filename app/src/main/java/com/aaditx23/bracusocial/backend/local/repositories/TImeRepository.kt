@@ -18,7 +18,7 @@ fun getCurrentTime(): String{
 fun getToday(): String{
     val currentTime = LocalDateTime.now()
     val formatter = DateTimeFormatter.ofPattern("EEEE")
-    println("Current day ${currentTime.format(formatter)}")
+//    println("Current day ${currentTime.format(formatter)}")
     return currentTime.format(formatter)
 }
 fun to24Hours(time: String): String {
@@ -88,7 +88,7 @@ fun getTimeSlot(slotList: List<String>): String{
             val withStart = compareTime(time, start) // should be >=0
             val withStartNext = compareTime(time, end, true) // should be <=0
             val withEnd = compareTime(time, end) // should be <=0
-            println("$withStart start $withEnd end")
+//            println("$withStart start $withEnd end")
             if (withStart >=0 && withEnd <= 0){
                 return s
             }

@@ -37,7 +37,7 @@ class ProfileProxyRepository @Inject constructor(
                 email = emailData
             }
             copyToRealm(profileData, updatePolicy = UpdatePolicy.ALL)
-            println("Profile created (profile repository, create profile)")
+//            println("Profile created (profile repository, create profile)")
         }
     }
 
@@ -48,7 +48,7 @@ class ProfileProxyRepository @Inject constructor(
                 profileData.studentName = name
             }
         }
-        println("Name updated to $name")
+//        println("Name updated to $name")
     }
     suspend fun updatePic(sid: String, pic: String){
         realm.write {
@@ -57,7 +57,7 @@ class ProfileProxyRepository @Inject constructor(
                 profileData.profilePicture = pic
             }
         }
-        println("Name updated to $pic")
+//        println("Name updated to $pic")
     }
     suspend fun updateCourses(sid: String, courses: String){
         realm.write {
@@ -66,7 +66,7 @@ class ProfileProxyRepository @Inject constructor(
                 profileData.enrolledCourses = courses
             }
         }
-        println("Name updated to $courses")
+//        println("Name updated to $courses")
     }
 
     suspend fun addFriend(me: String, friend: String){
@@ -78,7 +78,7 @@ class ProfileProxyRepository @Inject constructor(
                 addFriendToList(friendData, profileData.studentId)
             }
         }
-        println("Friend added $friend")
+//        println("Friend added $friend")
     }
     suspend fun updateFriend(me: String, friend: String, add:Boolean = true){
         realm.write {
@@ -88,12 +88,12 @@ class ProfileProxyRepository @Inject constructor(
                 if(add){
                     addFriendToList(profileData, friend)
                     addFriendToList(friendData, profileData.studentId)
-                    println("Friend added $friend")
+//                    println("Friend added $friend")
                 }
                 else{
                     removeFriendFromList(profileData, friend)
                     removeFriendFromList(friendData, profileData.studentId)
-                    println("Friend removed $friend")
+//                    println("Friend removed $friend")
                 }
             }
         }
@@ -168,7 +168,7 @@ class ProfileProxyRepository @Inject constructor(
 
     private fun removeFriendRequest(profileData: ProfileProxy, friend: String){
         if (profileData.friendRequests != "" && profileData.friendRequests.contains(friend)){
-            println("FRIEND IS HERE in remote$friend ${profileData.friendRequests}")
+//            println("FRIEND IS HERE in remote$friend ${profileData.friendRequests}")
             val temp = profileData.friendRequests.split(",")
             var tempReq = ""
             temp.forEachIndexed { _, s ->

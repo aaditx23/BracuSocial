@@ -36,11 +36,11 @@ class SavedRoutineRepository @Inject constructor(
     }
 
     suspend fun deleteSavedRoutine(id: ObjectId){
-        println("deleteing routine from repi")
+//        println("deleteing routine from repi")
         realm.write {
             val savedRoutine = query<SavedRoutine>("_id == $0", id).first().find()
             if (savedRoutine != null){
-                println("Found course")
+//                println("Found course")
                 delete(savedRoutine)
             }
         }
