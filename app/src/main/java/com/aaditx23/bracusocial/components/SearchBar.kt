@@ -5,10 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,17 +53,10 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.dayList
+import com.aaditx23.bracusocial.timeSlots
 import com.aaditx23.bracusocial.ui.theme.paletteBlue1
-import com.aaditx23.bracusocial.ui.theme.paletteBlue2
-import com.aaditx23.bracusocial.ui.theme.paletteBlue3
 import com.aaditx23.bracusocial.ui.theme.paletteBlue4
-import com.aaditx23.bracusocial.ui.theme.paletteBlue5
-import com.aaditx23.bracusocial.ui.theme.paletteBlue6
-import com.aaditx23.bracusocial.ui.theme.paletteBlue7
-import com.aaditx23.bracusocial.ui.theme.paletteBlue8
-import com.aaditx23.bracusocial.ui.theme.paletteBlue9
-import org.json.JSONObject
 
 @Composable
 fun SearchBar(
@@ -132,7 +124,9 @@ fun SearchBar(
 
 @Composable
 fun SearchBarDropDown(
-    action: (TextFieldValue) -> Unit,
+    searchAction: (TextFieldValue) -> Unit,
+    dropDownAction: (String) -> Unit,
+    setFilterValue: (String) -> Unit,
     width: Dp = 250.dp,
     height: Dp = 40.dp,
     paddingStart: Dp = 8.dp,
@@ -140,68 +134,89 @@ fun SearchBarDropDown(
     cornerRadius: Dp = 5.dp,
     textSize: TextUnit = 15.sp,
     text: String ="Search Courses",
-    dropDown: List<String>
+    dropDown: List<String>,
+    currentFilterSelection: String
 ) {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
-    action(searchQuery)
+    searchAction(searchQuery)
+
 
     val textColor = MaterialTheme.colorScheme.onSurface
     val placeholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) // Slightly lighter for placeholder
-
     Row {
-        BasicTextField(
-            value = searchQuery,
-            onValueChange = { newValue -> searchQuery = newValue },
-            modifier = Modifier
-                .size(width = width, height = height)
-                .padding(start = paddingStart, end = paddingEnd)
-                .border(1.dp, Color.Gray, RoundedCornerShape(cornerRadius))
-                .padding(8.dp),
-            textStyle = TextStyle(
-                fontSize = textSize,
-                color = textColor // Set the text color based on the theme
-            ),
-            decorationBox = { innerTextField ->
-                if (searchQuery.text.isEmpty()) {
-                    Box(
+        // search bar
+        if(!listOf("Class Day", "Class Time").contains(currentFilterSelection)){
+            BasicTextField(
+                value = searchQuery,
+                onValueChange = { newValue -> searchQuery = newValue },
+                modifier = Modifier
+                    .size(width = width, height = height)
+                    .padding(start = paddingStart, end = paddingEnd)
+                    .border(1.dp, Color.Gray, RoundedCornerShape(cornerRadius))
+                    .padding(8.dp),
+                textStyle = TextStyle(
+                    fontSize = textSize,
+                    color = textColor // Set the text color based on the theme
+                ),
+                decorationBox = { innerTextField ->
+                    if (searchQuery.text.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Text(
+                                text = text,
+                                color = placeholderColor, // Set the placeholder color based on the theme
+                                fontSize = textSize
+                            )
+                        }
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.CenterStart
+                            .fillMaxHeight()
                     ) {
-                        Text(
-                            text = text,
-                            color = placeholderColor, // Set the placeholder color based on the theme
-                            fontSize = textSize
-                        )
+                        innerTextField()
+                        IconButton(
+                            onClick = { searchQuery = TextFieldValue("") }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Backspace,
+                                contentDescription = "Clear search",
+                                tint = Color.Gray
+                            )
+                        }
                     }
                 }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                ) {
-                    innerTextField()
-                    IconButton(
-                        onClick = { searchQuery = TextFieldValue("") }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Backspace,
-                            contentDescription = "Clear search",
-                            tint = Color.Gray
-                        )
-                    }
-                }
-            }
-        )
+            )
+        }
+        else{
+            DropDownCard(
+                dropdownItems = when (currentFilterSelection) {
+                    "Class Day" -> dayList
+                    "Class Time" -> timeSlots
+                    else -> listOf("")
+                },
+                width = width,
+                height =  height,
+                startPadding = 10.dp,
+                endPadding = 10.dp,
+                onItemClick = setFilterValue
+            )
+        }
+
+        // drop down for search
+
+
 //        DropdownSample()
         DropDownCard(
             dropdownItems = dropDown,
-            endPadding = 10.dp
+            endPadding = 10.dp,
+            onItemClick = dropDownAction
+        )
 
-        ) {
-
-        }
     }
 }
 
@@ -230,7 +245,11 @@ fun DropDownCard(
         MutableInteractionSource()
     }
     val density = LocalDensity.current
+    LaunchedEffect(key1 = dropdownItems) {
+        selectedText = dropdownItems[0]
+    }
 
+//    println("Inside drop down $dropdownItems $selectedText ${dropdownItems[0]}")
     Card(
 //        elevation = 4.dp,
         modifier = Modifier
@@ -295,32 +314,7 @@ fun DropDownCard(
     }
 }
 
-fun FilterCourseList(list: List<Course>, searchQuery: String): List<Course>{
-    return list.filter { course ->
-        val query = searchQuery.trim().split("-")
-        when (query.size) {
-            1 -> course.courseName.contains(query[0].trim(), ignoreCase = true)
-            2 -> course.courseName.contains(query[0].trim(), ignoreCase = true) &&
-                    course.section.contains(query[1].trim(), ignoreCase = true)
-            else -> false
-        }
-    }
-}
 
-fun FilterCourseListJson(list: List<JSONObject>, searchQuery: String): List<JSONObject> {
-    return list.filter { courseJson ->
-        val query = searchQuery.trim().split("-")
-        val courseName = courseJson.optString("Course", "")
-        val section = courseJson.optString("Section", "")
-
-        when (query.size) {
-            1 -> courseName.contains(query[0].trim(), ignoreCase = true)
-            2 -> courseName.contains(query[0].trim(), ignoreCase = true) &&
-                    section.contains(query[1].trim(), ignoreCase = true)
-            else -> false
-        }
-    }
-}
 
 
 
