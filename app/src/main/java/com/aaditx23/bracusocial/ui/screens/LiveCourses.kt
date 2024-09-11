@@ -1,7 +1,6 @@
 package com.aaditx23.bracusocial.ui.screens
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,10 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.filterCourseJsonByNameSection
-import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.checkInternetConnection
-import com.aaditx23.bracusocial.components.CourseItemJson
+import com.aaditx23.bracusocial.components.CallCourseItem
 import com.aaditx23.bracusocial.components.EmptyScreenText
 import com.aaditx23.bracusocial.components.NoButtonCircularLoadingDialog
 import com.aaditx23.bracusocial.components.SearchBar
@@ -133,7 +130,7 @@ fun LiveFeed(){
                         filteredCourseList
                     }
                 ) { course ->
-                    CourseItemJson(course)
+                    CallCourseItem(course)
                 }
             }
         }

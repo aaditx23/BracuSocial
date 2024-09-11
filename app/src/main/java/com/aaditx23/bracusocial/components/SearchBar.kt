@@ -56,7 +56,13 @@ import androidx.compose.ui.unit.sp
 import com.aaditx23.bracusocial.dayList
 import com.aaditx23.bracusocial.timeSlots
 import com.aaditx23.bracusocial.ui.theme.paletteBlue1
+import com.aaditx23.bracusocial.ui.theme.paletteBlue2
+import com.aaditx23.bracusocial.ui.theme.paletteBlue3
 import com.aaditx23.bracusocial.ui.theme.paletteBlue4
+import com.aaditx23.bracusocial.ui.theme.paletteBlue5
+import com.aaditx23.bracusocial.ui.theme.paletteBlue6
+import com.aaditx23.bracusocial.ui.theme.paletteBlue7
+import com.aaditx23.bracusocial.ui.theme.paletteBlue9
 
 @Composable
 fun SearchBar(
@@ -131,6 +137,8 @@ fun SearchBarDropDown(
     height: Dp = 40.dp,
     paddingStart: Dp = 8.dp,
     paddingEnd: Dp = 8.dp,
+    paddingTop: Dp = 0.dp,
+    paddingBottom: Dp = 8.dp,
     cornerRadius: Dp = 5.dp,
     textSize: TextUnit = 15.sp,
     text: String ="Search Courses",
@@ -151,7 +159,7 @@ fun SearchBarDropDown(
                 onValueChange = { newValue -> searchQuery = newValue },
                 modifier = Modifier
                     .size(width = width, height = height)
-                    .padding(start = paddingStart, end = paddingEnd)
+                    .padding(start = paddingStart, end = paddingEnd, top = paddingTop, bottom =  paddingBottom)
                     .border(1.dp, Color.Gray, RoundedCornerShape(cornerRadius))
                     .padding(8.dp),
                 textStyle = TextStyle(
@@ -203,7 +211,13 @@ fun SearchBarDropDown(
                 height =  height,
                 startPadding = 10.dp,
                 endPadding = 10.dp,
-                onItemClick = setFilterValue
+                onItemClick = setFilterValue,
+                bgColor = when (currentFilterSelection) {
+                    "Day" -> paletteBlue4
+                    "Time" -> paletteBlue6
+                    else -> paletteBlue1
+                },
+                fontColor = paletteBlue1
             )
         }
 
@@ -227,7 +241,12 @@ fun DropDownCard(
     width: Dp = 150.dp,
     startPadding: Dp = 0.dp,
     endPadding: Dp = 0.dp,
+    topPadding: Dp = 0.dp,
+    bottomPadding: Dp = 0.dp,
     onItemClick: (String) -> Unit,
+    bgColor: Color = paletteBlue2,
+    fontColor: Color = paletteBlue9
+
 ) {
     var isContextMenuVisible by rememberSaveable {
         mutableStateOf(false)
@@ -253,13 +272,13 @@ fun DropDownCard(
     Card(
 //        elevation = 4.dp,
         modifier = Modifier
-            .padding(start = startPadding, end = endPadding)
+            .padding(start = startPadding, end = endPadding, top = topPadding, bottom = bottomPadding)
             .size(height = height, width = width)
             .onSizeChanged {
                 itemHeight = with(density) { it.height.toDp() }
             },
         shape = RoundedCornerShape(5.dp),
-        colors = CardDefaults.cardColors(paletteBlue4)
+        colors = CardDefaults.cardColors(bgColor)
     ) {
         Box(
             modifier = Modifier
@@ -278,7 +297,7 @@ fun DropDownCard(
                 Text(
                     text = selectedText,
                     fontWeight = FontWeight.Bold,
-                    color = paletteBlue1,
+                    color = fontColor,
                     fontSize = 15.sp,
                     textAlign = TextAlign.Center
                 )
@@ -312,84 +331,4 @@ fun DropDownCard(
             }
         }
     }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DropdownSample() {
-    // State to hold expanded/collapsed status
-    var expanded by remember { mutableStateOf(false) }
-
-    // State to hold selected option
-
-
-    // List of options for the dropdown
-    val options = listOf("Option 1", "Option 2", "Option 3", "Option 4")
-    var selectedOption by remember { mutableStateOf(options[0]) }
-
-    // Dropdown component
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = {
-            expanded = !expanded
-        },
-        modifier = Modifier
-            .height(40.dp)
-            .padding(end = 10.dp)
-    ) {
-        TextField(
-            value = selectedOption,
-            onValueChange = { selectedOption = it },
-            readOnly = true,
-            label = {
-                Text(
-                    text = "Search By",
-                    fontSize = 10.sp
-                )
-            },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            textStyle = TextStyle(fontSize = 15.sp),
-            modifier = Modifier
-                .fillMaxSize()
-                .exposedDropdownSize()
-                .menuAnchor()
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = {
-                expanded = false
-            }
-        ) {
-            options.forEach { item ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = item,
-                            fontSize = 15.sp
-                        )
-                    },
-                    onClick = {
-                        selectedOption = item
-                        expanded = false
-                    })
-            }
-
-        }
-
-    }
-
 }

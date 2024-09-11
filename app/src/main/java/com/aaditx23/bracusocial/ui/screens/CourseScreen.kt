@@ -38,7 +38,8 @@ import com.aaditx23.bracusocial.backend.filterCourseByRooms
 import com.aaditx23.bracusocial.backend.filterCourseByTimes
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.checkInternetConnection
-import com.aaditx23.bracusocial.components.CourseItem
+import com.aaditx23.bracusocial.components.CallCourseItem
+
 import com.aaditx23.bracusocial.components.NoButtonDialog
 import com.aaditx23.bracusocial.components.SearchBarDropDown
 import com.aaditx23.bracusocial.dayList
@@ -207,7 +208,7 @@ fun CourseScreen(dbStatus: Boolean){
 
             },
             width = (LocalConfiguration.current.screenWidthDp -150).dp,
-            height = 40.dp,
+            height = 48.dp,
             textSize = 16.sp,
             dropDown = filter,
             text = "Search by...",
@@ -253,7 +254,7 @@ fun CourseScreen(dbStatus: Boolean){
                     else
                     filteredCourseList
                 ){course ->
-                    CourseItem(course = course)
+                    CallCourseItem(courseData = course)
                 }
             }
         }
