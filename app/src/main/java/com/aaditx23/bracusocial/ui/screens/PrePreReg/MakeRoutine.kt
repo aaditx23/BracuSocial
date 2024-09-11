@@ -47,10 +47,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.aaditx23.bracusocial.backend.filterCourseByNameSection
+import com.aaditx23.bracusocial.backend.filterCourseJsonByNameSection
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
-import com.aaditx23.bracusocial.components.FilterCourseList
 import com.aaditx23.bracusocial.components.Routine
 import com.aaditx23.bracusocial.components.SearchBar
 import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen2
@@ -118,7 +119,7 @@ fun MakeRoutine(
     LaunchedEffect(searchQuery) {
         coroutineScope.launch {
             isFiltering = true
-            filteredCourseList = FilterCourseList(list = courseList, searchQuery = searchQuery.text)
+            filteredCourseList = filterCourseByNameSection(list = courseList, searchQuery = searchQuery.text)
             isFiltering = false
 
         }

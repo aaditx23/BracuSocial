@@ -28,13 +28,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.aaditx23.bracusocial.backend.filterCourseJsonByNameSection
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.checkInternetConnection
 import com.aaditx23.bracusocial.components.CourseItemJson
 import com.aaditx23.bracusocial.components.EmptyScreenText
-import com.aaditx23.bracusocial.components.FilterCourseList
-import com.aaditx23.bracusocial.components.FilterCourseListJson
 import com.aaditx23.bracusocial.components.NoButtonCircularLoadingDialog
 import com.aaditx23.bracusocial.components.SearchBar
 import kotlinx.coroutines.launch
@@ -67,7 +66,7 @@ fun LiveFeed(){
     LaunchedEffect(searchQuery) {
         scope.launch {
             isFiltering = true
-            filteredCourseList = FilterCourseListJson(list = courseJsonList, searchQuery = searchQuery.text).toMutableList()
+            filteredCourseList = filterCourseJsonByNameSection(list = courseJsonList, searchQuery = searchQuery.text).toMutableList()
             isFiltering = false
 
         }

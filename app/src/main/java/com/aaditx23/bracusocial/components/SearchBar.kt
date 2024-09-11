@@ -145,7 +145,7 @@ fun SearchBarDropDown(
     val placeholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) // Slightly lighter for placeholder
     Row {
         // search bar
-        if(!listOf("Class Day", "Class Time").contains(currentFilterSelection)){
+        if(!listOf("Day", "Time").contains(currentFilterSelection)){
             BasicTextField(
                 value = searchQuery,
                 onValueChange = { newValue -> searchQuery = newValue },
@@ -195,8 +195,8 @@ fun SearchBarDropDown(
         else{
             DropDownCard(
                 dropdownItems = when (currentFilterSelection) {
-                    "Class Day" -> dayList
-                    "Class Time" -> timeSlots
+                    "Day" -> dayList
+                    "Time" -> timeSlots
                     else -> listOf("")
                 },
                 width = width,

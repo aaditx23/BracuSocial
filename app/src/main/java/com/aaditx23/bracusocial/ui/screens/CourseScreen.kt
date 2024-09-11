@@ -71,9 +71,9 @@ fun CourseScreen(dbStatus: Boolean){
         mutableStateOf(listOf(
             "Course-Section",
             "Faculty",
-            "Class Day",
-            "Class Time",
-            "Class Room"
+            "Day",
+            "Time",
+            "Room"
         ))
     }
     var currentFilter by rememberSaveable {
@@ -87,6 +87,7 @@ fun CourseScreen(dbStatus: Boolean){
     val coroutineScope = rememberCoroutineScope()
 
     fun refresh(){
+        println("refreshing")
         status = "Refreshing DB"
         courseVM.refreshDB(
             onSet = {s->
@@ -106,7 +107,7 @@ fun CourseScreen(dbStatus: Boolean){
     }
 
     // Filtering logic within a coroutine
-    LaunchedEffect(searchQuery) {
+    LaunchedEffect(searchQuery, currentFilter) {
         if(!(currentFilter == filter[2] || currentFilter == filter[3])){
             coroutineScope.launch {
                 isFiltering = true
@@ -127,12 +128,13 @@ fun CourseScreen(dbStatus: Boolean){
                         searchQuery = searchQuery.text
                     )
 
-                    else -> filteredCourseList
+                    else -> allCourses
                 }
-                isFiltering = false
 
+                isFiltering = false
             }
         }
+
     }
     LaunchedEffect(currentFilter, filterValue) {
         if(currentFilter == filter[2] || currentFilter == filter[3]){
@@ -155,7 +157,7 @@ fun CourseScreen(dbStatus: Boolean){
                             else filterValue
                         filterCourseByTimes(list = allCourses, searchQuery = filterValue)
                     }
-                    else -> filteredCourseList
+                    else -> allCourses
                 }
                 println("After filtration $filter $filterValue ${filteredCourseList.size}")
                 isFiltering = false
@@ -171,8 +173,6 @@ fun CourseScreen(dbStatus: Boolean){
                 refresh()
             }
         }
-        println("HAS INTERNET $hasInternet")
-
     }
 
     Column(modifier = Modifier.padding(top = 80.dp)) {
@@ -248,6 +248,9 @@ fun CourseScreen(dbStatus: Boolean){
         else{
             LazyColumn() {
                 items(
+                    if(searchQuery.text == "" && !listOf("Day", "Time").contains(currentFilter))
+                    allCourses
+                    else
                     filteredCourseList
                 ){course ->
                     CourseItem(course = course)

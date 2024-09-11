@@ -231,7 +231,7 @@ class UsisCrawler{
             //val file = File("course_info.json")
             //file.writeText(courseList.toString())
 
-            println("Extraction completed. Data saved to 'course_info.json'.")
+            println("Extraction completed. Data saved to 'course_info.json'. ${courseList.size}")
 
             courseList
         }
