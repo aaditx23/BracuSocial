@@ -1,6 +1,5 @@
 package com.aaditx23.bracusocial.ui.screens
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,14 +31,19 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.backend.filterCourseByDays
+import com.aaditx23.bracusocial.backend.filterCourseByFaculty
+import com.aaditx23.bracusocial.backend.filterCourseByNameSection
+import com.aaditx23.bracusocial.backend.filterCourseByRooms
+import com.aaditx23.bracusocial.backend.filterCourseByTimes
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.checkInternetConnection
 import com.aaditx23.bracusocial.components.CourseItem
 import com.aaditx23.bracusocial.components.NoButtonDialog
-import com.aaditx23.bracusocial.components.FilterCourseList
-import com.aaditx23.bracusocial.components.SearchBar
-import kotlinx.coroutines.delay
+import com.aaditx23.bracusocial.components.SearchBarDropDown
+import com.aaditx23.bracusocial.dayList
+import com.aaditx23.bracusocial.days
+import com.aaditx23.bracusocial.timeSlots
 import kotlinx.coroutines.launch
 
 @Composable
@@ -63,6 +66,21 @@ fun CourseScreen(dbStatus: Boolean){
     var addedCourses by remember { mutableIntStateOf(0) }
     var hasInternet by remember{
         mutableStateOf(checkInternetConnection(context))
+    }
+    val filter by rememberSaveable {
+        mutableStateOf(listOf(
+            "Course-Section",
+            "Faculty",
+            "Class Day",
+            "Class Time",
+            "Class Room"
+        ))
+    }
+    var currentFilter by rememberSaveable {
+        mutableStateOf(filter[0])
+    }
+    var filterValue by rememberSaveable {
+        mutableStateOf("")
     }
 
 
@@ -89,11 +107,60 @@ fun CourseScreen(dbStatus: Boolean){
 
     // Filtering logic within a coroutine
     LaunchedEffect(searchQuery) {
-        coroutineScope.launch {
-            isFiltering = true
-            filteredCourseList = FilterCourseList(list = allCourses, searchQuery = searchQuery.text)
-            isFiltering = false
+        if(!(currentFilter == filter[2] || currentFilter == filter[3])){
+            coroutineScope.launch {
+                isFiltering = true
 
+                filteredCourseList = when (currentFilter) {
+                    filter[0] -> filterCourseByNameSection(
+                        list = allCourses,
+                        searchQuery = searchQuery.text
+                    )
+
+                    filter[1] -> filterCourseByFaculty(
+                        list = allCourses,
+                        searchQuery = searchQuery.text
+                    )
+
+                    filter[4] -> filterCourseByRooms(
+                        list = allCourses,
+                        searchQuery = searchQuery.text
+                    )
+
+                    else -> filteredCourseList
+                }
+                isFiltering = false
+
+            }
+        }
+    }
+    LaunchedEffect(currentFilter, filterValue) {
+        if(currentFilter == filter[2] || currentFilter == filter[3]){
+            coroutineScope.launch {
+                isFiltering = true
+                filteredCourseList = when (currentFilter) {
+                    filter[2] -> {
+                        filterValue =
+                            if (filterValue == "") dayList[0].slice(0..1)
+                            else filterValue
+                        filterCourseByDays(
+                            list = allCourses,
+                            searchQuery = filterValue.slice(0..1)
+                        )
+                    }
+
+                    filter[3] -> {
+                        filterValue =
+                            if(filterValue == "") timeSlots[0]
+                            else filterValue
+                        filterCourseByTimes(list = allCourses, searchQuery = filterValue)
+                    }
+                    else -> filteredCourseList
+                }
+                println("After filtration $filter $filterValue ${filteredCourseList.size}")
+                isFiltering = false
+
+            }
         }
     }
 
@@ -126,12 +193,25 @@ fun CourseScreen(dbStatus: Boolean){
                 Text(text = "Refresh DB")
             }
         }
-        SearchBar(action = {query ->
+
+        SearchBarDropDown(
+            searchAction = { query ->
                 searchQuery = query
             },
-            width = LocalConfiguration.current.screenWidthDp.dp,
+            dropDownAction = { filter ->
+                currentFilter = filter
+            },
+            setFilterValue = { value ->
+                filterValue = value
+                println("FILTER VALUE $filterValue")
+
+            },
+            width = (LocalConfiguration.current.screenWidthDp -150).dp,
             height = 40.dp,
-            textSize = 16.sp
+            textSize = 16.sp,
+            dropDown = filter,
+            text = "Search by...",
+            currentFilterSelection = currentFilter
         )
         if (isFiltering){
             Box(
@@ -168,12 +248,7 @@ fun CourseScreen(dbStatus: Boolean){
         else{
             LazyColumn() {
                 items(
-                    if(searchQuery.text == ""){
-                        allCourses
-                    }
-                    else{
-                        filteredCourseList
-                    }
+                    filteredCourseList
                 ){course ->
                     CourseItem(course = course)
                 }

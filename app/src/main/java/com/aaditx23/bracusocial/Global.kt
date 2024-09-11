@@ -10,7 +10,7 @@ import android.os.Build
 operator fun <T> List<T>.component6(): T = get(5)
 operator fun <T> List<T>.component7(): T = get(6)
 operator fun <T> List<T>.component8(): T = get(7)
-val timeSlots = arrayOf(
+val timeSlots = listOf(
     "08:00 AM - 09:20 AM",
     "08:00 AM - 10:50 AM", //lab
     "09:30 AM - 10:50 AM",
