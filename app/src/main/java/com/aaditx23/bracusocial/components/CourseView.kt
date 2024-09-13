@@ -51,7 +51,11 @@ fun CallCourseItem(
         val classRoom = courseJson.optString("ClassRoom", "N/A")
 
         val hasLab = courseJson.optBoolean("Lab", false)
-        val labDays = if (hasLab) courseJson.optJSONArray("LabDay")?.join(", ") ?: "-" else null
+        val labDays = if (hasLab) courseJson.optJSONArray("LabDay")?.let { jsonArray ->
+            (0 until jsonArray.length()).joinToString(" ") { index ->
+                jsonArray.optString(index)
+            }
+        } ?: "N/A" else null
         val labTime = if (hasLab) {
             courseJson.optJSONArray("LabTime")?.let { jsonArray ->
                 (0 until jsonArray.length()).joinToString(" ") { index ->

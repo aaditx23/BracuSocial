@@ -26,13 +26,27 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.aaditx23.bracusocial.backend.filterCourseJsonByNameSection
+import com.aaditx23.bracusocial.backend.filterCourseByDays
+import com.aaditx23.bracusocial.backend.filterCourseByFaculty
+import com.aaditx23.bracusocial.backend.filterCourseByNameSection
+import com.aaditx23.bracusocial.backend.filterCourseByRooms
+import com.aaditx23.bracusocial.backend.filterCourseByTimes
+import com.aaditx23.bracusocial.backend.filterJsonByDays
+import com.aaditx23.bracusocial.backend.filterJsonByFaculty
+import com.aaditx23.bracusocial.backend.filterJsonByNameSection
+import com.aaditx23.bracusocial.backend.filterJsonByRooms
+import com.aaditx23.bracusocial.backend.filterJsonByTimes
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.checkInternetConnection
 import com.aaditx23.bracusocial.components.CallCourseItem
 import com.aaditx23.bracusocial.components.EmptyScreenText
 import com.aaditx23.bracusocial.components.NoButtonCircularLoadingDialog
 import com.aaditx23.bracusocial.components.SearchBar
+import com.aaditx23.bracusocial.components.SearchBarDropDown
+import com.aaditx23.bracusocial.dayList
+import com.aaditx23.bracusocial.timeSlots
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -45,8 +59,8 @@ fun LiveFeed(){
         mutableStateOf(true)
     }
 
-    var courseJsonList by remember{
-        mutableStateOf(mutableListOf<JSONObject>())
+    var allCourses by remember{
+        mutableStateOf(listOf<JSONObject>())
     }
     var hasInternet by remember{
         mutableStateOf(checkInternetConnection(context))
@@ -56,23 +70,94 @@ fun LiveFeed(){
         mutableStateOf(false)
     }
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
-    var filteredCourseList by remember { mutableStateOf(courseJsonList) }
+    var filteredCourseList by remember { mutableStateOf(allCourses) }
     var isFiltering by remember { mutableStateOf(false) }
+    val filter by rememberSaveable {
+        mutableStateOf(listOf(
+            "Course-Section",
+            "Faculty",
+            "Day",
+            "Time",
+            "Room"
+        ))
+    }
+    var currentFilter by rememberSaveable {
+        mutableStateOf(filter[0])
+    }
+    var filterValue by rememberSaveable {
+        mutableStateOf("")
+    }
+
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(searchQuery) {
-        scope.launch {
-            isFiltering = true
-            filteredCourseList = filterCourseJsonByNameSection(list = courseJsonList, searchQuery = searchQuery.text).toMutableList()
-            isFiltering = false
+    LaunchedEffect(searchQuery, currentFilter) {
+        if(!(currentFilter == filter[2] || currentFilter == filter[3])){
+            scope.launch {
+                isFiltering = true
 
+                filteredCourseList = async{
+                    when (currentFilter) {
+                        filter[0] -> filterJsonByNameSection(
+                            list = allCourses,
+                            searchQuery = searchQuery.text
+                        ).toMutableList()
+
+                        filter[1] -> filterJsonByFaculty(
+                            list = allCourses,
+                            searchQuery = searchQuery.text
+                        ).toMutableList()
+
+                        filter[4] -> filterJsonByRooms(
+                            list = allCourses,
+                            searchQuery = searchQuery.text
+                        ).toMutableList()
+
+                        else -> allCourses
+                    }
+                }.await()
+
+                isFiltering = false
+            }
+        }
+
+    }
+    LaunchedEffect(currentFilter, filterValue) {
+        if(currentFilter == filter[2] || currentFilter == filter[3]){
+            scope.launch {
+                isFiltering = true
+                filteredCourseList = async{
+                    when (currentFilter) {
+                        filter[2] -> {
+                            filterValue =
+                                if (filterValue == "") dayList[0].slice(0..1)
+                                else filterValue
+                            filterJsonByDays(
+                                list = allCourses,
+                                searchQuery = filterValue.slice(0..1)
+                            )
+                        }
+
+                        filter[3] -> {
+                            filterValue =
+                                if (filterValue == "") timeSlots[0]
+                                else filterValue
+                            filterJsonByTimes(list = allCourses, searchQuery = filterValue)
+                        }
+
+                        else -> allCourses
+                    }
+                }.await()
+                println("After filtration $filter $filterValue ${filteredCourseList.size}")
+                isFiltering = false
+
+            }
         }
     }
 
     LaunchedEffect(toggleRefresh) {
         scope.launch {
             if(hasInternet){
-                courseJsonList = coursevm.liveData { loading ->
+                allCourses = coursevm.liveData { loading ->
                     println("Loading $loading")
                     isLoading = loading
                 }
@@ -105,13 +190,28 @@ fun LiveFeed(){
                 Text(text = "Refresh")
             }
         }
-        SearchBar(
-            action = { query ->
+        SearchBarDropDown(
+            searchAction = { query ->
                 searchQuery = query
             },
-            width = LocalConfiguration.current.screenWidthDp.dp,
-            height = 40.dp,
-            textSize = 16.sp
+            dropDownAction = { filter ->
+                currentFilter = filter
+            },
+            setFilterValue = { value ->
+                filterValue = value
+
+            },
+            width = (LocalConfiguration.current.screenWidthDp -150).dp,
+            height = 48.dp,
+            textSize = 16.sp,
+            primaryDropDown = filter,
+            text = "Search by...",
+            currentFilterSelection = currentFilter,
+            secondaryDropDown = when (currentFilter) {
+                "Day" -> dayList
+                "Time" -> timeSlots
+                else -> listOf("")
+            }
         )
         if (isLoading) {
             NoButtonCircularLoadingDialog(
@@ -125,7 +225,7 @@ fun LiveFeed(){
             LazyColumn {
                 items(
                     if (searchQuery.text == "") {
-                        courseJsonList
+                        allCourses
                     } else {
                         filteredCourseList
                     }

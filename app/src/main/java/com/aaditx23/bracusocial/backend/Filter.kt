@@ -58,18 +58,62 @@ fun filterCourseByRooms(list: List<Course>, searchQuery: String): List<Course> {
 }
 
 // JSON Course
-fun filterCourseJsonByNameSection(list: List<JSONObject>, searchQuery: String): List<JSONObject> {
-    return list.filter { courseJson ->
+fun filterJsonByNameSection(list: List<JSONObject>, searchQuery: String): List<JSONObject> {
+    return list.filter { json ->
         val query = searchQuery.trim().split("-")
-        val courseName = courseJson.optString("Course", "")
-        val section = courseJson.optString("Section", "")
-
         when (query.size) {
-            1 -> courseName.contains(query[0].trim(), ignoreCase = true)
-            2 -> courseName.contains(query[0].trim(), ignoreCase = true) &&
-                    section.contains(query[1].trim(), ignoreCase = true)
+            1 -> json.optString("Course", "").contains(query[0].trim(), ignoreCase = true)
+            2 -> json.optString("Course", "").contains(query[0].trim(), ignoreCase = true) &&
+                    json.optString("Section", "").contains(query[1].trim(), ignoreCase = true)
             else -> false
         }
+    }
+}
+
+fun filterJsonByFaculty(list: List<JSONObject>, searchQuery: String): List<JSONObject> {
+    return list.filter { json ->
+        json.optString("Faculty", "").contains(searchQuery.trim(), ignoreCase = true)
+    }
+}
+
+fun filterJsonByDays(list: List<JSONObject>, searchQuery: String): List<JSONObject> {
+    val trimmedQuery = searchQuery.trim()
+
+    return list.filter { json ->
+        val classDays = json.optJSONArray("ClassDay")?.let { jsonArray ->
+            (0 until jsonArray.length()).joinToString(" ") { index ->
+                jsonArray.optString(index)
+            }
+        } ?: "N/A"
+        val labDays = json.optJSONArray("ClassDay")?.let { jsonArray ->
+            (0 until jsonArray.length()).joinToString(" ") { index ->
+                jsonArray.optString(index)
+            }
+        } ?: "N/A"
+
+        classDays.contains(trimmedQuery) || (labDays.contains(trimmedQuery))
+    }
+}
+
+fun filterJsonByTimes(list: List<JSONObject>, searchQuery: String): List<JSONObject> {
+    val trimmedQuery = searchQuery.trim()
+
+    return list.filter { json ->
+        val classTime = json.optString("ClassTime", "").contains(trimmedQuery, ignoreCase = true)
+        val labTime = json.optString("LabTime", "").contains(trimmedQuery, ignoreCase = true)
+
+        classTime || labTime
+    }
+}
+
+fun filterJsonByRooms(list: List<JSONObject>, searchQuery: String): List<JSONObject> {
+    val trimmedQuery = searchQuery.trim()
+
+    return list.filter { json ->
+        val classRoom = json.optString("ClassRoom", "").contains(trimmedQuery, ignoreCase = true)
+        val labRoom = json.optString("LabRoom", "").contains(trimmedQuery, ignoreCase = true)
+
+        classRoom || labRoom
     }
 }
 
