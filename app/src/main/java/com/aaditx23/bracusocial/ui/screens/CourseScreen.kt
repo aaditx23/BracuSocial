@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -43,7 +44,6 @@ import com.aaditx23.bracusocial.components.CallCourseItem
 import com.aaditx23.bracusocial.components.NoButtonDialog
 import com.aaditx23.bracusocial.components.SearchBarDropDown
 import com.aaditx23.bracusocial.dayList
-import com.aaditx23.bracusocial.days
 import com.aaditx23.bracusocial.timeSlots
 import kotlinx.coroutines.launch
 
@@ -204,15 +204,19 @@ fun CourseScreen(dbStatus: Boolean){
             },
             setFilterValue = { value ->
                 filterValue = value
-                println("FILTER VALUE $filterValue")
 
             },
             width = (LocalConfiguration.current.screenWidthDp -150).dp,
             height = 48.dp,
             textSize = 16.sp,
-            dropDown = filter,
+            primaryDropDown = filter,
             text = "Search by...",
-            currentFilterSelection = currentFilter
+            currentFilterSelection = currentFilter,
+            secondaryDropDown = when (currentFilter) {
+                "Day" -> dayList
+                "Time" -> timeSlots
+                else -> listOf("")
+            }
         )
         if (isFiltering){
             Box(
@@ -247,7 +251,11 @@ fun CourseScreen(dbStatus: Boolean){
             )
         }
         else{
-            LazyColumn() {
+            LazyColumn(
+                modifier = Modifier
+                    .height((LocalConfiguration.current.screenHeightDp-20).dp)
+
+            ) {
                 items(
                     if(searchQuery.text == "" && !listOf("Day", "Time").contains(currentFilter))
                     allCourses

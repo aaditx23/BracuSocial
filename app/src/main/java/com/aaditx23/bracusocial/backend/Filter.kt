@@ -1,6 +1,7 @@
 package com.aaditx23.bracusocial.backend
 
 import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import org.json.JSONObject
 
 fun filterCourseByNameSection(list: List<Course>, searchQuery: String): List<Course>{
@@ -17,7 +18,7 @@ fun filterCourseByNameSection(list: List<Course>, searchQuery: String): List<Cou
 
 fun filterCourseByFaculty(list: List<Course>, searchQuery: String): List<Course> {
     return list.filter { course ->
-        course.faculty.equals(searchQuery.trim(), ignoreCase = true)
+        course.faculty.contains(searchQuery.trim(), ignoreCase = true)
     }
 }
 
@@ -56,12 +57,7 @@ fun filterCourseByRooms(list: List<Course>, searchQuery: String): List<Course> {
     }
 }
 
-
-
-
-
-
-
+// JSON Course
 fun filterCourseJsonByNameSection(list: List<JSONObject>, searchQuery: String): List<JSONObject> {
     return list.filter { courseJson ->
         val query = searchQuery.trim().split("-")
@@ -74,5 +70,30 @@ fun filterCourseJsonByNameSection(list: List<JSONObject>, searchQuery: String): 
                     section.contains(query[1].trim(), ignoreCase = true)
             else -> false
         }
+    }
+}
+
+
+// Profiles
+
+fun filterProfileByName(list: List<ProfileProxy>, searchQuery: String): List<ProfileProxy>{
+    val trimmedQuery = searchQuery.trim()
+
+    return list.filter { profile ->
+        profile.studentName.trim().contains(trimmedQuery, ignoreCase = true)
+    }
+}
+fun filterProfileByID(list: List<ProfileProxy>, searchQuery: String): List<ProfileProxy>{
+    val trimmedQuery = searchQuery.trim()
+
+    return list.filter { profile ->
+        profile.studentId.trim().contains(trimmedQuery, ignoreCase = true)
+    }
+}
+fun filterProfileByCourse(list: List<ProfileProxy>, searchQuery: String): List<ProfileProxy>{
+    val trimmedQuery = searchQuery.trim()
+
+    return list.filter { profile ->
+        profile.enrolledCourses.trim().contains(trimmedQuery, ignoreCase = true)
     }
 }

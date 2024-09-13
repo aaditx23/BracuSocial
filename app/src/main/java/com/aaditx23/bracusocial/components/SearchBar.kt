@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,14 +22,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,11 +52,8 @@ import com.aaditx23.bracusocial.dayList
 import com.aaditx23.bracusocial.timeSlots
 import com.aaditx23.bracusocial.ui.theme.paletteBlue1
 import com.aaditx23.bracusocial.ui.theme.paletteBlue2
-import com.aaditx23.bracusocial.ui.theme.paletteBlue3
 import com.aaditx23.bracusocial.ui.theme.paletteBlue4
-import com.aaditx23.bracusocial.ui.theme.paletteBlue5
 import com.aaditx23.bracusocial.ui.theme.paletteBlue6
-import com.aaditx23.bracusocial.ui.theme.paletteBlue7
 import com.aaditx23.bracusocial.ui.theme.paletteBlue9
 
 @Composable
@@ -131,8 +123,8 @@ fun SearchBar(
 @Composable
 fun SearchBarDropDown(
     searchAction: (TextFieldValue) -> Unit,
-    dropDownAction: (String) -> Unit,
-    setFilterValue: (String) -> Unit,
+    dropDownAction: (String) -> Unit, //primary
+    setFilterValue: (String) -> Unit, //secondary
     width: Dp = 250.dp,
     height: Dp = 40.dp,
     paddingStart: Dp = 8.dp,
@@ -142,9 +134,11 @@ fun SearchBarDropDown(
     cornerRadius: Dp = 5.dp,
     textSize: TextUnit = 15.sp,
     text: String ="Search Courses",
-    dropDown: List<String>,
-    currentFilterSelection: String
-) {
+    primaryDropDown: List<String>,
+    secondaryDropDown: List<String> = emptyList(),
+    currentFilterSelection: String,
+
+    ) {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     searchAction(searchQuery)
 
@@ -201,16 +195,14 @@ fun SearchBarDropDown(
             )
         }
         else{
+            // secondary drop down
             DropDownCard(
-                dropdownItems = when (currentFilterSelection) {
-                    "Day" -> dayList
-                    "Time" -> timeSlots
-                    else -> listOf("")
-                },
+                dropdownItems = secondaryDropDown,
                 width = width,
-                height =  height,
                 startPadding = 10.dp,
                 endPadding = 10.dp,
+                topPadding = paddingTop,
+                bottomPadding = paddingBottom,
                 onItemClick = setFilterValue,
                 bgColor = when (currentFilterSelection) {
                     "Day" -> paletteBlue4
@@ -224,9 +216,9 @@ fun SearchBarDropDown(
         // drop down for search
 
 
-//        DropdownSample()
+        // primary drop down for category
         DropDownCard(
-            dropdownItems = dropDown,
+            dropdownItems = primaryDropDown,
             endPadding = 10.dp,
             onItemClick = dropDownAction
         )

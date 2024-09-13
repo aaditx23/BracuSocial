@@ -1,35 +1,26 @@
 package com.aaditx23.bracusocial.ui.screens.Friends
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.PersonAddAlt1
 import androidx.compose.material.icons.outlined.Cancel
-import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -37,69 +28,163 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.aaditx23.bracusocial.backend.local.models.FriendProfile
+import com.aaditx23.bracusocial.backend.filterProfileByCourse
+import com.aaditx23.bracusocial.backend.filterProfileByID
+import com.aaditx23.bracusocial.backend.filterProfileByName
 import com.aaditx23.bracusocial.backend.local.models.Profile
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.FriendsVM
+import com.aaditx23.bracusocial.checkInternetConnection
+import com.aaditx23.bracusocial.components.CircularLoadingBasic
 import com.aaditx23.bracusocial.components.Pic_Name_ID
-import com.aaditx23.bracusocial.components.stringToBitmap
-import com.aaditx23.bracusocial.ui.theme.palette2DarkRed
+import com.aaditx23.bracusocial.components.SearchBarDropDown
+import com.aaditx23.bracusocial.dayList
+import com.aaditx23.bracusocial.timeSlots
 import com.aaditx23.bracusocial.ui.theme.palette7Blue1
-import com.aaditx23.bracusocial.ui.theme.palette7Green2
-import com.aaditx23.bracusocial.ui.theme.palette7Paste1
-import com.aaditx23.bracusocial.ui.theme.paletteBlue5
 import com.aaditx23.bracusocial.ui.theme.paletteBlue6
-import com.aaditx23.bracusocial.ui.theme.paletteBlue7
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun FindFriends(friendsvm: FriendsVM){
     val accountproxyvm : AccountProxyVM = hiltViewModel()
-    val allAccounts by accountproxyvm.allProfiles.collectAsState()
     val accountvm: AccountVM = hiltViewModel()
+    val context = LocalContext.current
+    val allAccounts by accountproxyvm.allProfiles.collectAsState()
+    val profiles by accountvm.allProfiles.collectAsState()
+
     var isLoading by remember { mutableStateOf(true) }
 
-    val profiles = remember { mutableStateOf(emptyList<Profile>()) }
+//    val profiles = remember { mutableStateOf(emptyList<Profile>()) }
     val scope = rememberCoroutineScope()
 
+    var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
+    var filteredProfileList by remember { mutableStateOf(emptyList<ProfileProxy>()) }
+    var isFiltering by remember { mutableStateOf(false) }
+    var hasInternet by remember{
+        mutableStateOf(checkInternetConnection(context))
+    }
+    val filter by rememberSaveable {
+        mutableStateOf(listOf(
+            "ID",
+            "Name",
+            "Course Section",
+        ))
+    }
+    var currentFilter by rememberSaveable {
+        mutableStateOf(filter[0])
+    }
     LaunchedEffect(Unit) {
         scope.launch {
-            accountvm.allProfiles.collect { profileList ->
-                profiles.value = profileList // Set the collected profiles
+            delay(200)
+            if(allAccounts.isNotEmpty() && profiles.isNotEmpty()){
                 isLoading = false
             }
+
         }
     }
 
+    LaunchedEffect(searchQuery, currentFilter) {
 
-    if (allAccounts.isNotEmpty()){
-        val me = profiles.value[0]
-        LazyColumn(
-            modifier = Modifier
-                .padding(top = 70.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top
-        ) {
-            items(allAccounts){ profile ->
-                if(me.studentId != profile.studentId && !me.addedFriends.contains(profile.studentId)) {
-                    AddFriendRow(friend = profile, friendvm = friendsvm)
+        scope.launch {
+            if(searchQuery.text.isNotEmpty()){
+                isFiltering = true
+
+                filteredProfileList = when (currentFilter) {
+                    filter[0] -> filterProfileByID(
+                        list = allAccounts,
+                        searchQuery = searchQuery.text
+                    )
+
+                    filter[1] -> filterProfileByName(
+                        list = allAccounts,
+                        searchQuery = searchQuery.text
+                    )
+
+                    filter[2] -> filterProfileByCourse(
+                        list = allAccounts,
+                        searchQuery = searchQuery.text
+                    )
+
+                    else -> emptyList()
                 }
 
+                isFiltering = false
+            }
+            else{
+                filteredProfileList = emptyList()
+            }
+        }
+
+
+    }
+    if(isLoading){
+        CircularLoadingBasic("Loading Users...")
+    }
+    else if(isFiltering){
+        CircularLoadingBasic("Searching ${searchQuery.text}")
+    }
+    else{
+        val me = profiles[0]
+
+        Column(
+            modifier = Modifier.
+            padding(top = 70.dp)
+        ) {
+            SearchBarDropDown(
+                searchAction = { query ->
+                    searchQuery = query
+                },
+                dropDownAction = { filter ->
+                    currentFilter = filter
+                },
+                setFilterValue = {
+                },
+                width = (LocalConfiguration.current.screenWidthDp -150).dp,
+                height = 48.dp,
+                textSize = 16.sp,
+                primaryDropDown = filter,
+                text = "Search Users...",
+                currentFilterSelection = currentFilter,
+            )
+            if(filteredProfileList.isEmpty()){
+                Text(
+                    text = "Search to find users...",
+                    modifier = Modifier
+                        .padding(top = 100.dp)
+                        .fillMaxSize(),
+                    textAlign = TextAlign.Center
+                )
+            }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Top
+            ) {
+                items(filteredProfileList) { profile ->
+                    if (me.studentId != profile.studentId && !me.addedFriends.contains(profile.studentId)) {
+                        AddFriendRow(friend = profile, friendvm = friendsvm)
+                    }
+
+                }
             }
         }
     }
+
+
+
+
+
 
 }
 

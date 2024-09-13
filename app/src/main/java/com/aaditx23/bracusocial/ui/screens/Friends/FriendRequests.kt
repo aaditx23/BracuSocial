@@ -99,22 +99,7 @@ fun FriendRequests(friendvm: FriendsVM){
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
-//                Button(onClick = {
-//                    friendvm.sendRequest(
-//                        "21201617"
-//                    )
-//                    friendvm.sendRequest(
-//                        "21201616"
-//                    )
-//                    friendvm.sendRequest(
-//                        "21201615"
-//                    )
-//
-//                }) {
-//                    Text(text = "ADD MANUALLY")
-//                }
                 Text(text = "No Friend Requests")
-
             }
         }
     }
