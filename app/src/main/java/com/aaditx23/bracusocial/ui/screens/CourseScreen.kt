@@ -118,19 +118,17 @@ fun CourseScreen(dbStatus: Boolean){
 
         filteredCourseList = withContext(Dispatchers.IO) {
             // If all search fields are blank, return all courses
-            if (searchQuery.text.isBlank() && searchQueryFaculty.text.isBlank() && searchQueryRoom.text.isBlank()) {
-                allCourses
-            } else {
-                // Filter the courses based on the provided criteria
-                filterCourses(
-                    list = allCourses,
-                    searchQuery = searchQuery.text,
-                    days = filterDay,
-                    time = filterTime,
-                    room = searchQueryRoom.text,
-                    faculty = searchQueryFaculty.text
-                )
-            }
+
+            // Filter the courses based on the provided criteria
+            filterCourses(
+                list = allCourses,
+                searchQuery = searchQuery.text,
+                days = filterDay,
+                time = filterTime,
+                room = searchQueryRoom.text,
+                faculty = searchQueryFaculty.text
+            )
+
         }
 
         isFiltering = false
@@ -272,9 +270,11 @@ fun CourseScreen(dbStatus: Boolean){
             ) {
                 items(
                     if(
-                        searchQuery.text == "" &&
-                        searchQueryFaculty.text == "" &&
-                        searchQueryRoom.text == ""
+                        searchQuery.text.isBlank() &&
+                        searchQueryFaculty.text.isBlank() &&
+                        searchQueryRoom.text.isBlank() &&
+                        filterDay.contains("All") &&
+                        filterTime.contains("All")
                     )
                         allCourses
                     else
