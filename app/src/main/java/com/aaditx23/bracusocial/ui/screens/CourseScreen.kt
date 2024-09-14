@@ -114,27 +114,26 @@ fun CourseScreen(dbStatus: Boolean){
 
     // Filtering logic within a coroutine
     LaunchedEffect(searchQuery, searchQueryFaculty, searchQueryRoom, filterDay, filterTime) {
-        coroutineScope.launch {
-            isFiltering = true
+        isFiltering = true
 
-            // If the search query is empty, return all courses
-            filteredCourseList = withContext(Dispatchers.IO){
-                if (searchQuery.text.isBlank()) {
-                    allCourses
-                } else {
-                    filterCourses(
-                        list = allCourses,
-                        searchQuery = searchQuery.text,
-                        days = filterDay,
-                        time = filterTime,
-                        room = searchQueryRoom.text,
-                        faculty = searchQueryFaculty.text
-                    )
-                }
+        filteredCourseList = withContext(Dispatchers.IO) {
+            // If all search fields are blank, return all courses
+            if (searchQuery.text.isBlank() && searchQueryFaculty.text.isBlank() && searchQueryRoom.text.isBlank()) {
+                allCourses
+            } else {
+                // Filter the courses based on the provided criteria
+                filterCourses(
+                    list = allCourses,
+                    searchQuery = searchQuery.text,
+                    days = filterDay,
+                    time = filterTime,
+                    room = searchQueryRoom.text,
+                    faculty = searchQueryFaculty.text
+                )
             }
-
-            isFiltering = false
         }
+
+        isFiltering = false
     }
 
 
@@ -253,6 +252,13 @@ fun CourseScreen(dbStatus: Boolean){
 
             ) {
                 items(
+                    if(
+                        searchQuery.text == "" &&
+                        searchQueryFaculty.text == "" &&
+                        searchQueryRoom.text == ""
+                    )
+                        allCourses
+                    else
                     filteredCourseList
                 ){course ->
                     CallCourseItem(courseData = course)

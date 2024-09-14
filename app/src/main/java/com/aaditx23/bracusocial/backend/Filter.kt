@@ -2,57 +2,60 @@ package com.aaditx23.bracusocial.backend
 
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
-fun filterCourses(
+suspend fun filterCourses(
     list: List<Course>,
     searchQuery: String,
     days: String,
     time: String,
     room: String,
     faculty: String
-): List<Course> {
-    return list.filter { course ->
-        val queryMatches = searchQuery.trim().split("-").let { query ->
-            when (query.size) {
-                1 -> course.courseName.contains(query[0].trim(), ignoreCase = true)
-                2 -> course.courseName.contains(query[0].trim(), ignoreCase = true) &&
-                        course.section.contains(query[1].trim(), ignoreCase = true)
-                else -> true // If searchQuery is empty, return true to not filter by query.
+): List<Course> = withContext(Dispatchers.Default) {
+    list.filter { course ->
+        val queryMatches = if (searchQuery.isNotBlank()) {
+            searchQuery.trim().split("-").let { query ->
+                when (query.size) {
+                    1 -> course.courseName.contains(query[0].trim(), ignoreCase = true)
+                    2 -> course.courseName.contains(query[0].trim(), ignoreCase = true) &&
+                            course.section.contains(query[1].trim(), ignoreCase = true)
+                    else -> true
+                }
             }
+        } else {
+            true
         }
 
-        val dayMatches = when {
-            days.contains("All") -> true
-            else -> {
-                val trimmedDay = days.take(2)
-                course.classDay?.contains(trimmedDay, ignoreCase = true) == true ||
-                        course.labDay?.contains(trimmedDay, ignoreCase = true) == true
-            }
-        }
-
-        val timeMatches = when {
-            time.contains("All") -> true
-            else -> {
-                course.classTime?.contains(time, ignoreCase = true) == true ||
-                        course.labTime?.contains(time, ignoreCase = true) == true
-            }
-        }
-
-        val roomMatches = if (room.isBlank()) {
+        val dayMatches = if (days.contains("All")) {
             true
         } else {
+            val trimmedDay = days.take(2)
+            course.classDay?.contains(trimmedDay, ignoreCase = true) == true ||
+                    course.labDay?.contains(trimmedDay, ignoreCase = true) == true
+        }
+
+        val timeMatches = if (time.contains("All")) {
+            true
+        } else {
+            course.classTime?.contains(time, ignoreCase = true) == true ||
+                    course.labTime?.contains(time, ignoreCase = true) == true
+        }
+
+        val roomMatches = if (room.isNotBlank()) {
             course.classRoom?.contains(room.trim(), ignoreCase = true) == true ||
                     course.labRoom?.contains(room.trim(), ignoreCase = true) == true
-        }
-
-        val facultyMatches = if (faculty.isBlank()) {
-            true
         } else {
-            course.faculty.contains(faculty.trim(), ignoreCase = true)
+            true
         }
 
-        // Combining all conditions
+        val facultyMatches = if (faculty.isNotBlank()) {
+            course.faculty.contains(faculty.trim(), ignoreCase = true)
+        } else {
+            true
+        }
+
         queryMatches && dayMatches && timeMatches && roomMatches && facultyMatches
     }
 }
