@@ -146,7 +146,10 @@ fun CourseScreen(dbStatus: Boolean){
         }
     }
 
-    Column(modifier = Modifier.padding(top = 80.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(top = 80.dp, bottom = 20.dp)
+    ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
@@ -167,44 +170,60 @@ fun CourseScreen(dbStatus: Boolean){
 
         // Filters drop down
 
-        Row {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+        ) {
             DropDownCard(
                 dropdownItems = dayFilters,
-                startPadding = 10.dp,
-                endPadding = 10.dp,
+                startPadding = 8.dp,
+                endPadding = 8.dp,
                 onItemClick = { day ->
                     filterDay = day
                 },
                 bgColor = paletteBlue4,
-                fontColor = paletteBlue1
+                fontColor = paletteBlue1,
+                weight = 0.48f
             )
             DropDownCard(
                 dropdownItems = timeFilters,
-                startPadding = 10.dp,
-                endPadding = 10.dp,
+                startPadding = 8.dp,
+                endPadding = 8.dp,
                 onItemClick = { time ->
                     filterTime = time
                 },
                 bgColor = paletteBlue4,
-                fontColor = paletteBlue1
+                fontColor = paletteBlue1,
+                weight = 1f
             )
         }
-        SearchBar(action = {query ->
-            searchQueryRoom = query
-        },
-            width = LocalConfiguration.current.screenWidthDp.dp,
-            height = 40.dp,
-            textSize = 16.sp,
-            text = "Search By room..."
-        )
-        SearchBar(action = {query ->
-            searchQueryFaculty = query
-        },
-            width = LocalConfiguration.current.screenWidthDp.dp,
-            height = 40.dp,
-            textSize = 16.sp,
-            text = "Search By Faculty..."
-        )
+        Row(
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+        ) {
+            SearchBar(
+                action = { query ->
+                    searchQueryRoom = query
+                },
+                height = 40.dp,
+                paddingStart = 8.dp,
+                paddingEnd = 8.dp,
+                textSize = 15.sp,
+                text = "Search By room...",
+                weight = 0.5f
+            )
+            SearchBar(
+                action = { query ->
+                    searchQueryFaculty = query
+                },
+                paddingStart = 8.dp,
+                paddingEnd = 8.dp,
+                height = 40.dp,
+                textSize = 14.sp,
+                text = "Search By Faculty...",
+                weight = 1f
+            )
+        }
 
         SearchBar(action = {query ->
             searchQuery = query

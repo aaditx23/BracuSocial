@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -59,8 +60,9 @@ import com.aaditx23.bracusocial.ui.theme.paletteBlue9
 @Composable
 fun SearchBar(
     action: (TextFieldValue) -> Unit,
-    width: Dp = 305.dp,
+    width: Dp = 0.dp,
     height: Dp = 40.dp,
+    weight: Float = 1f,
     paddingStart: Dp = 8.dp,
     paddingEnd: Dp = 8.dp,
     cornerRadius: Dp = 5.dp,
@@ -77,7 +79,10 @@ fun SearchBar(
         value = searchQuery,
         onValueChange = { newValue -> searchQuery = newValue },
         modifier = Modifier
-            .size(width = width, height = height)
+            .height(height)
+            .then(
+                if (width == 0.dp) Modifier.fillMaxWidth(weight) else Modifier.width(width)
+            )
             .padding(start = paddingStart, end = paddingEnd)
             .border(1.dp, Color.Gray, RoundedCornerShape(cornerRadius))
             .padding(8.dp),
@@ -152,7 +157,8 @@ fun SearchBarDropDown(
                 value = searchQuery,
                 onValueChange = { newValue -> searchQuery = newValue },
                 modifier = Modifier
-                    .size(width = width, height = height)
+                    .height(height)
+
                     .padding(start = paddingStart, end = paddingEnd, top = paddingTop, bottom =  paddingBottom)
                     .border(1.dp, Color.Gray, RoundedCornerShape(cornerRadius))
                     .padding(8.dp),
@@ -230,7 +236,8 @@ fun SearchBarDropDown(
 fun DropDownCard(
     dropdownItems: List<String>,
     height: Dp = 40.dp,
-    width: Dp = 150.dp,
+    width: Dp = 0.dp,
+    weight: Float = 1f,
     startPadding: Dp = 0.dp,
     endPadding: Dp = 0.dp,
     topPadding: Dp = 0.dp,
@@ -252,6 +259,7 @@ fun DropDownCard(
     var itemHeight by remember {
         mutableStateOf(0.dp)
     }
+    var widthDp by remember { mutableStateOf(0.dp) } // State to hold the width
     val interactionSource = remember {
         MutableInteractionSource()
     }
@@ -265,7 +273,10 @@ fun DropDownCard(
 //        elevation = 4.dp,
         modifier = Modifier
             .padding(start = startPadding, end = endPadding, top = topPadding, bottom = bottomPadding)
-            .size(height = height, width = width)
+            .height(height)
+            .then(
+                if (width == 0.dp) Modifier.fillMaxWidth(weight) else Modifier.width(width)
+            )
             .onSizeChanged {
                 itemHeight = with(density) { it.height.toDp() }
             },
@@ -300,7 +311,10 @@ fun DropDownCard(
                 isContextMenuVisible = false
             },
             modifier = Modifier
-                .width(width)
+                .onSizeChanged { size ->
+                    // Convert the width from pixels to dp
+                    widthDp = with(density) { size.width.toDp() }
+                }
                 .padding(start = startPadding, end = endPadding),
             offset = DpOffset(0.dp, 10.dp)
         ) {
