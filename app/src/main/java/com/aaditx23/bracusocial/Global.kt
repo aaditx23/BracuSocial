@@ -45,6 +45,13 @@ val dayList = listOf(
     "Friday"
 )
 
+fun listfiltersAddAll(list: List<String>, item: String): List<String>{
+    val filters = list.toMutableList()
+    filters.add(0, item)
+    return filters
+}
+
+
 val classTimeList = listOf(
     "08:00 AM - 09:20 AM",
     "09:30 AM - 10:50 AM",

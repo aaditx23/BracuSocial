@@ -37,20 +37,31 @@ import com.aaditx23.bracusocial.backend.filterCourseByFaculty
 import com.aaditx23.bracusocial.backend.filterCourseByNameSection
 import com.aaditx23.bracusocial.backend.filterCourseByRooms
 import com.aaditx23.bracusocial.backend.filterCourseByTimes
+import com.aaditx23.bracusocial.backend.filterCourses
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.checkInternetConnection
 import com.aaditx23.bracusocial.components.CallCourseItem
+import com.aaditx23.bracusocial.components.DropDownCard
 
 import com.aaditx23.bracusocial.components.NoButtonDialog
-import com.aaditx23.bracusocial.components.SearchBarDropDown
+import com.aaditx23.bracusocial.components.SearchBar
+
 import com.aaditx23.bracusocial.dayList
+import com.aaditx23.bracusocial.listfiltersAddAll
 import com.aaditx23.bracusocial.timeSlots
+import com.aaditx23.bracusocial.ui.theme.paletteBlue1
+import com.aaditx23.bracusocial.ui.theme.paletteBlue4
+import com.aaditx23.bracusocial.ui.theme.paletteBlue6
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun CourseScreen(dbStatus: Boolean){
     val courseVM: CourseVM = hiltViewModel()
     val context = LocalContext.current
+    val dayFilters = listfiltersAddAll(dayList, "All Days")
+    val timeFilters = listfiltersAddAll(timeSlots, "All Time Slots")
 
     val allCourses by courseVM.allCourses.collectAsState()
     var status by rememberSaveable {
@@ -59,7 +70,7 @@ fun CourseScreen(dbStatus: Boolean){
     var isLoading by rememberSaveable {
         mutableStateOf(false)
     }
-    var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
+
     var filteredCourseList by remember { mutableStateOf(allCourses) }
     var isFiltering by remember { mutableStateOf(false) }
 
@@ -68,20 +79,14 @@ fun CourseScreen(dbStatus: Boolean){
     var hasInternet by remember{
         mutableStateOf(checkInternetConnection(context))
     }
-    val filter by rememberSaveable {
-        mutableStateOf(listOf(
-            "Course-Section",
-            "Faculty",
-            "Day",
-            "Time",
-            "Room"
-        ))
+    var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
+    var searchQueryFaculty by remember { mutableStateOf(TextFieldValue("")) }
+    var searchQueryRoom by remember { mutableStateOf(TextFieldValue("")) }
+    var filterDay by rememberSaveable {
+        mutableStateOf(dayFilters[0])
     }
-    var currentFilter by rememberSaveable {
-        mutableStateOf(filter[0])
-    }
-    var filterValue by rememberSaveable {
-        mutableStateOf("")
+    var filterTime by rememberSaveable {
+        mutableStateOf(timeFilters[0])
     }
 
 
@@ -108,64 +113,30 @@ fun CourseScreen(dbStatus: Boolean){
     }
 
     // Filtering logic within a coroutine
-    LaunchedEffect(searchQuery, currentFilter) {
-        if(!(currentFilter == filter[2] || currentFilter == filter[3])){
-            coroutineScope.launch {
-                isFiltering = true
+    LaunchedEffect(searchQuery, searchQueryFaculty, searchQueryRoom, filterDay, filterTime) {
+        coroutineScope.launch {
+            isFiltering = true
 
-                filteredCourseList = when (currentFilter) {
-                    filter[0] -> filterCourseByNameSection(
+            // If the search query is empty, return all courses
+            filteredCourseList = withContext(Dispatchers.IO){
+                if (searchQuery.text.isBlank()) {
+                    allCourses
+                } else {
+                    filterCourses(
                         list = allCourses,
-                        searchQuery = searchQuery.text
+                        searchQuery = searchQuery.text,
+                        days = filterDay,
+                        time = filterTime,
+                        room = searchQueryRoom.text,
+                        faculty = searchQueryFaculty.text
                     )
-
-                    filter[1] -> filterCourseByFaculty(
-                        list = allCourses,
-                        searchQuery = searchQuery.text
-                    )
-
-                    filter[4] -> filterCourseByRooms(
-                        list = allCourses,
-                        searchQuery = searchQuery.text
-                    )
-
-                    else -> allCourses
                 }
-
-                isFiltering = false
             }
-        }
 
-    }
-    LaunchedEffect(currentFilter, filterValue) {
-        if(currentFilter == filter[2] || currentFilter == filter[3]){
-            coroutineScope.launch {
-                isFiltering = true
-                filteredCourseList = when (currentFilter) {
-                    filter[2] -> {
-                        filterValue =
-                            if (filterValue == "") dayList[0].slice(0..1)
-                            else filterValue
-                        filterCourseByDays(
-                            list = allCourses,
-                            searchQuery = filterValue.slice(0..1)
-                        )
-                    }
-
-                    filter[3] -> {
-                        filterValue =
-                            if(filterValue == "") timeSlots[0]
-                            else filterValue
-                        filterCourseByTimes(list = allCourses, searchQuery = filterValue)
-                    }
-                    else -> allCourses
-                }
-                println("After filtration $filter $filterValue ${filteredCourseList.size}")
-                isFiltering = false
-
-            }
+            isFiltering = false
         }
     }
+
 
 
     LaunchedEffect(dbStatus) {
@@ -195,28 +166,53 @@ fun CourseScreen(dbStatus: Boolean){
             }
         }
 
-        SearchBarDropDown(
-            searchAction = { query ->
-                searchQuery = query
-            },
-            dropDownAction = { filter ->
-                currentFilter = filter
-            },
-            setFilterValue = { value ->
-                filterValue = value
+        // Filters drop down
 
-            },
-            width = (LocalConfiguration.current.screenWidthDp -150).dp,
-            height = 48.dp,
+        Row {
+            DropDownCard(
+                dropdownItems = dayFilters,
+                startPadding = 10.dp,
+                endPadding = 10.dp,
+                onItemClick = { day ->
+                    filterDay = day
+                },
+                bgColor = paletteBlue4,
+                fontColor = paletteBlue1
+            )
+            DropDownCard(
+                dropdownItems = timeFilters,
+                startPadding = 10.dp,
+                endPadding = 10.dp,
+                onItemClick = { time ->
+                    filterTime = time
+                },
+                bgColor = paletteBlue4,
+                fontColor = paletteBlue1
+            )
+        }
+        SearchBar(action = {query ->
+            searchQueryRoom = query
+        },
+            width = LocalConfiguration.current.screenWidthDp.dp,
+            height = 40.dp,
             textSize = 16.sp,
-            primaryDropDown = filter,
-            text = "Search by...",
-            currentFilterSelection = currentFilter,
-            secondaryDropDown = when (currentFilter) {
-                "Day" -> dayList
-                "Time" -> timeSlots
-                else -> listOf("")
-            }
+            text = "Search By room..."
+        )
+        SearchBar(action = {query ->
+            searchQueryFaculty = query
+        },
+            width = LocalConfiguration.current.screenWidthDp.dp,
+            height = 40.dp,
+            textSize = 16.sp,
+            text = "Search By Faculty..."
+        )
+
+        SearchBar(action = {query ->
+            searchQuery = query
+        },
+            width = LocalConfiguration.current.screenWidthDp.dp,
+            height = 40.dp,
+            textSize = 16.sp
         )
         if (isFiltering){
             Box(
@@ -257,9 +253,6 @@ fun CourseScreen(dbStatus: Boolean){
 
             ) {
                 items(
-                    if(searchQuery.text == "" && !listOf("Day", "Time").contains(currentFilter))
-                    allCourses
-                    else
                     filteredCourseList
                 ){course ->
                     CallCourseItem(courseData = course)

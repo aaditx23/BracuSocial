@@ -4,6 +4,60 @@ import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import org.json.JSONObject
 
+fun filterCourses(
+    list: List<Course>,
+    searchQuery: String,
+    days: String,
+    time: String,
+    room: String,
+    faculty: String
+): List<Course> {
+    return list.filter { course ->
+        val queryMatches = searchQuery.trim().split("-").let { query ->
+            when (query.size) {
+                1 -> course.courseName.contains(query[0].trim(), ignoreCase = true)
+                2 -> course.courseName.contains(query[0].trim(), ignoreCase = true) &&
+                        course.section.contains(query[1].trim(), ignoreCase = true)
+                else -> true // If searchQuery is empty, return true to not filter by query.
+            }
+        }
+
+        val dayMatches = when {
+            days.contains("All") -> true
+            else -> {
+                val trimmedDay = days.take(2)
+                course.classDay?.contains(trimmedDay, ignoreCase = true) == true ||
+                        course.labDay?.contains(trimmedDay, ignoreCase = true) == true
+            }
+        }
+
+        val timeMatches = when {
+            time.contains("All") -> true
+            else -> {
+                course.classTime?.contains(time, ignoreCase = true) == true ||
+                        course.labTime?.contains(time, ignoreCase = true) == true
+            }
+        }
+
+        val roomMatches = if (room.isBlank()) {
+            true
+        } else {
+            course.classRoom?.contains(room.trim(), ignoreCase = true) == true ||
+                    course.labRoom?.contains(room.trim(), ignoreCase = true) == true
+        }
+
+        val facultyMatches = if (faculty.isBlank()) {
+            true
+        } else {
+            course.faculty.contains(faculty.trim(), ignoreCase = true)
+        }
+
+        // Combining all conditions
+        queryMatches && dayMatches && timeMatches && roomMatches && facultyMatches
+    }
+}
+
+
 fun filterCourseByNameSection(list: List<Course>, searchQuery: String): List<Course>{
     return list.filter { course ->
         val query = searchQuery.trim().split("-")
