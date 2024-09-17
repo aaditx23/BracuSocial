@@ -104,7 +104,7 @@ class UsisCrawler{
                 }
 
                 courseList.put(courseInfo)
-                println(courseList.toString(4))
+//                println(courseList.toString(4))
             }
         }
         return courseList
@@ -134,6 +134,7 @@ class UsisCrawler{
                 "https://usis.bracu.ac.bd/academia/admissionRequirement/getAvailableSeatStatus"
             val doc: Document = Jsoup.connect(url).get()
             val rows: Elements = doc.select("tr")
+            println(rows.size)
             val courses = dataFormat(rows)
             val courseList = mutableListOf<JSONObject>()
             for (i in 0 until courses.length()) {

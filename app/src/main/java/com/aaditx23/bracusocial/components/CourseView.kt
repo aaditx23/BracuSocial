@@ -128,18 +128,20 @@ fun CourseCard(course: CourseInfo){
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            TitledText(
-                title = "Class Time: ",
-                text = course.classTime.toString()
-            )
-            TitledText(
-                title = "Class Day: ",
-                text = course.classDay.toString()
-            )
-            TitledText(
-                title = "Class Room: ",
-                text = course.classRoom.toString()
-            )
+            if(course.classDay != "-"){
+                TitledText(
+                    title = "Class Time: ",
+                    text = course.classTime.toString()
+                )
+                TitledText(
+                    title = "Class Day: ",
+                    text = course.classDay.toString()
+                )
+                TitledText(
+                    title = "Class Room: ",
+                    text = course.classRoom.toString()
+                )
+            }
             if (course.labDay != "-") {
                 TitledText(
                     title = "Lab Day: ",

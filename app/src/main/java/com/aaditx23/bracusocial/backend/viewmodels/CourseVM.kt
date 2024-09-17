@@ -63,56 +63,21 @@ open class CourseVM @Inject constructor(
         setSize(size)
         onSet("Data fetching Complete")
         allCoursesJson.forEachIndexed { idx, course ->
-            val lab = course.getBoolean("Lab")
-            val classArray = course.getJSONArray("ClassDay")
-            var classRoom = course.optString("ClassRoom")
-            if (classRoom[0] != '0' && classRoom[0] != '1') {
-                println(classRoom)
-                classRoom = classRoom.slice(1..<classRoom.length)
-            }
-            var classDay = ""
-            for (i in 0..<classArray.length()) {
-                classDay = "$classDay ${classArray[i]}"
-            }
-            val courseInfo: List<String>
-            if (lab) {
-                val labArray = course.getJSONArray("LabDay")
-                var labDay = ""
-                for (i in 0..<labArray.length()) {
-                    labDay = "$labDay ${labArray[i]}"
-                }
-                courseInfo = listOf(
-                    course.optString("Course"),
-                    course.optString("Section"),
-                    classDay,
-                    course.optString("ClassTime"),
-                    classRoom,
-                    labDay,
-                    course.optString("LabTime"),
-                    course.optString("LabRoom"),
-                    course.optString("Faculty")
-                )
-            } else {
-                courseInfo = listOf(
-                    course.optString("Course"),
-                    course.optString("Section"),
-//                    course.getJSONArray("ClassDay").join(" - "),
-                    classDay,
-                    course.optString("ClassTime"),
-                    classRoom,
-                    "-",
-                    "-",
-                    "-",
-                    course.optString("Faculty")
-                )
-            }
+
+            val courseInfo = listOf(
+                course.optString("Course"),
+                course.optString("Section"),
+                course.optString("ClassDay", "-"),
+                course.optString("ClassTime", "-"),
+                course.optString("ClassRoom", "-"),
+                course.optString("LabDay", "-"),
+                course.optString("LabTime", "-"),
+                course.optString("LabRoom", "-"),
+                course.optString("Faculty", "-")
+            )
             courseR.createCourse(courseInfo)
             onSet("Creating: ${courseInfo[0]} - ${courseInfo[1]}")
             setProgress(idx)
-            if (idx == size/2) {
-                onSet("Waiting 1s before continuing")
-                delay(1000)
-            }
         }
         onSet("Database Updated")
         sessionR.dbStatusUpdate(true)
