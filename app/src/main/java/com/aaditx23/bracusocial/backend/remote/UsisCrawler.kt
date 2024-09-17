@@ -15,144 +15,62 @@ class UsisCrawler{
 
     private var courseKey: MutableList<String> = mutableListOf("")
 
-    private fun checkLab(classTime: String): Boolean {
-        val raw = classTime.split(")")
-        return raw.any { it.endsWith("L") }
-    }
 
-    private fun getClassTime(classList: List<String>): Triple<List<String>, String, String> {
-        val day = mutableListOf<String>()
-        var time = ""
-        var room = ""
-        when (classList.size) {
-            2 -> {
-                val d1 = classList[0]
-                val d2 = classList[1]
-                if (d1.substring(0, 2) != d2.substring(0, 2)) {
-                    day.add(d1.substring(0, 2))
-                    day.add(d2.substring(0, 2))
-                    room = d1.substring(21)
-                    time = "${d1.substring(3, 11)} - ${d1.substring(12,20)}"
-                } else {
-                    day.add(d1.substring(0, 2))
-                    room = d1.substring(20)
-                    time = "${d1.substring(3, 11)} - ${d1.substring(12,20)}"
-                }
-            }
-            4 ->{
-                val d1 = classList[0]
-                val d2 = classList[1]
-                val d3 = classList[2]
-                val d4 = classList[3]
-                if (d1.substring(0, 2) != d2.substring(0, 2)) {
-                    day.add(d1.substring(0, 2))
-                    day.add(d2.substring(0, 2))
-                    day.add(d3.substring(0, 2))
-                    day.add(d4.substring(0, 2))
-                    room = d1.substring(21)
-                    time = "${d1.substring(3, 11)} - ${d1.substring(12,20)}"
-                } else {
-                    day.add(d1.substring(0, 2))
-                    room = d1.substring(20)
-                    time = "${d1.substring(3, 11)} - ${d1.substring(12,20)}"
-                }
-            }
-            3 ->{
-                val d1 = classList[0]
-                val d2 = classList[1]
-                val d3 = classList[2]
-                if (d1.substring(0, 2) != d2.substring(0, 2)) {
-                    day.add(d1.substring(0, 2))
-                    day.add(d2.substring(0, 2))
-                    day.add(d3.substring(0, 2))
-                    room = d1.substring(21)
-                    time = "${d1.substring(3, 11)} - ${d1.substring(12,20)}"
-                } else {
-                    day.add(d1.substring(0, 2))
-                    room = d1.substring(20)
-                    time = "${d1.substring(3, 11)} - ${d1.substring(12,20)}"
-                }
-            }
-
-            1 -> {
-                val d1 = classList[0]
-                day.add(d1.substring(0, 2))
-                room = d1.substring(21)
-                time = d1.substring(3,20)
-            }
-        }
-        return Triple(day, time, room)
-    }
-
-    private fun getLabTime(labList: List<String>): Triple<List<String>, String, String> {
-        val day = mutableListOf<String>()
-        var time = ""
-        var room = ""
-        when (labList.size) {
-            2 -> {
-                val t1 = labList[0]
-                val t2 = labList[1]
-                day.add(t1.substring(0, 2))
-                time = "${t1.substring(3, 11)} - ${t2.substring(12,20)}"
-                room = t2.substring(21)
-            }
-            1 -> {
-                val t1 = labList[0]
-                day.add(t1.substring(0, 2))
-                time = t1.substring(3,20)
-                room = t1.substring(21)
-            }
-        }
-        return Triple(day, time, room)
-    }
-
-    private fun timeFormat(dict: JSONObject) : Boolean {
+    private fun timeFormat(dict: JSONObject): Boolean {
         val raw = dict.getString("ClassTime")
-        val rawList = raw.split(")")
-        val classList = mutableListOf<String>()
-        val labList = mutableListOf<String>()
-        for (time in rawList) {
-            when {
-                time.endsWith("C") -> classList.add(time.trim())
-                time.endsWith("L") -> labList.add(time.trim())
-            }
-        }
-        dict.remove("ClassTime")
-        if (classList.isNotEmpty()) {
-            val processedClass = getClassTime(classList)
-            dict.put("ClassDay", JSONArray(processedClass.first))
-            val time = processedClass.second
-            if (!isValidTime(time)){
-//                println("Here are the timings: $time")
+        val processed = processTime(raw)
+
+        dict.put("ClassTime", "")
+
+        processed.forEachIndexed { _, map ->
+            if (!isValidTime(map["time"].toString())) {
                 return false
             }
-            dict.put("ClassTime", processedClass.second)
-            dict.put("ClassRoom", processedClass.third)
-        }
-        if (labList.isNotEmpty()) {
-            val processedLab = getLabTime(labList)
-            dict.put("LabDay", JSONArray(processedLab.first))
-            dict.put("LabTime", processedLab.second)
-            dict.put("LabRoom", processedLab.third)
-        }
+            val classTime = dict.getString("ClassTime")
+            val lab = dict.getBoolean("Lab")
+            if(map["type"] == "Class") {
+                if(classTime == ""){
+                    dict.put("ClassTime", map["time"])
+                    dict.put("ClassDay", map["day"])
+                    dict.put("ClassRoom", map["room"])
+                }
+                else{
+                    val day = dict.getString("ClassDay")
+                    dict.put("ClassDay", "$day ${map["day"]}")
+                }
+            }
+            else{
+                dict.put("Lab", true)
+                if(!lab){
+                    dict.put("LabTime", map["time"])
+                    dict.put("LabDay", map["day"])
+                    dict.put("LabRoom", map["room"])
+                }
+                else{
+                    val day = dict.getString("LabDay").toString()
+                    dict.put("LabDay", "$day ${map["day"]}")
+                }
+            }
 
+        }
         return true
+
     }
 
     private fun isValidTime(time: String): Boolean{
         val timeSlots = arrayOf(
-            "08:00 AM - 09:20 AM",
-            "09:30 AM - 10:50 AM",
-            "11:00 AM - 12:20 PM",
-            "12:30 PM - 01:50 PM",
-            "02:00 PM - 03:20 PM",
-            "03:30 PM - 04:50 PM",
-            "05:00 PM - 06:20 PM",
-            "06:30 PM - 08:00 PM",
-            "08:00 AM - 10:50 AM",
-            "11:00 AM - 01:50 PM",
-            "02:00 PM - 04:50 PM",
-            "05:00 PM - 08:00 PM"
+            "08:00 AM-09:20 AM",
+            "09:30 AM-10:50 AM",
+            "11:00 AM-12:20 PM",
+            "12:30 PM-01:50 PM",
+            "02:00 PM-03:20 PM",
+            "03:30 PM-04:50 PM",
+            "05:00 PM-06:20 PM",
+            "06:30 PM-08:00 PM",
+            "08:00 AM-10:50 AM",
+            "11:00 AM-01:50 PM",
+            "02:00 PM-04:50 PM",
+            "05:00 PM-08:00 PM"
         )
 
         return timeSlots.contains(time)
@@ -165,31 +83,28 @@ class UsisCrawler{
             if (data.size >= 10) {
                 val courseCode = data[1].text().trim()
                 val faculty = data[3].text().trim()
-                if (courseCode.contains("TSL") || courseCode.contains("PSM") || courseCode.contains("HUM103")
-                    || courseCode.contains("LAW101") || courseCode.contains("LAW203") || courseCode.contains("ENG102")
-                    || courseCode.contains("EMB101") || courseCode.contains("BNG103") || courseCode.contains("PHR")
-                    || courseCode.contains("ARC") || courseCode.contains("ACT511")
-                ) continue
+//                if (courseCode.contains("TSL") || courseCode.contains("PSM") || courseCode.contains("HUM103")
+//                    || courseCode.contains("LAW101") || courseCode.contains("LAW203") || courseCode.contains("ENG102")
+//                    || courseCode.contains("EMB101") || courseCode.contains("BNG103") || courseCode.contains("PHR")
+//                    || courseCode.contains("ARC") || courseCode.contains("ACT511")
+//                ) continue
                 val section = data[5].text().trim()
                 if (section.contains("OM", ignoreCase = true) || section.contains("closed", ignoreCase = true)) continue
                 val timings = data[6].text().trim()
-                if (timings.count { it == 'L' } > 2 || "UB0000" in timings) continue
-                val labFlag = checkLab(timings)
+                if ("UB0000" in timings) continue
                 val courseInfo = JSONObject()
                 courseInfo.put("Course", courseCode)
                 courseInfo.put("Section", section)
                 courseInfo.put("ClassTime", timings)
-                courseInfo.put("Lab", labFlag)
+                courseInfo.put("Lab", false)
                 courseInfo.put("Faculty", faculty)
                 val timeCheckFlag = timeFormat(courseInfo)
-                if(!courseInfo.has("ClassDay")){
-                    continue
-                }
                 if( !timeCheckFlag){
                     continue
                 }
 
                 courseList.put(courseInfo)
+                println(courseList.toString(4))
             }
         }
         return courseList
@@ -212,6 +127,7 @@ class UsisCrawler{
     }
 
 
+
     suspend fun executeAsyncTask(): MutableList<JSONObject> {
         return withContext(Dispatchers.IO) {
             val url =
@@ -226,7 +142,7 @@ class UsisCrawler{
             }
 
 //             You can still use createCourseList(courseList) if it accepts MutableList<JSONObject>
-             createCourseList(courses)
+            createCourseList(courses)
 
             //val file = File("course_info.json")
             //file.writeText(courseList.toString())
