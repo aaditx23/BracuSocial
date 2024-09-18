@@ -127,10 +127,10 @@ val courseArray = arrayOf(
 
 val demoProfiles = listOf(
     listOf(
-        "21201618", // Profile 1
-        "123",
+        "23341077", // Profile 1
+        "",
         "Demo 1",
-        "CSE221 02,SOC101 01,CSE489 01",
+        "CSE421 05, CSE489 01, SOC101 09, CSE428 02",
         "21201617", // Added Friends: Demo 2
         "21201616",  // Friend Requests: Demo 3 sent a request to Demo 1,
         emptyProfileString,
@@ -144,7 +144,7 @@ val demoProfiles = listOf(
         "21201618,21201616", // Added Friends: Demo 1 and Demo 3
         "",            // No pending friend requests
         emptyProfileString,
-        "amir.ul.islam@g.bracu.ac.bd"
+        "amir1.ul.islam@g.bracu.ac.bd"
 
     ),
     listOf(
@@ -155,7 +155,7 @@ val demoProfiles = listOf(
         "21201617", // Added Friends: Demo 2
         "21201618",  // Friend Requests: Demo 1 sent a request to Demo 3
         emptyProfileString,
-        "amir.ul.islam@g.bracu.ac.bd"
+        "amir2.ul.islam@g.bracu.ac.bd"
     ),
     listOf(
         "21201615", // Profile 4
@@ -165,7 +165,7 @@ val demoProfiles = listOf(
         "",         // No friends yet
         "21201614",  // Friend Requests: Demo 5 sent a request to Demo 4
         emptyProfileString,
-        "amir.ul.islam@g.bracu.ac.bd"
+        "amir3.ul.islam@g.bracu.ac.bd"
     ),
     listOf(
         "21201614", // Profile 5
@@ -175,6 +175,6 @@ val demoProfiles = listOf(
         "",         // No friends yet
         "",          // No pending friend requests
         emptyProfileString,
-        "amir.ul.islam@g.bracu.ac.bd"
+        "amir4.ul.islam@g.bracu.ac.bd"
     )
 )

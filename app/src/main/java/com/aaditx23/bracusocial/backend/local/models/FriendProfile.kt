@@ -4,11 +4,11 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
 class FriendProfile: RealmObject {
-    @PrimaryKey
+    @PrimaryKey var email: String = ""
     var studentId: String = ""
     var studentName: String = ""
     var enrolledCourses: String = ""
     var addedFriends: String = ""
     var profilePicture: String = ""
-    var email: String = ""
+
 }

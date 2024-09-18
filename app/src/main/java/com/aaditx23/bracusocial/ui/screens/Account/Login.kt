@@ -41,84 +41,74 @@ fun Login(accountvm: AccountVM, loginSuccess: () -> Unit){
     }
 
     val context = LocalContext.current
-    val (id, setId) = rememberSaveable { mutableStateOf("") }
+    val (email, setEmail) = rememberSaveable { mutableStateOf("") }
     val (pass, setPass) = rememberSaveable { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
 
 
-    if (isSuccess){
-        Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-        loginSuccess()
-        isSuccess = false
-    }
-    else{
-        Column(
+
+    Column(
+        modifier = Modifier
+            .padding(top = 80.dp)
+    ) {
+        TextField(
+            value = email,
+            onValueChange = {setEmail(it)},
+            label = { Text(text = "USIS Email") },
             modifier = Modifier
-                .padding(top = 80.dp)
-        ) {
-            TextField(
-                value = id,
-                onValueChange = {setId(it)},
-                label = { Text(text = "ID") },
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
+                .padding(10.dp)
+                .fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+        )
 
-            TextField(
-                value = pass,
-                onValueChange = {setPass(it)},
-                label = { Text(text = "Password") },
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .border(2.dp, Color.Transparent),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-            )
+        TextField(
+            value = pass,
+            onValueChange = {setPass(it)},
+            label = { Text(text = "USIS Password") },
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
+                .border(2.dp, Color.Transparent),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+        )
 
-            Button(
-                onClick = {
-                    if(id == "" || pass == ""){
-                        Toast.makeText(context, "Fields cannot be empty", Toast.LENGTH_SHORT).show()
-                    }
-                    else{
-                        scope.launch {
-                            isLoading = true
-                            ppVM.login(
-                                id, pass,
-                                result = {match, found ->
-                                    isSuccess = match
-                                    gotProfile = found
-
-                                    if(!isSuccess){
-                                        if(gotProfile){
-                                            Toast.makeText(context, "Wrong Password", Toast.LENGTH_SHORT).show()
-                                        }
-                                        else{
-                                            Toast.makeText(context, "Wrong ID", Toast.LENGTH_SHORT).show()
-                                        }
-
-                                    }
+        Button(
+            onClick = {
+                if(email == "" || pass == ""){
+                    Toast.makeText(context, "Fields cannot be empty", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    scope.launch {
+                        isLoading = true
+                        println("Loggin in...")
+                        ppVM.login(
+                            email, pass,
+                            result = { success ->
+                                isSuccess = success
+                                println("$success is Success")
+                                if(success){
+                                    Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
+                                    loginSuccess()
                                 }
-                            )
+                            }
+                        )
 //                            if(isSuccess){
 //                                accountvm.createFriends()
 //                            }
-                            isLoading = false
+                        isLoading = false
 
-                        }
                     }
                 }
-            ) {
-                Text(text = "Login")
             }
-            if(isLoading){
-                NoButtonCircularLoadingDialog(title = "Logging in to $id", message = "Please wait...")
-            }
+        ) {
+            Text(text = "Login")
+        }
+        if(isLoading){
+            NoButtonCircularLoadingDialog(title = "Logging in to $email", message = "Please wait...")
         }
     }
+
 
 }
 

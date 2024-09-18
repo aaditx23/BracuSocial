@@ -65,7 +65,6 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-//    implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -78,6 +77,8 @@ dependencies {
     implementation("org.jsoup:jsoup:1.15.4")
     implementation("org.json:json:20230227")
     implementation("com.google.code.gson:gson:2.10.1")
+
+    implementation("com.squareup.okhttp3:okhttp:4.9.2")
 
     implementation("androidx.compose.material:material-icons-extended:1.6.5")
     implementation("androidx.navigation:navigation-compose:2.7.7")

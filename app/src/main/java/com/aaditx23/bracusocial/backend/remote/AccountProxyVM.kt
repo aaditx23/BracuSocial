@@ -10,7 +10,6 @@ import com.aaditx23.bracusocial.component7
 import com.aaditx23.bracusocial.component8
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -21,7 +20,8 @@ open class AccountProxyVM @Inject constructor(
     private val ppR: ProfileProxyRepository,
     private val sessionR: SessionRepository,
     private val profileR: ProfileRepository,
-    private val fpR: FriendProfileRepository
+    private val fpR: FriendProfileRepository,
+    private val usisClient: USISClient
 ): ViewModel() {
 
     val allSessions = sessionR.getAllSession()
@@ -55,8 +55,8 @@ open class AccountProxyVM @Inject constructor(
         }
     }
 
-    fun getProfile(sid: String): ProfileProxy? {
-        return ppR.getProfileProxy(sid)
+    fun getProfile(email: String): ProfileProxy? {
+        return ppR.getProfileProxy(email)
     }
 
     fun deleteLocalProfile(sid: String) {
@@ -73,18 +73,22 @@ open class AccountProxyVM @Inject constructor(
         }
     }
 
-    suspend fun login(sid: String, pass: String, result: (Boolean, Boolean) -> Unit){
+    suspend fun login(email: String, pass: String, result: (Boolean) -> Unit){
         viewModelScope.launch {
-            val profile =  async {
-                ppR.getProfileProxy(sid)
-            }.await()
-            if (profile != null){
-                if(pass == profile.password){
+            val (login, name) = async{ usisClient.loginAndFetchName(email, pass) }.await()
 
+
+            if(login){
+                println("In vm login is true")
+                val profile =  async {
+                    ppR.getProfileProxy(email)
+                }.await()
+
+                if (profile != null){
                     profileR.createProfile(
                         sid = profile.studentId,
-                        name = profile.studentName,
-                        pass = profile.password,
+                        name = name,
+                        pass = pass,
                         friends = profile.addedFriends,
                         courses = profile.enrolledCourses,
                         requests = profile.friendRequests,
@@ -113,12 +117,15 @@ open class AccountProxyVM @Inject constructor(
 
                     }
                     sessionR.loginStatusUpdate(true)
-                    result(pass == profile.password, true)
+                    result(true)
                 }
+
             }
             else{
-                result(false, false)
+                result(false)
             }
+
+
         }
     }
 

@@ -207,9 +207,9 @@ class ProfileProxyRepository @Inject constructor(
                 results.list.toList()
             }
     }
-    fun getProfileProxy(sid: String) : ProfileProxy? {
+    fun getProfileProxy(email: String) : ProfileProxy? {
         return realm
-            .query<ProfileProxy>("studentId == $0", sid).first().find()
+            .query<ProfileProxy>("email == $0", email).first().find()
 
     }
     private fun stringToSet(st: String): MutableSet<Int>{
