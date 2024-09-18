@@ -231,6 +231,7 @@ fun AddFriendRow(friend: RemoteProfile, friendvm: FriendsVM){
                 IconButton(
                     onClick = {
                         friendvm.cancelSentRequest(friend.studentId)
+                        sentAlready = false
                         Toast.makeText(context, "${friend.name} Request Cancelled", Toast.LENGTH_SHORT).show()
                     },
                 ) {
@@ -245,6 +246,7 @@ fun AddFriendRow(friend: RemoteProfile, friendvm: FriendsVM){
                 IconButton(
                     onClick = {
                         friendvm.sendRequest(friend.studentId)
+                        sentAlready = true
                         Toast.makeText(context, "${friend.name} Request Sent", Toast.LENGTH_SHORT).show()
                     },
                 ) {

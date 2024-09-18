@@ -50,23 +50,42 @@ open class FriendsVM @Inject constructor(
         )
 //    val firstProfile = profileR.getMyProfile()
 
+    fun updateFriends(){
+        viewModelScope.launch {
+            val me = profileR.getMyProfile()
+            if(me != null){
+                val friendListString = me.addedFriends
+                val temp = friendListString.split(",")
+                val list = mutableListOf<RemoteProfile>()
+                temp.forEach { s ->
+                    if (s!= ""){
+                        val remoteProfile = fbp.getProfileById(s)
+                        if (remoteProfile != null){
+                            list.add(remoteProfile)
+                        }
+                    }
+                }
+                fpR.updateFriendProfile(list.toList())
+            }
+        }
+    }
     fun addFriend(friend: String){
         viewModelScope.launch {
              // add friend id to string
             // fetch profile from remote
-            val remoteProfile = ppR.getProfileProxy(friend)
+            val remoteProfile = fbp.getProfileById(friend)
             if (remoteProfile != null){
                 profileR.addFriend(friend)
                 fpR.createFriendProfile(
                     sid = remoteProfile.studentId,
-                    name = remoteProfile.studentName,
+                    name = remoteProfile.name,
                     courses = remoteProfile.enrolledCourses,
                     friends = remoteProfile.addedFriends,
                     pic = remoteProfile.profilePicture,
                     emailData = remoteProfile.email
                 )
                 val me = profileR.getMyProfile()
-                ppR.updateFriend(me!!.studentId, friend)
+                fbp.updateFriend(me!!.studentId, friend)
                 // add me to friend's profile
 
             }
@@ -81,7 +100,7 @@ open class FriendsVM @Inject constructor(
             profileR.removeFriend(friend)   //remove friend from profile
             fpR.deleteFriendProfile(friend) // remove friend from local
             val me = profileR.getMyProfile()
-            ppR.updateFriend(me!!.studentId, friend, add = false)
+            fbp.updateFriend(me!!.studentId, friend, add = false)
         }
     }
 
@@ -121,7 +140,7 @@ open class FriendsVM @Inject constructor(
         viewModelScope.launch {
             val meLocal = profileR.getMyProfile()
             if(meLocal != null){
-                ppR.cancelRequest(friend, meLocal.studentId)
+                fbp.cancelRequest(friend, meLocal.studentId)
                 profileR.cancelRequest(friend)
 
             }
@@ -133,7 +152,7 @@ open class FriendsVM @Inject constructor(
         viewModelScope.launch {
             val meLocal = profileR.getMyProfile()
             if (meLocal != null){
-                ppR.cancelRequest( meLocal.studentId, friend)
+                fbp.cancelRequest( meLocal.studentId, friend)
             }
         }
     }
@@ -187,6 +206,14 @@ open class FriendsVM @Inject constructor(
                 fbp.getProfileById(id)
             }
             _friendRequestProfiles.value = profiles
+        }
+    }
+    suspend fun fetchFriendProfiles(id: String, onGet: (RemoteProfile) -> Unit) {
+        viewModelScope.launch {
+            val profile = async{ fbp.getProfileById(id) }.await()
+            if(profile != null){
+                onGet(profile)
+            }
         }
     }
 

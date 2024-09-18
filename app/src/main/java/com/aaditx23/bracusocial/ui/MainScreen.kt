@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -34,6 +35,7 @@ import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.backend.viewmodels.SessionVM
+import com.aaditx23.bracusocial.checkInternetConnection
 import com.aaditx23.bracusocial.components.CircularLoadingBasic
 import com.aaditx23.bracusocial.components.NavDrawer
 import com.aaditx23.bracusocial.components.TopActionBar
@@ -90,6 +92,9 @@ fun Main(){
     var loginStatus by rememberSaveable {
         mutableStateOf(false)
     }
+    var hasInternet by remember{
+        mutableStateOf(checkInternetConnection(context))
+    }
 
     val navController = rememberNavController()
     var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -116,6 +121,9 @@ fun Main(){
     LaunchedEffect(allSessions) {
         println(allSessions)
         CoroutineScope(Dispatchers.IO).launch {
+            if(hasInternet){
+                accountvm.updateProfileFromRemote()
+            }
             delay(1000)
             if(allSessions.isEmpty()){
                 sessionvm.createSession()

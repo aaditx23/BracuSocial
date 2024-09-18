@@ -21,6 +21,8 @@ import androidx.compose.ui.platform.LocalContext
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
@@ -59,8 +61,9 @@ fun ImagePicker(onImagePicked: (image: Bitmap) -> Unit){
             fixAspectRatio = true
             aspectRatioX = 1
             aspectRatioY = 1
-            outputRequestWidth = 300
-            outputRequestHeight = 300
+            outputRequestWidth = 150
+            outputRequestHeight = 150
+            outputCompressQuality = 20
         })
         cropLauncher.launch(cropOptions)
     }
@@ -79,11 +82,28 @@ private fun createBitmapFromUri(context: Context, uri: Uri): Bitmap {
     return BitmapFactory.decodeStream(inputStream)
 }
 
-fun bitmapToString(bitmap: Bitmap): String {
-    val outputStream = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-    val byteArray = outputStream.toByteArray()
-    return Base64.encodeToString(byteArray, Base64.DEFAULT)
+//fun bitmapToString(bitmap: Bitmap): String {
+//    val outputStream = ByteArrayOutputStream()
+//    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+//    val byteArray = outputStream.toByteArray()
+//    return Base64.encodeToString(byteArray, Base64.DEFAULT)
+//}
+
+suspend fun bitmapToString(bitmap: Bitmap, maxSizeKB: Int = 100): String = withContext(Dispatchers.IO) {
+    var compressedBitmap = bitmap
+    var quality = 100
+    var outputStream = ByteArrayOutputStream()
+
+    // Compress and check size
+    do {
+        outputStream.reset() // Reset the stream to clear previous data
+        compressedBitmap.compress(Bitmap.CompressFormat.PNG, quality, outputStream)
+        val byteArray = outputStream.toByteArray()
+        val sizeKB = byteArray.size / 1024
+        quality -= 10 // Reduce quality for further compression if needed
+    } while (sizeKB > maxSizeKB && quality > 0)
+
+    Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
 }
 
 fun stringToBitmap(encodedString: String): Bitmap? {

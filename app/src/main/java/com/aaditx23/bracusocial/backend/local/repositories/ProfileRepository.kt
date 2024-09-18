@@ -1,8 +1,10 @@
 package com.aaditx23.bracusocial.backend.local.repositories
 
+import android.util.Log
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.local.models.Profile
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
+import com.aaditx23.bracusocial.backend.remote.RemoteProfile
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.asFlow
@@ -43,6 +45,18 @@ class ProfileRepository @Inject constructor(
             println("Profile created (profile repository, create profile)")
         }
     }
+    suspend fun updateProfile(profile: RemoteProfile){
+        realm.write {
+            val me = query<Profile>().first().find()
+            if (me != null) {
+                me.addedFriends = profile.addedFriends
+                me.friendRequests = profile.friendRequests
+                me.enrolledCourses = profile.enrolledCourses
+                me.profilePicture = profile.profilePicture
+                println("Friend reuqests of me ${me.friendRequests} remote ${profile.friendRequests}")
+            }
+        }
+    }
 
     suspend fun updateName(name: String){
         realm.write {
@@ -53,14 +67,24 @@ class ProfileRepository @Inject constructor(
         }
 //        println("Name updated to $name")
     }
-    suspend fun updatePic(pic: String){
-        realm.write {
-            val profileData = query<Profile>().first().find()
-            if (profileData != null) {
-                profileData.profilePicture = pic
+    suspend fun updatePic(pic: String, result: (Boolean) -> Unit) {
+        try {
+
+            realm.write {
+                val profileData = query<Profile>().first().find()
+                if (profileData != null) {
+                    profileData.profilePicture = pic
+                    result(true)
+                }
             }
+        } catch (e: IllegalArgumentException) {
+            Log.e("updatePic", "Error updating profile picture: ${e.message}")
+            result(false)
+        } catch (e: Exception) {
+            Log.e("updatePic", "Unexpected error occurred while updating profile picture", e)
+            result(false)
+            // Handle other exceptions
         }
-//        println("Name updated to $pic")
     }
     suspend fun updateCourses(courses: String){
         realm.write {

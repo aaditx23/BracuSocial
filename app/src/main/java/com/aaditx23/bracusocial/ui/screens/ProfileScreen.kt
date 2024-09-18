@@ -2,6 +2,7 @@ package com.aaditx23.bracusocial.ui.screens
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -143,6 +144,7 @@ fun ProfilePage(
 ) {
     val (isEditing, setEditing) = remember { mutableStateOf(false) }
     val (name, setName) = remember { mutableStateOf(profile.studentName) }
+    val context = LocalContext.current
 
     var updatingName by remember {
         mutableStateOf(false)
@@ -246,7 +248,18 @@ fun ProfilePage(
             scope.launch{
                 println("CALLED IMAGE PICKER $showImagePicker")
                 profileImage = image
-                accountvm.updatePic(bitmapToString(profileImage))
+                accountvm.updatePic(
+                    bitmapToString(profileImage),
+                    result = { r ->
+                        if (r){
+                            Toast.makeText(context, "Image Updated", Toast.LENGTH_SHORT).show()
+                        }
+                        else{
+                            Toast.makeText(context, "Error uploading photo, choose a smaller image", Toast.LENGTH_SHORT).show()
+
+                        }
+                    }
+                )
                 println("$image FOUND")
                 enableImageSelect = true
                 showImagePicker = false

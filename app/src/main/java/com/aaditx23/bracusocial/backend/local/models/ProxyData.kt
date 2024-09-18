@@ -3,10 +3,17 @@ package com.aaditx23.bracusocial.backend.local.models
 import android.graphics.Bitmap
 import com.aaditx23.bracusocial.MainActivity
 import com.aaditx23.bracusocial.components.bitmapToString
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 
 var emptiProfile = MainActivity.EmptyImage.emptyProfileImage
-val emptyProfileString = bitmapToString(emptiProfile)
+val emptyProfileString = runBlocking(Dispatchers.IO) {
+    async { bitmapToString(emptiProfile) }.await()
+}
 
 val courseArray = arrayOf(
     JSONObject(

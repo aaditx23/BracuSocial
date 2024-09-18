@@ -3,6 +3,7 @@ package com.aaditx23.bracusocial.backend.local.repositories
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.local.models.FriendProfile
 import com.aaditx23.bracusocial.backend.local.models.Profile
+import com.aaditx23.bracusocial.backend.remote.RemoteProfile
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.asFlow
@@ -45,6 +46,20 @@ class FriendProfileRepository @Inject constructor(
         val profile = realm.query<Profile>().first().find()
         val list = profile!!.addedFriends.split(",")
         return list.asFlow()
+    }
+    suspend fun updateFriendProfile(profileList: List<RemoteProfile>){
+        realm.write {
+            profileList.forEach{ profile ->
+                val local = query<FriendProfile>("email == $0", profile.email).first().find()
+                if (local != null) {
+                    local.addedFriends = profile.addedFriends
+                    local.enrolledCourses = profile.enrolledCourses
+                    local.profilePicture = profile.profilePicture
+                }
+            }
+
+
+        }
     }
 
 

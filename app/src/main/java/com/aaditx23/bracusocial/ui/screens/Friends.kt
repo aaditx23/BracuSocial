@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -20,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aaditx23.bracusocial.backend.viewmodels.FriendsVM
+import com.aaditx23.bracusocial.checkInternetConnection
 import com.aaditx23.bracusocial.components.BottomNavigation
 import com.aaditx23.bracusocial.components.models.BottomNavItem
 import com.aaditx23.bracusocial.ui.screens.Friends.FindFriends
@@ -32,15 +34,24 @@ import com.aaditx23.bracusocial.ui.screens.Friends.MyFriends
 fun Friends(){
     val friendvm: FriendsVM = hiltViewModel()
 
+    val context = LocalContext.current
     var selectedIndexBotNav by rememberSaveable {
         mutableIntStateOf(0)
     }
     val bottomNavList by rememberSaveable {
         mutableStateOf(BottomNavItem.friendItemList)
     }
+    var hasInternet by remember{
+        mutableStateOf(checkInternetConnection(context))
+    }
     val navController = rememberNavController()
     var scrollState = rememberScrollState()
-    val context = LocalContext.current
+
+    LaunchedEffect(hasInternet) {
+        if(hasInternet){
+            friendvm.updateFriends()
+        }
+    }
 
     Scaffold(
         bottomBar = {

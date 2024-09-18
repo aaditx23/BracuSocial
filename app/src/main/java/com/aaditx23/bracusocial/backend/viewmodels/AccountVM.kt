@@ -205,6 +205,19 @@ open class AccountVM @Inject constructor(
         }
     }
 
+    suspend fun updateProfileFromRemote(){
+        viewModelScope.launch {
+            println("Updating profile")
+            val me = async{ profileR.getMyProfile() }.await()
+            if (me != null){
+                val remoteMe = async { fbp.getProfileByEmail(me.email) }.await()
+                if(remoteMe!= null){
+                    profileR.updateProfile(remoteMe)
+                }
+            }
+        }
+    }
+
     fun getMyCourses(setCourses: (MutableList<Course>) -> Unit){
         viewModelScope.launch {
             val me = async{ profileR.getMyProfile() }.await()
@@ -235,12 +248,12 @@ open class AccountVM @Inject constructor(
             }
         }
     }
-    suspend fun updatePic(pic: String){
+    suspend fun updatePic(pic: String, result: (Boolean) -> Unit){
         viewModelScope.launch {
             val me = async{ profileR.getMyProfile() }.await()
             if (me != null){
-                profileR.updatePic(pic = pic)
-                ppR.updatePic(me.studentId, pic = pic)
+                profileR.updatePic(pic = pic, result = result)
+                fbp.updatePictureByEmail(me.email, pic)
             }
         }
     }

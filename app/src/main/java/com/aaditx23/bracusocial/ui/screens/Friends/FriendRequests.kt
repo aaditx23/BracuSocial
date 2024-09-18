@@ -61,7 +61,7 @@ import com.aaditx23.bracusocial.ui.theme.paletteBlue5
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@SuppressLint("CoroutineCreationDuringComposition")
+@SuppressLint("CoroutineCreationDuringComposition", "MutableCollectionMutableState")
 @Composable
 fun FriendRequests(friendvm: FriendsVM){
     val accountproxyvm: AccountProxyVM = hiltViewModel()
@@ -81,16 +81,18 @@ fun FriendRequests(friendvm: FriendsVM){
     }
     val friendProfiles by friendvm.friendRequestProfiles.observeAsState(emptyList())
 
-    LaunchedEffect(requests) {
 
-    }
 
     LaunchedEffect(requests, trigger) {
         println("$requests triggered")
         scope.launch {
             friendvm.fetchFriendRequestProfiles(requests)
+            println(friendProfiles.size)
+            friendProfiles.forEach{
+                println(it.name)
+            }
+            delay(200)
             if(profile.isNotEmpty()){
-                isLoading = false
                 requests = profile[0].friendRequests
             }
         }
@@ -118,6 +120,8 @@ fun FriendRequests(friendvm: FriendsVM){
                 RequestRow(friend = profile, friendvm = friendvm, trigger = { trigger = ! trigger })
             }
         }
+
+
     }
 
 }
