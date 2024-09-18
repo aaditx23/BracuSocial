@@ -212,49 +212,21 @@ fun ProfilePage(
                 val mod = Modifier
                     .padding(start = 10.dp, top = 15.dp)
                     .weight(1f)
-                if (isEditing) {
-                    TextField(
-                        value = name,
-                        onValueChange = { setName(it) },
-                        modifier = mod,
-                        label = { Text("Student Name") }
+                Column(
+                    modifier = mod
+                ){
+                    Text(
+                        text = name,
+                        fontSize = 22.sp,
+                        modifier = Modifier
+                            .padding(4.dp)
                     )
-                    IconButton(onClick = {
-                        setEditing(false)
-                        scope.launch {
-                            updatingName = true
-                            accountvm.updateName(name)
-                            updatingName = false
-                        }
-                        // Save action to be handled later
-                    }) {
-                        Icon(Icons.Filled.Save, contentDescription = "Save")
-                    }
-                } else {
-                    if (updatingName){
-                        CircularProgressIndicator()
-                    }
-                    else{
-                        Column(
-                            modifier = mod
-                        ){
-                            Text(
-                                text = name,
-                                fontSize = 22.sp,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                            )
-                            Text(
-                                text = profile.studentId,
-                                fontSize = 15.sp,
-                                modifier = Modifier
-                                    .padding(5.dp)
-                            )
-                        }
-                        IconButton(onClick = { setEditing(true) }) {
-                            Icon(Icons.Filled.Edit, contentDescription = "Edit")
-                        }
-                    }
+                    Text(
+                        text = profile.studentId,
+                        fontSize = 15.sp,
+                        modifier = Modifier
+                            .padding(5.dp)
+                    )
                 }
             }
 

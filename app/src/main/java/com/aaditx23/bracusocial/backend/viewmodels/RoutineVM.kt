@@ -54,7 +54,7 @@ open class RoutineVM @Inject constructor(
                     val courseList = mutableListOf<Course>()
                     temp.forEach { s ->
 ////                    println("My course $s")
-                        val cTemp = s.split(" ")
+                        val cTemp = s.trim().split(" ")
                         val name = cTemp[0].trim()
                         val sec = cTemp[1].trim()
                         val course = courseR.findCourse(name, sec)
