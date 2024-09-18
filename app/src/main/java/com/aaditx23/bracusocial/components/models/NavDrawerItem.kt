@@ -115,7 +115,6 @@ sealed class NavDrawerItem(
             Routine,
             Friends,
             AllCourses,
-            AllCoursesLive,
             PrePreReg,
             FindRoom,
             AboutApp,

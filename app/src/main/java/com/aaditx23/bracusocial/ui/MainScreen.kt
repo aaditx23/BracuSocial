@@ -107,7 +107,7 @@ fun Main(){
         when (navBackStackEntry?.destination?.route) {
             "Profile" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "Profile" }
             "Routine" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "Routine" }
-            "All Courses" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "All Courses" }
+            "All Courses (Offline)" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "All Courses (Offline)" }
             "PrePreReg" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "PrePreReg" }
             "Find Room" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "Find Room" }
             "About App" -> selectedIndexDrawer = navDrawerItemList.indexOfFirst { it.title == "About App" }
@@ -181,9 +181,6 @@ fun Main(){
                     composable("All Courses (Offline)") {
                         CourseScreen(dbStatus)
 
-                    }
-                    composable("All Courses (Online)"){
-                        LiveFeed()
                     }
                     composable("PrePreReg") {
                         PrePreReg()
