@@ -142,20 +142,6 @@ open class AccountVM @Inject constructor(
                 )
             )
             sessionR.loginStatusUpdate(true)
-//            ppR.createProfile(
-//                sid = id,
-//                name = name,
-//                pass = password,
-//                courses = courses,
-//                friends = addedFriends,
-//                requests = friendRequests,
-//                pic = profilePic,
-//                emailData = email
-//            )
-//            }
-//            else{
-//                ifRepeat(false)
-//            }
         }
     }
 
@@ -214,7 +200,7 @@ open class AccountVM @Inject constructor(
             val me = async{ profileR.getMyProfile() }.await()
            if (me != null){
                profileR.updateCourses(courses)
-               ppR.updateCourses(me.studentId, courses)
+               fbp.updateEnrolledCoursesByEmail(me.email, courses)
            }
         }
     }

@@ -55,5 +55,32 @@ class FirebaseRepository @Inject constructor() {
                 continuation.resume(null)
             }
     }
+    suspend fun updateEnrolledCoursesByEmail(email: String, newCourses: String) {
+        // Find the profile by email
+        db.collection("profiles")
+            .whereEqualTo("email", email)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (querySnapshot != null && !querySnapshot.isEmpty) {
+                    val document = querySnapshot.documents[0]
+                    val docId = document.id
+
+                    // Update the enrolledCourses field
+                    db.collection("profiles").document(docId)
+                        .update("enrolledCourses", newCourses)
+                        .addOnSuccessListener {
+                            Log.d("FirebaseRepository", "Successfully updated enrolledCourses!")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("FirebaseRepository", "Error updating enrolledCourses", e)
+                        }
+                } else {
+                    Log.d("FirebaseRepository", "No profile found with this email")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FirebaseRepository", "Error fetching profile by email", e)
+            }
+    }
 
 }

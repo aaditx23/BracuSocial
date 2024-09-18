@@ -61,14 +61,16 @@ suspend fun filterCourses(
 }
 
 
-fun filterCourseByNameSection(list: List<Course>, searchQuery: String): List<Course>{
-    return list.filter { course ->
-        val query = searchQuery.trim().split("-")
-        when (query.size) {
-            1 -> course.courseName.contains(query[0].trim(), ignoreCase = true)
-            2 -> course.courseName.contains(query[0].trim(), ignoreCase = true) &&
-                    course.section.contains(query[1].trim(), ignoreCase = true)
-            else -> false
+suspend fun filterCourseByNameSection(list: List<Course>, searchQuery: String): List<Course> {
+    return withContext(Dispatchers.IO) {
+        list.filter { course ->
+            val query = searchQuery.trim().split("-")
+            when (query.size) {
+                1 -> course.courseName.contains(query[0].trim(), ignoreCase = true)
+                2 -> course.courseName.contains(query[0].trim(), ignoreCase = true) &&
+                        course.section.contains(query[1].trim(), ignoreCase = true)
+                else -> false
+            }
         }
     }
 }

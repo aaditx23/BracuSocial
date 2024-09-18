@@ -134,14 +134,14 @@ fun Table(data: MutableList<MutableList<MutableState<MutableList<Course>>>>,
     )
 
     val time = listOf(
-        "08:00 - 09:20",
-        "09:30 - 10:50",
-        "11:00 - 12:20",
-        "12:30 - 01:50",
-        "02:00 - 03:20",
-        "03:30 - 04:50",
-        "05:00 - 06:20",
-        "06:30 - 08:00",
+        "08:00-09:20",
+        "09:30-10:50",
+        "11:00-12:20",
+        "12:30-01:50",
+        "02:00-03:20",
+        "03:30-04:50",
+        "05:00-06:20",
+        "06:30-08:00",
     )
     // Top Row
     val screenHeight = LocalConfiguration.current.screenHeightDp
@@ -266,18 +266,18 @@ private fun getSlot(dayInfo: String, timeInfo: String): MutableMap<String, Mutab
         }
     }
     when(timeInfo){
-        "08:00 AM - 09:20 AM" -> row.add(0)
-        "09:30 AM - 10:50 AM" -> row.add(1)
-        "11:00 AM - 12:20 PM" -> row.add(2)
-        "12:30 PM - 01:50 PM" -> row.add(3)
-        "02:00 PM - 03:20 PM" -> row.add(4)
-        "03:30 PM - 04:50 PM" -> row.add(5)
-        "05:00 PM - 06:20 PM" -> row.add(6)
-        "06:30 PM - 08:00 PM" -> row.add(7)
-        "08:00 AM - 10:50 AM" -> {row.add(0); row.add(1)}
-        "11:00 AM - 01:50 PM" -> {row.add(2); row.add(3)}
-        "02:00 PM - 04:50 PM" -> {row.add(4); row.add(5)}
-        "05:00 PM - 08:00 PM" -> {row.add(6); row.add(7)}
+        "08:00 AM-09:20 AM" -> row.add(0)
+        "09:30 AM-10:50 AM" -> row.add(1)
+        "11:00 AM-12:20 PM" -> row.add(2)
+        "12:30 PM-01:50 PM" -> row.add(3)
+        "02:00 PM-03:20 PM" -> row.add(4)
+        "03:30 PM-04:50 PM" -> row.add(5)
+        "05:00 PM-06:20 PM" -> row.add(6)
+        "06:30 PM-08:00 PM" -> row.add(7)
+        "08:00 AM-10:50 AM" -> {row.add(0); row.add(1)}
+        "11:00 AM-01:50 PM" -> {row.add(2); row.add(3)}
+        "02:00 PM-04:50 PM" -> {row.add(4); row.add(5)}
+        "05:00 PM-08:00 PM" -> {row.add(6); row.add(7)}
     }
 
     return mutableMapOf(

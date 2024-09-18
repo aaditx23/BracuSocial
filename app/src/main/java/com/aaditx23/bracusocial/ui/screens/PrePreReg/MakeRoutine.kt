@@ -54,6 +54,7 @@ import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.components.Routine
 import com.aaditx23.bracusocial.components.SearchBar
 import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen2
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -118,7 +119,8 @@ fun MakeRoutine(
     LaunchedEffect(searchQuery) {
         coroutineScope.launch {
             isFiltering = true
-            filteredCourseList = filterCourseByNameSection(list = courseList, searchQuery = searchQuery.text)
+            filteredCourseList =
+                async{ filterCourseByNameSection(list = courseList, searchQuery = searchQuery.text) }.await()
             isFiltering = false
 
         }
