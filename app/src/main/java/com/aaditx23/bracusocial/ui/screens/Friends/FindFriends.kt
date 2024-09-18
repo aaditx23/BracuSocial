@@ -45,7 +45,9 @@ import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.FriendsVM
 import com.aaditx23.bracusocial.checkInternetConnection
 import com.aaditx23.bracusocial.components.CircularLoadingBasic
+import com.aaditx23.bracusocial.components.DropDownCard
 import com.aaditx23.bracusocial.components.Pic_Name_ID
+import com.aaditx23.bracusocial.components.SearchBar
 import com.aaditx23.bracusocial.components.SearchBarDropDown
 import com.aaditx23.bracusocial.dayList
 import com.aaditx23.bracusocial.timeSlots
@@ -74,13 +76,11 @@ fun FindFriends(friendsvm: FriendsVM){
     var hasInternet by remember{
         mutableStateOf(checkInternetConnection(context))
     }
-    val filter by rememberSaveable {
-        mutableStateOf(listOf(
-            "ID",
-            "Name",
-            "Course Section",
-        ))
-    }
+    val filter = listOf(
+        "ID",
+        "Name",
+        "Course Section",
+    )
     var currentFilter by rememberSaveable {
         mutableStateOf(filter[0])
     }
@@ -141,22 +141,25 @@ fun FindFriends(friendsvm: FriendsVM){
             modifier = Modifier.
             padding(top = 70.dp)
         ) {
-            SearchBarDropDown(
-                searchAction = { query ->
-                    searchQuery = query
-                },
-                dropDownAction = { filter ->
-                    currentFilter = filter
-                },
-                setFilterValue = {
-                },
-                width = (LocalConfiguration.current.screenWidthDp -150).dp,
-                height = 48.dp,
-                textSize = 16.sp,
-                primaryDropDown = filter,
-                text = "Search Users...",
-                currentFilterSelection = currentFilter,
-            )
+            Row{
+                SearchBar(
+                    action = { query ->
+                        searchQuery = query
+                    },
+                    width = (LocalConfiguration.current.screenWidthDp - 150).dp,
+                    height = 40.dp,
+                    textSize = 16.sp,
+                    text = "Search Users...",
+                )
+                DropDownCard(
+                    dropdownItems = filter,
+                    onItemClick = { value ->
+                        currentFilter = value
+                    },
+                    endPadding = 8.dp,
+                    width = 150.dp
+                )
+            }
             if(filteredProfileList.isEmpty()){
                 Text(
                     text = "Search to find users...",

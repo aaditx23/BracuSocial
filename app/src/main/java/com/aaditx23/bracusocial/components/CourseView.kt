@@ -14,6 +14,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aaditx23.bracusocial.backend.local.models.Course
+import com.aaditx23.bracusocial.ui.theme.paletteBlue1
+import com.aaditx23.bracusocial.ui.theme.paletteBlue2
+import com.aaditx23.bracusocial.ui.theme.paletteBlue3
+import com.aaditx23.bracusocial.ui.theme.paletteBlue4
 import com.aaditx23.bracusocial.ui.theme.paletteBlue9
 import org.json.JSONObject
 
@@ -116,9 +120,10 @@ fun CourseCard(course: CourseInfo){
         ){
             Text(
                 text = "${course.courseName} - ${course.section}",
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Black,
                 fontSize = 23.sp,
                 textAlign = TextAlign.Center,
+                color = paletteBlue1,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -126,6 +131,8 @@ fun CourseCard(course: CourseInfo){
                 text = course.faculty,
                 fontSize = 18.sp,
                 textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                color = paletteBlue2,
                 modifier = Modifier.fillMaxWidth()
             )
             if(course.classDay != "-"){
@@ -167,8 +174,12 @@ fun TitledText(title: String, text: String){
     Row{
       Text(
           text = title,
-          fontWeight = FontWeight.Bold
+          fontWeight = FontWeight.Bold,
+          color = paletteBlue1
       )
-        Text(text = text)
+        Text(
+            text = text,
+            color = paletteBlue2
+        )
     }
 }
