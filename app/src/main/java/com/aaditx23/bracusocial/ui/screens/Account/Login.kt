@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
@@ -27,7 +29,11 @@ import com.aaditx23.bracusocial.components.NoButtonCircularLoadingDialog
 import kotlinx.coroutines.launch
 
 @Composable
-fun Login(accountvm: AccountVM, loginSuccess: () -> Unit){
+fun Login(
+    accountvm: AccountVM,
+    loginSuccess: () -> Unit,
+    loginButNoAccount: (name: String, email: String) -> Unit
+){
 
     val ppVM: AccountProxyVM = hiltViewModel()
     var isSuccess by rememberSaveable {
@@ -70,7 +76,8 @@ fun Login(accountvm: AccountVM, loginSuccess: () -> Unit){
                 .padding(10.dp)
                 .fillMaxWidth()
                 .border(2.dp, Color.Transparent),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            visualTransformation = PasswordVisualTransformation()
         )
 
         Button(
@@ -84,18 +91,30 @@ fun Login(accountvm: AccountVM, loginSuccess: () -> Unit){
                         println("Loggin in...")
                         ppVM.login(
                             email, pass,
-                            result = { success ->
-                                isSuccess = success
-                                println("$success is Success")
-                                if(success){
-                                    Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                                    loginSuccess()
+                            result = { login, name, gotProfile ->
+
+                                if(login){
+                                    if(gotProfile){
+                                        Toast.makeText(
+                                            context,
+                                            "Login Successful",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        loginSuccess()
+                                    }
+                                    else{
+                                        loginButNoAccount(name, email)
+                                    }
+                                }
+                                else{
+                                    Toast.makeText(
+                                        context,
+                                        "Wrong USIS Credentials",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         )
-//                            if(isSuccess){
-//                                accountvm.createFriends()
-//                            }
                         isLoading = false
 
                     }

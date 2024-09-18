@@ -2,17 +2,12 @@ package com.aaditx23.bracusocial.ui
 
 import android.annotation.SuppressLint
 import android.widget.Toast
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +40,7 @@ import com.aaditx23.bracusocial.components.TopActionBar
 import com.aaditx23.bracusocial.components.drawableToBitmap
 import com.aaditx23.bracusocial.components.models.BottomNavItem
 import com.aaditx23.bracusocial.components.models.NavDrawerItem
+import com.aaditx23.bracusocial.ui.screens.Account.Signup
 import com.aaditx23.bracusocial.ui.screens.Account.Logout
 import com.aaditx23.bracusocial.ui.screens.CourseScreen
 import com.aaditx23.bracusocial.ui.screens.FindRoom
@@ -52,7 +48,6 @@ import com.aaditx23.bracusocial.ui.screens.PrePreReg
 import com.aaditx23.bracusocial.ui.screens.Profile
 import com.aaditx23.bracusocial.ui.screens.SessionInfo
 import com.aaditx23.bracusocial.ui.screens.Friends
-import com.aaditx23.bracusocial.ui.screens.LiveFeed
 import com.aaditx23.bracusocial.ui.screens.Login_Signup
 import com.aaditx23.bracusocial.ui.screens.Routine
 import kotlinx.coroutines.CoroutineScope
@@ -171,6 +166,10 @@ fun Main(){
                 topBar = { TopActionBar(drawerState = drawerState, scope = scope) }
             ) {
                 NavHost(navController = navController, startDestination = "All Courses (Offline)") {
+                    fun login(){
+                        selectedIndexDrawer = 0
+                        navController.navigate("Profile")
+                    }
                     // Routes
                     composable("Profile") {
                         Profile(accountvm, accountproxyvm, navController)
@@ -196,19 +195,29 @@ fun Main(){
                         SessionInfo(sessionvm)
                     }
                     composable("Signup/Login"){
-                        fun login(){
-                            selectedIndexDrawer = 0
-                            navController.navigate("Profile")
-                        }
+
+
                         Login_Signup(
                             accountvm = accountvm,
                             success = {
                                 login()
+                            },
+                            navController = navController
+                        )
+                    }
+                    composable("CreateAccount/{email}/{name}") { backStackEntry ->
+                        val email = backStackEntry.arguments?.getString("email") ?: ""
+                        val name = backStackEntry.arguments?.getString("name") ?: ""
+                        Signup(
+                            accountvm = accountvm,
+                            email = email,
+                            name = name,
+                            signupSuccess = {
+                                login()
                             }
                         )
-
-
                     }
+
                     composable("Logout"){
                         Logout(
                             accountvm,

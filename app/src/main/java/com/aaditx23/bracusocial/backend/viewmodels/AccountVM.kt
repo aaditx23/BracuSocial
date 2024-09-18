@@ -48,38 +48,38 @@ open class AccountVM @Inject constructor(
 
     fun createProfile(
         profileData: List<String>,
-        ifRepeat: (Boolean) -> Unit
+
     ) {
 
         viewModelScope.launch {
             val (id,password,name,courses,addedFriends,friendRequests, profilePic, email) = profileData
-            val remoteProfile = ppR.getProfileProxy(id)
-            if (remoteProfile == null) {
-                profileR.createProfile(
-                    sid = id,
-                    name = name,
-                    pass = password,
-                    courses = courses,
-                    friends = addedFriends,
-                    requests = friendRequests,
-                    pic = profilePic,
-                    emailData = email
-                )
-                sessionR.loginStatusUpdate(true)
-                ppR.createProfile(
-                    sid = id,
-                    name = name,
-                    pass = password,
-                    courses = courses,
-                    friends = addedFriends,
-                    requests = friendRequests,
-                    pic = profilePic,
-                    emailData = email
-                )
-            }
-            else{
-                ifRepeat(false)
-            }
+//            val remoteProfile = ppR.getProfileProxy(email)
+//            if (remoteProfile == null) {
+            profileR.createProfile(
+                sid = id,
+                name = name,
+                pass = password,
+                courses = courses,
+                friends = addedFriends,
+                requests = friendRequests,
+                pic = profilePic,
+                emailData = email
+            )
+            sessionR.loginStatusUpdate(true)
+            ppR.createProfile(
+                sid = id,
+                name = name,
+                pass = password,
+                courses = courses,
+                friends = addedFriends,
+                requests = friendRequests,
+                pic = profilePic,
+                emailData = email
+            )
+//            }
+//            else{
+//                ifRepeat(false)
+//            }
         }
     }
 

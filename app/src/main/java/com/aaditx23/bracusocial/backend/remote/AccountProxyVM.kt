@@ -1,5 +1,6 @@
 package com.aaditx23.bracusocial.backend.remote
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aaditx23.bracusocial.backend.local.repositories.FriendProfileRepository
@@ -73,7 +74,11 @@ open class AccountProxyVM @Inject constructor(
         }
     }
 
-    suspend fun login(email: String, pass: String, result: (Boolean) -> Unit){
+    suspend fun login(
+        email: String,
+        pass: String,
+        result: (login: Boolean, name: String, gotProfile: Boolean) -> Unit
+    ){
         viewModelScope.launch {
             val (login, name) = async{ usisClient.loginAndFetchName(email, pass) }.await()
 
@@ -100,7 +105,7 @@ open class AccountProxyVM @Inject constructor(
                         if(s != ""){
                             println("Friend is $s")
                             val friend = async {
-                                ppR.getProfileProxy(s)
+                                ppR.getProfileProxyId(s)
                             }.await()
                             if (friend != null) {
                                 println("Friend found $s , accountproxyvm, login")
@@ -117,12 +122,13 @@ open class AccountProxyVM @Inject constructor(
 
                     }
                     sessionR.loginStatusUpdate(true)
-                    result(true)
+
                 }
+                result(true, name, profile != null)
 
             }
             else{
-                result(false)
+                result(false, "No name", false)
             }
 
 

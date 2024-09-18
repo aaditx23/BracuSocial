@@ -212,6 +212,11 @@ class ProfileProxyRepository @Inject constructor(
             .query<ProfileProxy>("email == $0", email).first().find()
 
     }
+    fun getProfileProxyId(id: String) : ProfileProxy? {
+        return realm
+            .query<ProfileProxy>("studentId == $0", id).first().find()
+
+    }
     private fun stringToSet(st: String): MutableSet<Int>{
         val t = st.split(",")
         val temp = mutableSetOf<Int>()

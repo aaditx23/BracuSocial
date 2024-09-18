@@ -1,7 +1,6 @@
 package com.aaditx23.bracusocial.ui.screens.Account
 
 import android.widget.Toast
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,17 +14,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.aaditx23.bracusocial.backend.local.models.emptyProfileString
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
-import com.aaditx23.bracusocial.ui.theme.palette2DarkRed
-import com.aaditx23.bracusocial.ui.theme.palette4green
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -33,9 +32,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Signup(
+    email: String,
+    name:String,
     accountvm: AccountVM,
     signupSuccess: () -> Unit
-){
+) {
     val allProfile by accountvm.allProfiles.collectAsState()
     var isLoading by rememberSaveable {
         mutableStateOf(true)
@@ -45,10 +46,9 @@ fun Signup(
     }
     val context = LocalContext.current
     val (id, setId) = rememberSaveable { mutableStateOf("") }
-    val (name, setName) = rememberSaveable { mutableStateOf("") }
-    val (email, setEmail) = rememberSaveable { mutableStateOf("") }
-    val (pass, setPass) = rememberSaveable { mutableStateOf("") }
-    val (confirmPass, setConfirmPass) = rememberSaveable { mutableStateOf("") }
+    val studentName by rememberSaveable { mutableStateOf(name) }
+    val emailAddress by rememberSaveable { mutableStateOf(email) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(allProfile) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -61,18 +61,38 @@ fun Signup(
 //        NoButtonDialog(title = "Creating account: $id", message = "Please wait...")
         CircularProgressIndicator()
     }
-    else if (isSuccess){
-
-        Toast.makeText(context, "Signup Successful", Toast.LENGTH_SHORT).show()
-        signupSuccess()
-        isSuccess = false
-
-    }
     else{
         Column(
             modifier = Modifier
                 .padding(top = 80.dp)
         ) {
+            Text(
+                text = "Welcome to BracuSocial!",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
+            Text(
+                text = name,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+
+            )
+            Text(
+                text = "Please enter your Student ID to create an account in BracuSocial",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium
+
+            )
+            TextField(
+                value = emailAddress,
+                onValueChange = {},
+                label = { Text(text = "Email") },
+                enabled = false,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .fillMaxWidth(),
+
+                )
             TextField(
                 value = id,
                 onValueChange = {setId(it)},
@@ -82,92 +102,32 @@ fun Signup(
                     .fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
-            TextField(
-                value = name,
-                onValueChange = {setName(it)},
-                label = { Text(text = "Name") },
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth()
-            )
-            TextField(
-                value = email,
-                onValueChange = {setEmail(it)},
-                label = { Text(text = "Email") },
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth(),
-                
-            )
-            TextField(
-                value = pass,
-                onValueChange = {setPass(it)},
-                label = { Text(text = "Password") },
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .border(
-                        2.dp,
-                        if (pass != confirmPass && pass != "" && confirmPass != "") palette2DarkRed
-                        else if (pass == confirmPass && pass != "") palette4green
-                        else Color.Transparent
-                    ),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-            )
-            TextField(
-                value = confirmPass,
-                onValueChange = {setConfirmPass(it)},
-                label = { Text(text = "Confirm Password") },
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .border(
-                        2.dp,
-                        if (pass != confirmPass && pass != "" && confirmPass != "") palette2DarkRed
-                        else if (pass == confirmPass && confirmPass != "") palette4green
-                        else Color.Transparent
-                    ),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-            )
-            Button(onClick = { 
-                if(id != "" &&
-                    name != "" &&
-                    pass != "" &&
-                    pass == confirmPass
-                    ){
-                    
-                    CoroutineScope(Dispatchers.IO).launch {
+
+            Button(onClick = {
+                if(id != ""
+                ){
+                    scope.launch {
                         accountvm.createProfile(
                             listOf(
                                 id,
-                                pass,
-                                name,
+                                "",
+                                studentName,
                                 "",
                                 "",
                                 "",
                                 emptyProfileString,
-                                email
-                            ),
-                            ifRepeat = { result ->
-
-                                if (!result){
-                                    Toast.makeText(context, "Profile already exists. Please Login.", Toast.LENGTH_SHORT).show()
-                                }
-                                isSuccess = result
-
-
-                            }
+                                emailAddress
+                            )
                         )
+                        Toast.makeText(context, "Signup Successful", Toast.LENGTH_SHORT).show()
+                        signupSuccess()
                     }
 
                 }
-                else if (pass != confirmPass && pass != "" && confirmPass != ""){
-                    Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
-                }
                 else{
-                    Toast.makeText(context, "Fields cannot be empty", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "ID cannot be empty", Toast.LENGTH_SHORT).show()
                 }
-                
+
             }) {
                 Text(text = "Signup")
             }
@@ -178,8 +138,7 @@ fun Signup(
                 Text(text = "Delete All")
             }
             Text(text = allProfile.size.toString())
-            
+
         }
     }
-
 }
