@@ -279,6 +279,8 @@ fun DropDownCard(
             )
             .onSizeChanged {
                 itemHeight = with(density) { it.height.toDp() }
+                widthDp = with(density) { it.width.toDp() }
+
             },
         shape = RoundedCornerShape(5.dp),
         colors = CardDefaults.cardColors(bgColor)
@@ -311,11 +313,8 @@ fun DropDownCard(
                 isContextMenuVisible = false
             },
             modifier = Modifier
-                .onSizeChanged { size ->
-                    // Convert the width from pixels to dp
-                    widthDp = with(density) { size.width.toDp() }
-                }
-                .padding(start = startPadding, end = endPadding),
+                .padding(start = startPadding, end = endPadding)
+                .width( widthDp - startPadding*2 ),
             offset = DpOffset(0.dp, 10.dp)
         ) {
             dropdownItems.forEach {
@@ -331,6 +330,7 @@ fun DropDownCard(
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .padding(start = startPadding, end = endPadding)
                         )
                     }
                 )

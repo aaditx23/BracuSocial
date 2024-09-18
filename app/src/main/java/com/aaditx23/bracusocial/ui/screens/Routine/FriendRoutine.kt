@@ -132,8 +132,8 @@ fun FriendRoutine(routinevm: RoutineVM){
                 DropDownCard(
                     dropdownItems = friendList.toList(),
                     width = LocalConfiguration.current.screenWidthDp.dp,
-                    startPadding = 15.dp,
-                    endPadding = 15.dp,
+                    startPadding = 40.dp,
+                    endPadding = 40.dp,
                     onItemClick = { friend ->
                         selectedFriend = friend
                     }
