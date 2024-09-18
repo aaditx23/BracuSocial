@@ -55,6 +55,22 @@ class FirebaseRepository @Inject constructor() {
                 continuation.resume(null)
             }
     }
+    suspend fun getProfileById(id: String): RemoteProfile? {
+        return try {
+            val documents = db.collection("profiles")
+                .whereEqualTo("studentId", id)
+                .get()
+                .await()  // Using the Kotlin coroutines extension for Firestore
+            if (documents.isEmpty) {
+                null
+            } else {
+                documents.documents[0].toObject(RemoteProfile::class.java)
+            }
+        } catch (e: Exception) {
+            Log.w("Firebase getProfileById", "Error fetching document", e)
+            null
+        }
+    }
     suspend fun updateEnrolledCoursesByEmail(email: String, newCourses: String) {
         // Find the profile by email
         db.collection("profiles")
@@ -82,5 +98,96 @@ class FirebaseRepository @Inject constructor() {
                 Log.w("FirebaseRepository", "Error fetching profile by email", e)
             }
     }
+
+    suspend fun fetchProfilesByName(searchQuery: String): List<RemoteProfile> {
+        val trimmedQuery = searchQuery.trim()
+        val profileList = mutableListOf<RemoteProfile>()
+
+        // Query to find profiles where the name contains the search query
+        val querySnapshot = db.collection("profiles")
+            .whereGreaterThanOrEqualTo("name", trimmedQuery)
+            .whereLessThanOrEqualTo("name", "${trimmedQuery}\uF7FF") // Using Unicode to get all names starting with `trimmedQuery`
+            .get()
+            .await() // Using Kotlin coroutine to wait for the query to complete
+
+        for (document in querySnapshot.documents) {
+            val profile = document.toObject(RemoteProfile::class.java)
+            profile?.let { profileList.add(it) }
+        }
+
+        return profileList
+    }
+
+    suspend fun fetchProfilesById(searchQuery: String): List<RemoteProfile> {
+
+        val trimmedQuery = searchQuery.trim()
+        val profileList = mutableListOf<RemoteProfile>()
+
+        // Query to find profiles where the studentId contains the search query
+        val querySnapshot = db.collection("profiles")
+            .whereGreaterThanOrEqualTo("studentId", trimmedQuery)
+            .whereLessThanOrEqualTo("studentId", "${trimmedQuery}\uF7FF") // Using Unicode to get all IDs starting with `trimmedQuery`
+            .get()
+            .await() // Using Kotlin coroutine to wait for the query to complete
+
+        for (document in querySnapshot.documents) {
+            val profile = document.toObject(RemoteProfile::class.java)
+            profile?.let { profileList.add(it) }
+        }
+
+        return profileList
+    }
+
+    suspend fun fetchProfilesByCourse(searchQuery: String): List<RemoteProfile> {
+
+        val trimmedQuery = searchQuery.trim().lowercase()
+        val profileList = mutableListOf<RemoteProfile>()
+
+        // Query to find profiles where the enrolledCourses contains the search query
+        val querySnapshot = db.collection("profiles")
+            .whereArrayContains("enrolledCourses", trimmedQuery)
+            .get()
+            .await() // Using Kotlin coroutine to wait for the query to complete
+
+        for (document in querySnapshot.documents) {
+            val profile = document.toObject(RemoteProfile::class.java)
+            profile?.let { profileList.add(it) }
+        }
+
+        return profileList
+    }
+
+
+    suspend fun sendFriendRequest(from: String, to: String) {
+        try {
+            // Retrieve the profiles based on studentId
+            val fromProfile = getProfileById(from)
+            val toProfile = getProfileById(to)
+
+            if (fromProfile != null && toProfile != null) {
+                // Check if the request already exists
+                if (!toProfile.friendRequests.contains(fromProfile.studentId)) {
+                    // Update the friendRequests of the 'toProfile'
+                    toProfile.friendRequests = "${toProfile.friendRequests},$from"
+                    addOrUpdateProfile(toProfile) // Ensure this function updates the profile in Firestore
+
+                    // Optionally, you can also update the 'fromProfile' to reflect the request was sent
+                    // fromProfile.sentRequests.add(toProfile.studentId)
+                    // updateProfile(fromProfile)
+
+                    Log.d("sendFriendRequest", "Friend request sent from ${fromProfile.studentId} to ${toProfile.studentId}")
+                } else {
+                    Log.d("sendFriendRequest", "Friend request already exists from ${fromProfile.studentId} to ${toProfile.studentId}")
+                }
+            } else {
+                Log.e("sendFriendRequest", "Profile not found for studentId: $from or $to")
+            }
+        } catch (e: Exception) {
+            // Handle errors
+            Log.e("sendFriendRequest", "Error sending friend request", e)
+        }
+    }
+
+
 
 }

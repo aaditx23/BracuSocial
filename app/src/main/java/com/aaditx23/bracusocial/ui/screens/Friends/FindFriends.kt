@@ -35,12 +35,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.aaditx23.bracusocial.backend.filterProfileByCourse
-import com.aaditx23.bracusocial.backend.filterProfileByID
-import com.aaditx23.bracusocial.backend.filterProfileByName
-import com.aaditx23.bracusocial.backend.local.models.Profile
+
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
-import com.aaditx23.bracusocial.backend.remote.ProfileProxy
+import com.aaditx23.bracusocial.backend.remote.RemoteProfile
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.FriendsVM
 import com.aaditx23.bracusocial.checkInternetConnection
@@ -48,12 +45,8 @@ import com.aaditx23.bracusocial.components.CircularLoadingBasic
 import com.aaditx23.bracusocial.components.DropDownCard
 import com.aaditx23.bracusocial.components.Pic_Name_ID
 import com.aaditx23.bracusocial.components.SearchBar
-import com.aaditx23.bracusocial.components.SearchBarDropDown
-import com.aaditx23.bracusocial.dayList
-import com.aaditx23.bracusocial.timeSlots
 import com.aaditx23.bracusocial.ui.theme.palette7Blue1
 import com.aaditx23.bracusocial.ui.theme.paletteBlue6
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -71,7 +64,7 @@ fun FindFriends(friendsvm: FriendsVM){
     val scope = rememberCoroutineScope()
 
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
-    var filteredProfileList by remember { mutableStateOf(emptyList<ProfileProxy>()) }
+    var filteredProfileList by remember { mutableStateOf(emptyList<RemoteProfile>()) }
     var isFiltering by remember { mutableStateOf(false) }
     var hasInternet by remember{
         mutableStateOf(checkInternetConnection(context))
@@ -87,7 +80,7 @@ fun FindFriends(friendsvm: FriendsVM){
     LaunchedEffect(Unit) {
         scope.launch {
             delay(200)
-            if(allAccounts.isNotEmpty() && profiles.isNotEmpty()){
+            if(profiles.isNotEmpty()){
                 isLoading = false
             }
 
@@ -95,28 +88,35 @@ fun FindFriends(friendsvm: FriendsVM){
     }
 
     LaunchedEffect(searchQuery, currentFilter) {
+        println("Current filter friends $currentFilter")
 
         scope.launch {
             if(searchQuery.text.isNotEmpty()){
                 isFiltering = true
 
-                filteredProfileList = when (currentFilter) {
-                    filter[0] -> filterProfileByID(
-                        list = allAccounts,
-                        searchQuery = searchQuery.text
+                when (currentFilter) {
+                    filter[0] -> friendsvm.filterProfilesByID(
+                        searchQuery = searchQuery.text,
+                        onResult = { list ->
+                            filteredProfileList = list
+                        }
                     )
 
-                    filter[1] -> filterProfileByName(
-                        list = allAccounts,
-                        searchQuery = searchQuery.text
+                    filter[1] -> friendsvm.filterProfilesByName(
+                        searchQuery = searchQuery.text,
+                        onResult = { list ->
+                            filteredProfileList = list
+                        }
                     )
 
-                    filter[2] -> filterProfileByCourse(
-                        list = allAccounts,
-                        searchQuery = searchQuery.text
+                    filter[2] -> friendsvm.filterProfilesByCourse(
+                        searchQuery = searchQuery.text,
+                        onResult = { list ->
+                            filteredProfileList = list
+                        }
                     )
 
-                    else -> emptyList()
+                    else -> emptyList<RemoteProfile>()
                 }
 
                 isFiltering = false
@@ -192,7 +192,7 @@ fun FindFriends(friendsvm: FriendsVM){
 }
 
 @Composable
-fun AddFriendRow(friend: ProfileProxy, friendvm: FriendsVM){
+fun AddFriendRow(friend: RemoteProfile, friendvm: FriendsVM){
     val context = LocalContext.current
 
     var sentAlready by rememberSaveable {
@@ -222,16 +222,16 @@ fun AddFriendRow(friend: ProfileProxy, friendvm: FriendsVM){
             verticalAlignment = Alignment.CenterVertically
         ) {
             Pic_Name_ID(
-                name = friend.studentName,
+                name = friend.name,
                 id = friend.studentId,
                 pic = friend.profilePicture
             )
 
-            if(sentAlready){
+            if( sentAlready){
                 IconButton(
                     onClick = {
                         friendvm.cancelSentRequest(friend.studentId)
-                        Toast.makeText(context, "${friend.studentName} Request Sent", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "${friend.name} Request Cancelled", Toast.LENGTH_SHORT).show()
                     },
                 ) {
                     Icon(
@@ -245,7 +245,7 @@ fun AddFriendRow(friend: ProfileProxy, friendvm: FriendsVM){
                 IconButton(
                     onClick = {
                         friendvm.sendRequest(friend.studentId)
-                        Toast.makeText(context, "${friend.studentName} Request Cancelled", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "${friend.name} Request Sent", Toast.LENGTH_SHORT).show()
                     },
                 ) {
                     Icon(

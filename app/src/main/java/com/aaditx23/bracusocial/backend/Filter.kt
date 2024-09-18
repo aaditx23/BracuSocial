@@ -179,24 +179,24 @@ fun filterJsonByRooms(list: List<JSONObject>, searchQuery: String): List<JSONObj
 
 // Profiles
 
-fun filterProfileByName(list: List<ProfileProxy>, searchQuery: String): List<ProfileProxy>{
-    val trimmedQuery = searchQuery.trim()
-
-    return list.filter { profile ->
-        profile.studentName.trim().contains(trimmedQuery, ignoreCase = true)
-    }
-}
-fun filterProfileByID(list: List<ProfileProxy>, searchQuery: String): List<ProfileProxy>{
-    val trimmedQuery = searchQuery.trim()
-
-    return list.filter { profile ->
-        profile.studentId.trim().contains(trimmedQuery, ignoreCase = true)
-    }
-}
-fun filterProfileByCourse(list: List<ProfileProxy>, searchQuery: String): List<ProfileProxy>{
-    val trimmedQuery = searchQuery.trim()
-
-    return list.filter { profile ->
-        profile.enrolledCourses.trim().contains(trimmedQuery, ignoreCase = true)
-    }
-}
+//fun filterProfileByName(list: List<ProfileProxy>, searchQuery: String): List<ProfileProxy>{
+//    val trimmedQuery = searchQuery.trim()
+//
+//    return list.filter { profile ->
+//        profile.studentName.trim().contains(trimmedQuery, ignoreCase = true)
+//    }
+//}
+//fun filterProfileByID(list: List<ProfileProxy>, searchQuery: String): List<ProfileProxy>{
+//    val trimmedQuery = searchQuery.trim()
+//
+//    return list.filter { profile ->
+//        profile.studentId.trim().contains(trimmedQuery, ignoreCase = true)
+//    }
+//}
+//fun filterProfileByCourse(list: List<ProfileProxy>, searchQuery: String): List<ProfileProxy>{
+//    val trimmedQuery = searchQuery.trim()
+//
+//    return list.filter { profile ->
+//        profile.enrolledCourses.trim().contains(trimmedQuery, ignoreCase = true)
+//    }
+//}

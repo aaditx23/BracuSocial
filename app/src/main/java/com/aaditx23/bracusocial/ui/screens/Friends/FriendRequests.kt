@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
+import com.aaditx23.bracusocial.backend.remote.RemoteProfile
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.FriendsVM
 import com.aaditx23.bracusocial.components.Pic_Name_ID
@@ -77,11 +79,16 @@ fun FriendRequests(friendvm: FriendsVM){
     var trigger by rememberSaveable {
         mutableStateOf(false)
     }
+    val friendProfiles by friendvm.friendRequestProfiles.observeAsState(emptyList())
+
+    LaunchedEffect(requests) {
+
+    }
 
     LaunchedEffect(requests, trigger) {
         println("$requests triggered")
         scope.launch {
-            delay(100)
+            friendvm.fetchFriendRequestProfiles(requests)
             if(profile.isNotEmpty()){
                 isLoading = false
                 requests = profile[0].friendRequests
@@ -104,26 +111,19 @@ fun FriendRequests(friendvm: FriendsVM){
         }
     }
     else{
-
         LazyColumn(
-            modifier = Modifier
-                .padding(top = 70.dp)
+            modifier = Modifier.padding(top = 70.dp)
         ) {
-            items(requests.split(",")){ s ->
-                if(s!=""){
-                    println("$s is friend")
-                    accountproxyvm.getProfile(s)
-                        ?.let { RequestRow(friend = it, friendvm = friendvm, trigger = { trigger = ! trigger } ) }
-                }
+            items(friendProfiles) { profile ->
+                RequestRow(friend = profile, friendvm = friendvm, trigger = { trigger = ! trigger })
             }
         }
-
     }
 
 }
 
 @Composable
-fun RequestRow(friend: ProfileProxy, friendvm: FriendsVM, trigger: () -> Unit){
+fun RequestRow(friend: RemoteProfile, friendvm: FriendsVM, trigger: () -> Unit){
     val context = LocalContext.current
 
     ElevatedCard(
@@ -142,7 +142,7 @@ fun RequestRow(friend: ProfileProxy, friendvm: FriendsVM, trigger: () -> Unit){
             verticalAlignment = Alignment.CenterVertically
         ) {
             Pic_Name_ID(
-                name = friend.studentName,
+                name = friend.name,
                 id = friend.studentId,
                 pic = friend.profilePicture
             )
@@ -150,7 +150,7 @@ fun RequestRow(friend: ProfileProxy, friendvm: FriendsVM, trigger: () -> Unit){
                 IconButton(
                     onClick = {
                         friendvm.addFriend(friend.studentId)
-                        Toast.makeText(context, "${friend.studentName} Added", Toast.LENGTH_SHORT)
+                        Toast.makeText(context, "${friend.name} Added", Toast.LENGTH_SHORT)
                             .show()
                         trigger()
                     },
@@ -164,7 +164,7 @@ fun RequestRow(friend: ProfileProxy, friendvm: FriendsVM, trigger: () -> Unit){
                 IconButton(
                     onClick = {
                         friendvm.cancelRequest(friend.studentId)
-                        Toast.makeText(context, "${friend.studentName} Removed", Toast.LENGTH_SHORT)
+                        Toast.makeText(context, "${friend.name} Removed", Toast.LENGTH_SHORT)
                             .show()
                         trigger()
                     },

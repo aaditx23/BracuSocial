@@ -72,7 +72,7 @@ class ProfileRepository @Inject constructor(
 //        println("Name updated to $courses")
     }
 
-    suspend fun addFriend(friend: String){
+    suspend fun addFriend(friend: String){  //local
         realm.write {
             val profileData = query<Profile>().first().find()
             if (profileData != null) {

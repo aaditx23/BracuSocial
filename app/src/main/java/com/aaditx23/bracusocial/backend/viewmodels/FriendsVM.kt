@@ -2,6 +2,8 @@ package com.aaditx23.bracusocial.backend.viewmodels
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aaditx23.bracusocial.backend.local.models.Profile
@@ -10,8 +12,10 @@ import com.aaditx23.bracusocial.backend.local.repositories.CourseRepository
 import com.aaditx23.bracusocial.backend.local.repositories.FriendProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.ProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.SavedRoutineRepository
+import com.aaditx23.bracusocial.backend.remote.FirebaseRepository
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import com.aaditx23.bracusocial.backend.remote.ProfileProxyRepository
+import com.aaditx23.bracusocial.backend.remote.RemoteProfile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -28,7 +32,8 @@ import javax.inject.Inject
 open class FriendsVM @Inject constructor(
     private val profileR: ProfileRepository,
     private val fpR: FriendProfileRepository,
-    private val ppR : ProfileProxyRepository
+    private val ppR : ProfileProxyRepository,
+    private val fbp: FirebaseRepository
 ): ViewModel() {
 
     val allFriendProfiles = fpR.getAllFriendProfile()
@@ -83,7 +88,7 @@ open class FriendsVM @Inject constructor(
     fun sendRequest(friend: String){
         viewModelScope.launch {
             val me = profileR.getMyProfile()
-            ppR.sendFriendRequest(
+            fbp.sendFriendRequest(
                 from = me!!.studentId,
                 to = friend
             )
@@ -92,7 +97,7 @@ open class FriendsVM @Inject constructor(
 
     fun isInRequest(friend: String, result: (Boolean) -> Unit){
         viewModelScope.launch {
-            val friendProfile = async{ ppR.getProfileProxy(friend) }.await()
+            val friendProfile = async{ fbp.getProfileById(friend) }.await()
             val me = async{ profileR.getMyProfile() }.await()
 
 //            println("FOUND FRIEND ${friendProfile!!.studentId}")
@@ -130,6 +135,58 @@ open class FriendsVM @Inject constructor(
             if (meLocal != null){
                 ppR.cancelRequest( meLocal.studentId, friend)
             }
+        }
+    }
+
+    // Function to filter profiles by ID
+    fun filterProfilesByID(searchQuery: String, onResult: (List<RemoteProfile>) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val profiles = fbp.fetchProfilesById(searchQuery)
+                onResult(profiles)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onResult(emptyList())
+            }
+        }
+    }
+
+    // Function to filter profiles by name
+    fun filterProfilesByName(searchQuery: String, onResult: (List<RemoteProfile>) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val profiles = fbp.fetchProfilesByName(searchQuery)
+                onResult(profiles)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onResult(emptyList())
+            }
+        }
+    }
+
+    // Function to filter profiles by course
+    fun filterProfilesByCourse(searchQuery: String, onResult: (List<RemoteProfile>) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val profiles = fbp.fetchProfilesByCourse(searchQuery)
+                onResult(profiles)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onResult(emptyList())
+            }
+        }
+    }
+
+    private val _friendRequestProfiles = MutableLiveData<List<RemoteProfile>>()
+    val friendRequestProfiles: LiveData<List<RemoteProfile>> get() = _friendRequestProfiles
+
+    suspend fun fetchFriendRequestProfiles(requests: String) {
+        viewModelScope.launch {
+            val ids = requests.split(",").filter { it.isNotEmpty() }
+            val profiles = ids.mapNotNull { id ->
+                fbp.getProfileById(id)
+            }
+            _friendRequestProfiles.value = profiles
         }
     }
 
