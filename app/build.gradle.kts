@@ -7,6 +7,9 @@ plugins {
     id("io.realm.kotlin")
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
+
+    //firebase
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -66,6 +69,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3.android)
+    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -89,6 +93,17 @@ dependencies {
 
     implementation("com.github.CanHub:Android-Image-Cropper:4.0.0")
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
+
+
+    // Add the dependencies for any other desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
 
 
 

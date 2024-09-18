@@ -81,7 +81,7 @@ fun Profile(
     LaunchedEffect(allProfile) {
         CoroutineScope(Dispatchers.IO).launch { 
             delay(200)
-            if(allProfile.isNotEmpty() && allProxyProfile.isNotEmpty()){
+            if(allProfile.isNotEmpty()){
 //                profile = allProfile[0]
                 isLoading = false
             }

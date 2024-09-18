@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "206125558559",
+    "project_id": "bracusocial-00",
+    "storage_bucket": "bracusocial-00.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:206125558559:android:8870e545c981a640c1de2a",
+        "android_client_info": {
+          "package_name": "com.aaditx23.bracusocial"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARwsIaf1yaPC9lZaN90LnxZhIrq_cMssg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

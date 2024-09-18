@@ -1,5 +1,6 @@
 package com.aaditx23.bracusocial.backend.remote
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,11 @@ import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository
 import com.aaditx23.bracusocial.component6
 import com.aaditx23.bracusocial.component7
 import com.aaditx23.bracusocial.component8
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,8 +28,10 @@ open class AccountProxyVM @Inject constructor(
     private val sessionR: SessionRepository,
     private val profileR: ProfileRepository,
     private val fpR: FriendProfileRepository,
-    private val usisClient: USISClient
+    private val usisClient: USISClient,
+    private val fbp: FirebaseRepository,
 ): ViewModel() {
+
 
     val allSessions = sessionR.getAllSession()
         .stateIn(
@@ -52,6 +60,17 @@ open class AccountProxyVM @Inject constructor(
                 requests = friendRequests,
                 pic = profilePic,
                 emailData = email
+            )
+            fbp.addOrUpdateProfile(
+                RemoteProfile(
+                    studentId = id,
+                    name = name,
+                    email = email,
+                    addedFriends = "",
+                    enrolledCourses = "",
+                    friendRequests = "",
+                    profilePicture = profilePic
+                )
             )
         }
     }
@@ -86,7 +105,7 @@ open class AccountProxyVM @Inject constructor(
             if(login){
                 println("In vm login is true")
                 val profile =  async {
-                    ppR.getProfileProxy(email)
+                    fbp.getProfileByEmail(email)
                 }.await()
 
                 if (profile != null){

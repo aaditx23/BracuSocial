@@ -125,11 +125,6 @@ fun Main(){
                 dbStatus = allSessions[0].dbStatus
                 loginStatus = allSessions[0].loginStatus
             }
-            if(allProfiles.isEmpty()){
-                demoProfiles.forEachIndexed { _, data ->
-                    accountproxyvm.createProfile(data)
-                }
-            }
             isSessionReady = true
         }
 

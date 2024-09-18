@@ -1,6 +1,7 @@
 package com.aaditx23.bracusocial.backend.local
 
 import com.aaditx23.bracusocial.backend.local.LocalServer
+import com.aaditx23.bracusocial.backend.remote.FirebaseRepository
 import com.aaditx23.bracusocial.backend.remote.USISClient
 import com.aaditx23.bracusocial.backend.remote.UsisCrawler
 import dagger.Module
@@ -30,4 +31,10 @@ object RealmModule {
     fun provideUsisLogin(): USISClient{
         return USISClient()
     }
+
+//    @Provides
+//    @Singleton
+//    fun provideFirebaseRepository(): FirebaseRepository {
+//        return FirebaseRepository()
+//    }
 }

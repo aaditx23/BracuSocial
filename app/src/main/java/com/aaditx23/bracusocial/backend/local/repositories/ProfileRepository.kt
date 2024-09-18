@@ -40,7 +40,7 @@ class ProfileRepository @Inject constructor(
                 email = emailData
             }
             copyToRealm(profileData, updatePolicy = UpdatePolicy.ALL)
-//            println("Profile created (profile repository, create profile)")
+            println("Profile created (profile repository, create profile)")
         }
     }
 

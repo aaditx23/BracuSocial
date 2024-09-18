@@ -92,7 +92,6 @@ fun stringToBitmap(encodedString: String): Bitmap? {
         val decodedBytes = Base64.decode(encodedString, Base64.DEFAULT)
         // Convert the byte array to a Bitmap
         val byteArray = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-        println("Converted $encodedString to $byteArray")
         byteArray
     } catch (e: IllegalArgumentException) {
         e.printStackTrace()

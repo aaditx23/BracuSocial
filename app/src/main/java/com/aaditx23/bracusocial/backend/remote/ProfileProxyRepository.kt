@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ProfileProxyRepository @Inject constructor(
-    private val realm: Realm
+    private val realm: Realm,
 ) {
 
 

@@ -89,7 +89,7 @@ fun Login(
                     scope.launch {
                         isLoading = true
                         println("Loggin in...")
-                        ppVM.login(
+                        accountvm.login(
                             email, pass,
                             result = { login, name, gotProfile ->
 

@@ -7,8 +7,11 @@ import com.aaditx23.bracusocial.backend.local.repositories.CourseRepository
 import com.aaditx23.bracusocial.backend.local.repositories.FriendProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.ProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository
+import com.aaditx23.bracusocial.backend.remote.FirebaseRepository
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import com.aaditx23.bracusocial.backend.remote.ProfileProxyRepository
+import com.aaditx23.bracusocial.backend.remote.RemoteProfile
+import com.aaditx23.bracusocial.backend.remote.USISClient
 import com.aaditx23.bracusocial.component6
 import com.aaditx23.bracusocial.component7
 import com.aaditx23.bracusocial.component8
@@ -25,7 +28,9 @@ open class AccountVM @Inject constructor(
     private val sessionR: SessionRepository,
     private val fpR: FriendProfileRepository,
     private val ppR: ProfileProxyRepository,
-    private val courseR: CourseRepository
+    private val courseR: CourseRepository,
+    private val fbp: FirebaseRepository,
+    private val usisClient: USISClient
 ): ViewModel() {
 
     val allSessions = sessionR.getAllSession()
@@ -45,6 +50,66 @@ open class AccountVM @Inject constructor(
 //    val firstProfile = profileR.getFirstProfile()
 
 
+    suspend fun login(
+        email: String,
+        pass: String,
+        result: (login: Boolean, name: String, gotProfile: Boolean) -> Unit
+    ){
+        viewModelScope.launch {
+            val (login, name) = async{ usisClient.loginAndFetchName(email, pass) }.await()
+
+
+            if(login){
+                println("In vm login is true")
+                val profile =  async {
+                    fbp.getProfileByEmail(email)
+                }.await()
+
+                if (profile != null){
+                    profileR.createProfile(
+                        sid = profile.studentId,
+                        name = name,
+                        pass = pass,
+                        friends = profile.addedFriends,
+                        courses = profile.enrolledCourses,
+                        requests = profile.friendRequests,
+                        pic = profile.profilePicture,
+                        emailData = profile.email
+                    )
+
+                    profile.addedFriends.split(",").forEachIndexed{_, s ->
+                        if(s != ""){
+                            println("Friend is $s")
+                            val friend = async {
+                                ppR.getProfileProxyId(s)
+                            }.await()
+                            if (friend != null) {
+                                println("Friend found $s , accountproxyvm, login")
+                                fpR.createFriendProfile(
+                                    sid = s,
+                                    name = friend.studentName,
+                                    courses = friend.enrolledCourses,
+                                    friends = friend.addedFriends,
+                                    pic = friend.profilePicture,
+                                    emailData = friend.email
+                                )
+                            }
+                        }
+
+                    }
+                    sessionR.loginStatusUpdate(true)
+
+                }
+                result(true, name, profile != null)
+
+            }
+            else{
+                result(false, "No name", false)
+            }
+
+
+        }
+    }
 
     fun createProfile(
         profileData: List<String>,
@@ -65,17 +130,28 @@ open class AccountVM @Inject constructor(
                 pic = profilePic,
                 emailData = email
             )
-            sessionR.loginStatusUpdate(true)
-            ppR.createProfile(
-                sid = id,
-                name = name,
-                pass = password,
-                courses = courses,
-                friends = addedFriends,
-                requests = friendRequests,
-                pic = profilePic,
-                emailData = email
+            fbp.addOrUpdateProfile(
+                RemoteProfile(
+                    studentId = id,
+                    name = name,
+                    email = email,
+                    addedFriends = "",
+                    enrolledCourses = "",
+                    friendRequests = "",
+                    profilePicture = profilePic
+                )
             )
+            sessionR.loginStatusUpdate(true)
+//            ppR.createProfile(
+//                sid = id,
+//                name = name,
+//                pass = password,
+//                courses = courses,
+//                friends = addedFriends,
+//                requests = friendRequests,
+//                pic = profilePic,
+//                emailData = email
+//            )
 //            }
 //            else{
 //                ifRepeat(false)
