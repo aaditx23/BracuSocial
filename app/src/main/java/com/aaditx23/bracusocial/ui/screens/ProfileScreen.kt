@@ -109,28 +109,28 @@ fun Profile(
             )
             HorizontalDivider()
 
-            LazyColumn{
-                item {
-                    Text(text = allProfile[0].studentId.toString())
-                    Text(text = allProfile[0].studentName)
-                    Text(text = allProfile[0].enrolledCourses.split(",").toString())
-                    Text(text = allProfile[0].addedFriends.split(",").toString())
-                    Text(text = allProfile[0].friendRequests.split(",").toString())
-//                    Text(text = allProfile[0].profilePicture)
-                    Text(text = allProfile[0].email)
-                    HorizontalDivider()
-                    allProxyProfile.forEachIndexed { _, profile ->
-                        Text(text = profile.studentId.toString())
-                        Text(text = profile.studentName)
-                        Text(text = profile.enrolledCourses.split(",").toString())
-                        Text(text = profile.addedFriends.split(",").toString())
-                        Text(text = profile.friendRequests.split(",").toString())
-//                        Text(text = profile.profilePicture)
-                        Text(text = profile.email)
-                    }
-                    HorizontalDivider()
-                }
-            }
+//            LazyColumn{
+//                item {
+//                    Text(text = allProfile[0].studentId.toString())
+//                    Text(text = allProfile[0].studentName)
+//                    Text(text = allProfile[0].enrolledCourses.split(",").toString())
+//                    Text(text = allProfile[0].addedFriends.split(",").toString())
+//                    Text(text = allProfile[0].friendRequests.split(",").toString())
+////                    Text(text = allProfile[0].profilePicture)
+//                    Text(text = allProfile[0].email)
+//                    HorizontalDivider()
+//                    allProxyProfile.forEachIndexed { _, profile ->
+//                        Text(text = profile.studentId.toString())
+//                        Text(text = profile.studentName)
+//                        Text(text = profile.enrolledCourses.split(",").toString())
+//                        Text(text = profile.addedFriends.split(",").toString())
+//                        Text(text = profile.friendRequests.split(",").toString())
+////                        Text(text = profile.profilePicture)
+//                        Text(text = profile.email)
+//                    }
+//                    HorizontalDivider()
+//                }
+//            }
 
         }
     }
