@@ -64,7 +64,7 @@ fun FriendRoutine(routinevm: RoutineVM){
     var selectedFriend by remember{
         mutableStateOf("All Friends")
     }
-    println("$currentDay $currentDay $selectedIndexDay $days")
+//    println("$currentDay $currentDay $selectedIndexDay $days")
     fun add(entry: String){
         if (!nonEmpty.contains(entry)){
             nonEmpty.add(entry)
@@ -79,7 +79,7 @@ fun FriendRoutine(routinevm: RoutineVM){
         scope.launch {
             routinevm.friendList { list -> friendList.addAll( list.map { it.studentName }) }
 
-            println(friendList)
+//            println(friendList)
             routinevm.friendsAndCourses(
                 setLoading = { b->
                     isLoading = b

@@ -119,7 +119,7 @@ fun Main(){
     }
 
     LaunchedEffect(allSessions) {
-        println(allSessions)
+//        println(allSessions)
         CoroutineScope(Dispatchers.IO).launch {
 //            if(hasInternet){
 //                accountvm.updateProfileFromRemote()

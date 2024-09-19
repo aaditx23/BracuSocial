@@ -43,7 +43,7 @@ fun Routine(navControllerOld: NavHostController) {
                 items = bottomNavList,
                 selectedIndex = selectedIndexBotNav
             ) { index ->
-                println("Selected index $index size ${bottomNavList.size}")
+//                println("Selected index $index size ${bottomNavList.size}")
                 selectedIndexBotNav = index
                 navController.navigate(bottomNavList[index].title)
 

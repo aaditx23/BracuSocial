@@ -147,7 +147,7 @@ fun LiveFeed(){
                         else -> allCourses
                     }
                 }.await()
-                println("After filtration $filter $filterValue ${filteredCourseList.size}")
+//                println("After filtration $filter $filterValue ${filteredCourseList.size}")
                 isFiltering = false
 
             }
@@ -158,7 +158,7 @@ fun LiveFeed(){
         scope.launch {
             if(hasInternet){
                 allCourses = coursevm.liveData { loading ->
-                    println("Loading $loading")
+//                    println("Loading $loading")
                     isLoading = loading
                 }
             }

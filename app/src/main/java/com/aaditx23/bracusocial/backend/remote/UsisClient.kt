@@ -82,7 +82,7 @@ class USISClient {
         client.newCall(accountRequest).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
-                println("Failed to retrieve the account.")
+//                println("Failed to retrieve the account.")
                 continuation.resume(Pair(false, "No Name"))
             }
 
@@ -92,13 +92,13 @@ class USISClient {
                     val document: Document = Jsoup.parse(res!!)
                     val fullName = document.select("tr:contains(Your Full Name) td").last()?.text()
                     if (!fullName.isNullOrEmpty()) {
-                        println("Your name is $fullName")
+//                        println("Your name is $fullName")
                         continuation.resume(Pair(true, fullName))
                     } else {
                         continuation.resume(Pair(false, "No Name"))
                     }
                 } else {
-                    println("Failed to retrieve the account.")
+//                    println("Failed to retrieve the account.")
                     continuation.resume(Pair(false, "No Name"))
                 }
             }

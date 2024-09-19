@@ -42,7 +42,7 @@ class ProfileRepository @Inject constructor(
                 email = emailData
             }
             copyToRealm(profileData, updatePolicy = UpdatePolicy.ALL)
-            println("Profile created (profile repository, create profile)")
+//            println("Profile created (profile repository, create profile)")
         }
     }
     suspend fun updateProfile(profile: RemoteProfile){
@@ -53,7 +53,7 @@ class ProfileRepository @Inject constructor(
                 me.friendRequests = profile.friendRequests
                 me.enrolledCourses = profile.enrolledCourses
                 me.profilePicture = profile.profilePicture
-                println("Friend reuqests of me ${me.friendRequests} remote ${profile.friendRequests}")
+//                println("Friend reuqests of me ${me.friendRequests} remote ${profile.friendRequests}")
             }
         }
     }

@@ -246,7 +246,7 @@ fun ProfilePage(
     if (showImagePicker){
         ImagePicker {image ->
             scope.launch{
-                println("CALLED IMAGE PICKER $showImagePicker")
+//                println("CALLED IMAGE PICKER $showImagePicker")
                 profileImage = image
                 accountvm.updatePic(
                     bitmapToString(profileImage),
@@ -260,7 +260,7 @@ fun ProfilePage(
                         }
                     }
                 )
-                println("$image FOUND")
+//                println("$image FOUND")
                 enableImageSelect = true
                 showImagePicker = false
             }

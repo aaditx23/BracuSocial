@@ -43,11 +43,11 @@ fun checkEmptyDayForFriend(
     var result = true
     if(name == "All Friends") return false
 
-    println("map $map")
+//    println("map $map")
 
     for ((key, value) in map){
        val temp = value.split("|")
-        println("Temp $temp")
+//        println("Temp $temp")
        temp.forEachIndexed { _, s ->
            if (s.contains(name)){
                println(s)
@@ -128,11 +128,11 @@ fun Day(day: String,
 
         if (!myRoutine){
             if(!isEmpty){
-                println("day not empty $day")
+//                println("day not empty $day")
                 callUI()
             }
             else{
-                println("day empty $day")
+//                println("day empty $day")
             }
         }
         else{

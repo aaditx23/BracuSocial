@@ -60,7 +60,7 @@ open class AccountVM @Inject constructor(
 
 
             if(login){
-                println("In vm login is true")
+//                println("In vm login is true")
                 val profile =  async {
                     fbp.getProfileByEmail(email)
                 }.await()
@@ -79,12 +79,12 @@ open class AccountVM @Inject constructor(
 
                     profile.addedFriends.split(",").forEachIndexed{_, s ->
                         if(s != ""){
-                            println("Friend is $s")
+//                            println("Friend is $s")
                             val friend = async {
                                 ppR.getProfileProxyId(s)
                             }.await()
                             if (friend != null) {
-                                println("Friend found $s , accountproxyvm, login")
+//                                println("Friend found $s , accountproxyvm, login")
                                 fpR.createFriendProfile(
                                     sid = s,
                                     name = friend.studentName,
@@ -207,7 +207,7 @@ open class AccountVM @Inject constructor(
 
     suspend fun updateProfileFromRemote(){
         viewModelScope.launch {
-            println("Updating profile")
+//            println("Updating profile")
             val me = async{ profileR.getMyProfile() }.await()
             if (me != null){
                 val remoteMe = async { fbp.getProfileByEmail(me.email) }.await()

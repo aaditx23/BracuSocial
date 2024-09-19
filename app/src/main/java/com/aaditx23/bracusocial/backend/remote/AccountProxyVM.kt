@@ -103,7 +103,7 @@ open class AccountProxyVM @Inject constructor(
 
 
             if(login){
-                println("In vm login is true")
+//                println("In vm login is true")
                 val profile =  async {
                     fbp.getProfileByEmail(email)
                 }.await()
@@ -122,12 +122,12 @@ open class AccountProxyVM @Inject constructor(
 
                     profile.addedFriends.split(",").forEachIndexed{_, s ->
                         if(s != ""){
-                            println("Friend is $s")
+//                            println("Friend is $s")
                             val friend = async {
                                 ppR.getProfileProxyId(s)
                             }.await()
                             if (friend != null) {
-                                println("Friend found $s , accountproxyvm, login")
+//                                println("Friend found $s , accountproxyvm, login")
                                 fpR.createFriendProfile(
                                     sid = s,
                                     name = friend.studentName,

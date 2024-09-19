@@ -161,7 +161,7 @@ fun MyRoutine(routinevm: RoutineVM, navController: NavHostController, ){
 
     }
     else{
-        println(nonEmpty.sorted())
+//        println(nonEmpty.sorted())
         LazyColumn(
             modifier = Modifier
                 .padding(top = 100.dp, bottom = 130.dp),

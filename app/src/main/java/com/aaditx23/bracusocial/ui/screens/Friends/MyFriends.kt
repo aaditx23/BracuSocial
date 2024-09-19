@@ -74,7 +74,7 @@ fun MyFriends(friendvm: FriendsVM){
         scope.launch {
             delay(100)
             if (allFriends.isNotEmpty()){
-                println(allFriends.size)
+//                println(allFriends.size)
                 isEmpty = false
             }
             else{

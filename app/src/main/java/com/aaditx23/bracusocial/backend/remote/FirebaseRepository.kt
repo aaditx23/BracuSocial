@@ -15,7 +15,7 @@ class FirebaseRepository @Inject constructor() {
     private val db = Firebase.firestore
 
     suspend fun addOrUpdateProfile(profile: RemoteProfile) {
-        println("Entered firebase")
+//        println("Entered firebase")
         val profileData = hashMapOf(
             "studentId" to profile.studentId,
             "name" to profile.name,
@@ -291,7 +291,7 @@ class FirebaseRepository @Inject constructor() {
     }
 
     private fun addFriendToList(profileData: RemoteProfile, friend: String){
-        println("add frine to list ${profileData.name} ${profileData.friendRequests}")
+//        println("add frine to list ${profileData.name} ${profileData.friendRequests}")
         if(!profileData.addedFriends.contains(friend)) {
             profileData.addedFriends = "${profileData.addedFriends},$friend"
         }
