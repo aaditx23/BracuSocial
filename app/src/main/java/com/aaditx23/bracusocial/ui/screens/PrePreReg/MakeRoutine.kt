@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Backspace
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -53,6 +54,17 @@ import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.CourseVM
 import com.aaditx23.bracusocial.components.Routine
 import com.aaditx23.bracusocial.components.SearchBar
+import com.aaditx23.bracusocial.ui.theme.palette2DarkPurple3
+import com.aaditx23.bracusocial.ui.theme.palette2Plum
+import com.aaditx23.bracusocial.ui.theme.palette4green
+import com.aaditx23.bracusocial.ui.theme.palette7Green2
+import com.aaditx23.bracusocial.ui.theme.paletteBlue1
+import com.aaditx23.bracusocial.ui.theme.paletteBlue2
+import com.aaditx23.bracusocial.ui.theme.paletteBlue4
+import com.aaditx23.bracusocial.ui.theme.paletteBlue5
+import com.aaditx23.bracusocial.ui.theme.paletteBlue7
+import com.aaditx23.bracusocial.ui.theme.paletteBlue9
+import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen
 import com.aaditx23.bracusocial.ui.theme.paletteDarkGreen2
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -222,7 +234,8 @@ fun MakeRoutine(
                     .padding(top = 50.dp, start = 5.dp)
             ) {
                 if(fromProfile){
-                    Button(onClick = {
+                    Button(
+                        onClick = {
                         if(hasClash){
                             Toast.makeText(
                                 context,
@@ -234,18 +247,37 @@ fun MakeRoutine(
                             saveOrSetCourse(save = false)
                         }
 
-                        }
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(paletteDarkGreen2)
                     ) {
-                        Text(text = "Add")
+                        Text(
+                            text = "Add",
+                            color = palette7Green2
+                        )
                     }
                 }
                 else {
-                    Button(onClick = { saveOrSetCourse(save = true) }) {
-                        Text(text = "Save")
+                    Button(
+                        onClick = { saveOrSetCourse(save = true) },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(paletteBlue4)
+                    ) {
+                        Text(
+                            text = "Save",
+                            color = paletteBlue1
+                        )
                     }
                 }
-                Button(onClick = { clearRoutine() }) {
-                    Text(text = "Clear")
+                Button(
+                    onClick = { clearRoutine() },
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(palette2Plum)
+                ) {
+                    Text(
+                        text = "Clear",
+                        color = paletteBlue1
+                    )
                 }
 
             }
@@ -274,12 +306,15 @@ fun CourseCard(
     left: Boolean = false
     ){
     val text = "${course.courseName} - ${course.section}"
-    var color = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
+    var textColor = paletteBlue9
+    var color = CardDefaults.cardColors(paletteBlue2)
     if (left){
         if (selectedMap[course.courseName] == true){
-            color = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiary)
+            color = CardDefaults.cardColors(paletteBlue7)
+            textColor = paletteBlue1
         }
     }
+
     Box(
         modifier = Modifier
             .fillMaxWidth(),
@@ -299,7 +334,8 @@ fun CourseCard(
             Text(
                 text = text,
                 modifier = Modifier
-                    .padding(10.dp)
+                    .padding(10.dp),
+                color = textColor
             )
         }
     }

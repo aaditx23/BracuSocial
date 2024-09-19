@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,8 +51,10 @@ import com.aaditx23.bracusocial.dayList
 import com.aaditx23.bracusocial.listfiltersAddAll
 import com.aaditx23.bracusocial.timeSlots
 import com.aaditx23.bracusocial.ui.theme.paletteBlue1
+import com.aaditx23.bracusocial.ui.theme.paletteBlue2
 import com.aaditx23.bracusocial.ui.theme.paletteBlue4
 import com.aaditx23.bracusocial.ui.theme.paletteBlue6
+import com.aaditx23.bracusocial.ui.theme.paletteBlue9
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -160,9 +163,13 @@ fun CourseScreen(dbStatus: Boolean){
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                shape = RoundedCornerShape(5.dp)
+                shape = RoundedCornerShape(5.dp),
+                colors = ButtonDefaults.buttonColors(paletteBlue2)
             ) {
-                Text(text = "Refresh DB")
+                Text(
+                    text = "Refresh",
+                    color = paletteBlue9
+                )
             }
         }
 
