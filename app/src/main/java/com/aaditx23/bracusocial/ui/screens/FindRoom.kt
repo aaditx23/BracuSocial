@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,6 +39,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aaditx23.bracusocial.backend.local.repositories.compareTime
 import com.aaditx23.bracusocial.backend.viewmodels.RoomVM
+import com.aaditx23.bracusocial.ui.theme.paletteBlue1
+import com.aaditx23.bracusocial.ui.theme.paletteBlue2
+import com.aaditx23.bracusocial.ui.theme.paletteBlue3
+import com.aaditx23.bracusocial.ui.theme.paletteBlue4
+import com.aaditx23.bracusocial.ui.theme.paletteBlue7
+import com.aaditx23.bracusocial.ui.theme.paletteBlue9
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -170,6 +177,7 @@ fun FindRoom(){
                     if (isLab) emptyLab
                     else emptyClasses
                 ) { index, item ->
+                    if(item.length > 2)
                     classCard(i = index, room =item)
                 }
             }
@@ -244,6 +252,7 @@ fun FindRoom(){
     Button(
         modifier = Modifier
             .padding(top = 75.dp)
+            .padding(horizontal = 8.dp)
             .fillMaxWidth(),
         onClick = {
             isLab = !isLab
@@ -258,9 +267,13 @@ fun FindRoom(){
             }
 
         },
-        shape = RectangleShape
+        shape = MaterialTheme.shapes.medium,
+        colors = ButtonDefaults.buttonColors(paletteBlue2)
     ) {
-        Text(text = if (isLab) "Showing Lab" else "Showing Classes")
+        Text(
+            text = if (isLab) "Showing Lab" else "Showing Classes",
+            color = paletteBlue9
+        )
     }
 }
 
@@ -274,8 +287,10 @@ fun TimeSlotBar(
     val cardHeight = 45.0
     val containerWidth = 160
     val fontSize = 14
-    val selectedColor = MaterialTheme.colorScheme.inversePrimary
-    val unselectedColor = MaterialTheme.colorScheme.primary
+    val selectedColor = paletteBlue7
+    val unselectedColor = paletteBlue3
+    val selectedTextColor = paletteBlue1
+    val unselectedTextColor = paletteBlue9
     Box(
         modifier = Modifier
             .width(containerWidth.dp)
@@ -295,7 +310,7 @@ fun TimeSlotBar(
                     } else {
                         CardDefaults.cardColors(unselectedColor)
                     },
-//                    shape = RectangleShape,
+                    shape = MaterialTheme.shapes.medium,
 
                     modifier = Modifier
                         .padding(5.dp)
@@ -309,7 +324,9 @@ fun TimeSlotBar(
                     ) {
                         Text(
                             text = s,
-                            fontSize = fontSize.sp
+                            fontSize = fontSize.sp,
+                            color = if(selectedIndex == i) selectedTextColor
+                            else unselectedTextColor
                         )
                     }
                 }
@@ -325,8 +342,10 @@ fun DayBar(
     onClick: (i: Int)-> Unit,
     topPadding: Dp = 119.dp
 ){
-    val selectedColor: Color = MaterialTheme.colorScheme.inversePrimary
-    val unselectedColor: Color = MaterialTheme.colorScheme.primary
+    val selectedColor = paletteBlue7
+    val unselectedColor = paletteBlue3
+    val selectedTextColor = paletteBlue1
+    val unselectedTextColor = paletteBlue9
     Box(
         modifier = Modifier
             .fillMaxWidth(),
@@ -362,6 +381,8 @@ fun DayBar(
                         Text(
                             text = s.slice(0..1),
                             fontSize = 15.sp,
+                            color = if(selectedIndex == i) selectedTextColor
+                            else unselectedTextColor
                         )
                     }
                 }

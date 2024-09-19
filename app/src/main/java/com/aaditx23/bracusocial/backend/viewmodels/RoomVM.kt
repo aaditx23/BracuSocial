@@ -44,7 +44,7 @@ open class RoomVM @Inject constructor(
         val newList = mutableListOf<String>()
         val allClassRooms = courseR.getAllClass().first()
         allClassRooms.forEachIndexed { _, s ->
-            if (!courseList.contains(s)) {
+            if (!courseList.contains(s) && s!!.length > 1 && s != "Online" && !s.contains("FT")) {
                 newList.add(s.toString())
             }
         }
