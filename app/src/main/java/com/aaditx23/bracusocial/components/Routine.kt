@@ -153,13 +153,13 @@ fun Table(data: MutableList<MutableList<MutableState<MutableList<Course>>>>,
                 .padding(top = topPadding)
                 .height(availableHeight.dp)
                 .horizontalScroll(rememberScrollState())
-//                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState())
         }
         else{
             Modifier
                 .padding(top = topPadding)
                 .horizontalScroll(rememberScrollState())
-//                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState())
         }
 
 

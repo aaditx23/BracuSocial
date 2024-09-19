@@ -253,7 +253,7 @@ fun CourseScreen(dbStatus: Boolean){
                 done = addedCourses
             )
         }
-        else if(!hasInternet){
+        else if(!hasInternet && !dbStatus){
             println("NO INTERNET")
             NoButtonDialog(
                 title = "No Internet",
