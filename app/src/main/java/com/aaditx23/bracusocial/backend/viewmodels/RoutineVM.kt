@@ -104,19 +104,21 @@ open class RoutineVM @Inject constructor(
                 setEmpty(false)
                 val dataMap = mutableMapOf<String, List<String>>()  // Name: ["CourseData"]
                 for((name, courseString) in map){
-                    val temp = courseString.split(",")
-                    val tempCourseList = mutableListOf<String>()
-                    temp.forEach { course ->
-                        val (courseName, section) = course.trim().split(" ")
-                        val courseData = courseR.findCourse(courseName, section)
-                        if (courseData!= null){
-                            val tempStringList = courseR.courseToString(courseData)
-                            tempStringList.forEach { string ->
-                                if(string.isNotEmpty()){
-                                    tempCourseList.add(string)
+                    if(courseString != ""){
+                        val temp = courseString.split(",")
+                        val tempCourseList = mutableListOf<String>()
+                        temp.forEach { course ->
+                            val (courseName, section) = course.trim().split(" ")
+                            val courseData = courseR.findCourse(courseName, section)
+                            if (courseData != null) {
+                                val tempStringList = courseR.courseToString(courseData)
+                                tempStringList.forEach { string ->
+                                    if (string.isNotEmpty()) {
+                                        tempCourseList.add(string)
+                                    }
                                 }
+                                dataMap[name] = tempCourseList.toList()
                             }
-                            dataMap[name] = tempCourseList.toList()
                         }
                     }
                 }   // dataMap populated
