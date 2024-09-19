@@ -46,6 +46,7 @@ class USISClient {
                 .add("j_password", pass)
                 .build()
 
+            println("Credentials $email $pass")
             val loginRequest = Request.Builder()
                 .url(loginUrl)  // Replace with your login URL
                 .post(formBody)

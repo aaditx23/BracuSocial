@@ -112,10 +112,10 @@ class FirebaseRepository @Inject constructor() {
                     db.collection("profiles").document(docId)
                         .update("profilePicture", pic)
                         .addOnSuccessListener {
-                            Log.d("FirebaseRepository", "Successfully updated enrolledCourses!")
+                            Log.d("FirebaseRepository", "Successfully updated Picture!")
                         }
                         .addOnFailureListener { e ->
-                            Log.w("FirebaseRepository", "Error updating enrolledCourses", e)
+                            Log.w("FirebaseRepository", "Error updating Picture", e)
                         }
                 } else {
                     Log.d("FirebaseRepository", "No profile found with this email")

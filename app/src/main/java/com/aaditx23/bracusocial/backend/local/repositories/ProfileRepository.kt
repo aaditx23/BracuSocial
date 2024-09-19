@@ -68,23 +68,24 @@ class ProfileRepository @Inject constructor(
 //        println("Name updated to $name")
     }
     suspend fun updatePic(pic: String, result: (Boolean) -> Unit) {
-        try {
-
-            realm.write {
-                val profileData = query<Profile>().first().find()
-                if (profileData != null) {
-                    profileData.profilePicture = pic
-                    result(true)
-                }
+        realm.write {
+            val profileData = query<Profile>().first().find()
+            if (profileData != null) {
+                profileData.profilePicture = pic
+                result(true)
             }
-        } catch (e: IllegalArgumentException) {
-            Log.e("updatePic", "Error updating profile picture: ${e.message}")
-            result(false)
-        } catch (e: Exception) {
-            Log.e("updatePic", "Unexpected error occurred while updating profile picture", e)
-            result(false)
-            // Handle other exceptions
         }
+//        try {
+
+
+//        } catch (e: IllegalArgumentException) {
+//            Log.e("updatePic", "Error updating profile picture: ${e.message}")
+//            result(false)
+//        } catch (e: Exception) {
+//            Log.e("updatePic", "Unexpected error occurred while updating profile picture", e)
+//            result(false)
+//            // Handle other exceptions
+//        }
     }
     suspend fun updateCourses(courses: String){
         realm.write {

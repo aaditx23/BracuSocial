@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,7 +64,8 @@ fun ImagePicker(onImagePicked: (image: Bitmap) -> Unit){
             aspectRatioY = 1
             outputRequestWidth = 150
             outputRequestHeight = 150
-            outputCompressQuality = 20
+            outputCompressQuality = 100
+            outputCompressFormat = Bitmap.CompressFormat.JPEG
         })
         cropLauncher.launch(cropOptions)
     }
@@ -97,10 +99,12 @@ suspend fun bitmapToString(bitmap: Bitmap, maxSizeKB: Int = 100): String = withC
     // Compress and check size
     do {
         outputStream.reset() // Reset the stream to clear previous data
-        compressedBitmap.compress(Bitmap.CompressFormat.PNG, quality, outputStream)
+        compressedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
         val byteArray = outputStream.toByteArray()
         val sizeKB = byteArray.size / 1024
+        println("Size of image $sizeKB")
         quality -= 10 // Reduce quality for further compression if needed
+
     } while (sizeKB > maxSizeKB && quality > 0)
 
     Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)

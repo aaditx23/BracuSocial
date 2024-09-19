@@ -159,6 +159,12 @@ fun ProfilePage(
         mutableStateOf(true)
     }
     var profileImage by remember { mutableStateOf(MainActivity.EmptyImage.emptyProfileImage) }
+    var showToast by remember {
+        mutableStateOf(false)
+    }
+    var imageUpload by remember {
+        mutableStateOf(false)
+    }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -251,13 +257,8 @@ fun ProfilePage(
                 accountvm.updatePic(
                     bitmapToString(profileImage),
                     result = { r ->
-                        if (r){
-                            Toast.makeText(context, "Image Updated", Toast.LENGTH_SHORT).show()
-                        }
-                        else{
-                            Toast.makeText(context, "Error uploading photo, choose a smaller image", Toast.LENGTH_SHORT).show()
-
-                        }
+                        imageUpload = r
+                        showToast = true
                     }
                 )
 //                println("$image FOUND")
@@ -265,6 +266,14 @@ fun ProfilePage(
                 showImagePicker = false
             }
         }
+    }
+    if(showToast){
+        if (imageUpload) {
+            Toast.makeText(context, "Image Updated", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Error uploading photo", Toast.LENGTH_SHORT).show()
+        }
+        showToast = false
     }
 }
 

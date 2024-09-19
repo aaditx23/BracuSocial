@@ -6,12 +6,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -45,10 +51,11 @@ fun Login(
     var isLoading by rememberSaveable {
         mutableStateOf(false)
     }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val (email, setEmail) = rememberSaveable { mutableStateOf("") }
-    val (pass, setPass) = rememberSaveable { mutableStateOf("") }
+    var (pass, setPass) = rememberSaveable { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
 
@@ -68,16 +75,28 @@ fun Login(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
 
+
+
+
         TextField(
             value = pass,
-            onValueChange = {setPass(it)},
+            onValueChange = { setPass(it) },
             label = { Text(text = "USIS Password") },
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxWidth()
                 .border(2.dp, Color.Transparent),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image = if (passwordVisible)
+                    Icons.Filled.VisibilityOff
+                else Icons.Filled.Visibility
+
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(imageVector = image, contentDescription = null)
+                }
+            }
         )
 
         Button(
