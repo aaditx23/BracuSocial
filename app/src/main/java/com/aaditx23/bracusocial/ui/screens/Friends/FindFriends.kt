@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAddAlt1
+import androidx.compose.material.icons.filled.QueryBuilder
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -198,10 +199,19 @@ fun AddFriendRow(friend: RemoteProfile, friendvm: FriendsVM){
     var sentAlready by rememberSaveable {
         mutableStateOf(false)
     }
+    var inMyRequests by rememberSaveable {
+        mutableStateOf(false)
+    }
     friendvm.isInRequest(
         friend = friend.studentId,
         result = { r ->
             sentAlready = r
+        }
+    )
+    friendvm.isInMyRequest(
+        friend = friend.studentId,
+        result = { r ->
+            inMyRequests = r
         }
     )
     println("$sentAlready sent already")
@@ -240,6 +250,19 @@ fun AddFriendRow(friend: RemoteProfile, friendvm: FriendsVM){
                         contentDescription = "Cancel Request",
                         tint = palette7Blue1,
                         )
+                }
+            }
+            else if (inMyRequests){
+                IconButton(
+                    onClick = {
+                        Toast.makeText(context, "Go to Friend Requests page", Toast.LENGTH_SHORT).show()
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.QueryBuilder,
+                        contentDescription = "Send Request",
+                        tint = palette7Blue1
+                    )
                 }
             }
             else{

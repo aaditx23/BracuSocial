@@ -121,9 +121,9 @@ fun Main(){
     LaunchedEffect(allSessions) {
         println(allSessions)
         CoroutineScope(Dispatchers.IO).launch {
-            if(hasInternet){
-                accountvm.updateProfileFromRemote()
-            }
+//            if(hasInternet){
+//                accountvm.updateProfileFromRemote()
+//            }
             delay(1000)
             if(allSessions.isEmpty()){
                 sessionvm.createSession()
@@ -136,6 +136,13 @@ fun Main(){
             isSessionReady = true
         }
 
+    }
+    LaunchedEffect(navBackStackEntry?.destination) {
+        scope.launch{
+            if (hasInternet) {
+                accountvm.updateProfileFromRemote()
+            }
+        }
     }
 
 
@@ -156,7 +163,7 @@ fun Main(){
                             selectedIndexDrawer = navDrawerItemList.indexOf(item)
 
                         },
-                        isLogin = session?.loginStatus ?: false
+                        isLogin = session?.loginStatus ?: false,
 
                     )
                 }
@@ -234,7 +241,7 @@ fun Main(){
                         )
                     }
                     composable("Friends"){
-                        Friends()
+                        Friends(accountvm)
                     }
                 }
             }

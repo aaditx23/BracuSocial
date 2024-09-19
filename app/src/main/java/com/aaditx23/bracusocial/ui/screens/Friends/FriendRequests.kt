@@ -87,18 +87,19 @@ fun FriendRequests(friendvm: FriendsVM){
         println("$requests triggered")
         scope.launch {
             friendvm.fetchFriendRequestProfiles(requests)
+            delay(500)
             println(friendProfiles.size)
             friendProfiles.forEach{
                 println(it.name)
             }
-            delay(200)
+
             if(profile.isNotEmpty()){
                 requests = profile[0].friendRequests
             }
         }
     }
 
-    if(requests == ""){
+    if(requests == "" || requests == ","){
         Box(
             modifier = Modifier
                 .fillMaxSize(),

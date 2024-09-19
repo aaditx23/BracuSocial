@@ -56,6 +56,17 @@ class FriendProfileRepository @Inject constructor(
                     local.enrolledCourses = profile.enrolledCourses
                     local.profilePicture = profile.profilePicture
                 }
+                else{
+                    val profileData = FriendProfile().apply {
+                        studentId = profile.studentId
+                        studentName = profile.name
+                        enrolledCourses = profile.enrolledCourses
+                        addedFriends = profile.addedFriends
+                        profilePicture = profile.profilePicture
+                        email = profile.email
+                    }
+                    copyToRealm(profileData, updatePolicy = UpdatePolicy.ALL)
+                }
             }
 
 

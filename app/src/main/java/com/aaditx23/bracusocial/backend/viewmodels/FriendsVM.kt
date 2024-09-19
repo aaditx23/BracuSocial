@@ -50,7 +50,7 @@ open class FriendsVM @Inject constructor(
         )
 //    val firstProfile = profileR.getMyProfile()
 
-    fun updateFriends(){
+    suspend fun updateFriends(){
         viewModelScope.launch {
             val me = profileR.getMyProfile()
             if(me != null){
@@ -122,6 +122,23 @@ open class FriendsVM @Inject constructor(
 //            println("FOUND FRIEND ${friendProfile!!.studentId}")
             if (friendProfile != null ){
                 if(friendProfile.friendRequests.contains(me!!.studentId)){
+//                    println("${ friendProfile.friendRequests } here")
+                    result(true)
+                }
+                else{
+                    result(false)
+                }
+            }
+        }
+    }
+    fun isInMyRequest(friend: String, result: (Boolean) -> Unit){
+        viewModelScope.launch {
+            val friendProfile = async{ fbp.getProfileById(friend) }.await()
+            val me = async{ profileR.getMyProfile() }.await()
+
+//            println("FOUND FRIEND ${friendProfile!!.studentId}")
+            if (me != null && friendProfile!= null ){
+                if(me.friendRequests.contains(friendProfile.studentId)){
 //                    println("${ friendProfile.friendRequests } here")
                     result(true)
                 }

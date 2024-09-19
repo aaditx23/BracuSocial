@@ -19,7 +19,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.backend.viewmodels.FriendsVM
 import com.aaditx23.bracusocial.checkInternetConnection
 import com.aaditx23.bracusocial.components.BottomNavigation
@@ -31,7 +33,7 @@ import com.aaditx23.bracusocial.ui.screens.Friends.MyFriends
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Friends(){
+fun Friends(accountvm: AccountVM){
     val friendvm: FriendsVM = hiltViewModel()
 
     val context = LocalContext.current
@@ -46,10 +48,12 @@ fun Friends(){
     }
     val navController = rememberNavController()
     var scrollState = rememberScrollState()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
 
-    LaunchedEffect(hasInternet) {
+    LaunchedEffect(navBackStackEntry?.destination) {
         if(hasInternet){
             friendvm.updateFriends()
+            accountvm.updateProfileFromRemote()
         }
     }
 
