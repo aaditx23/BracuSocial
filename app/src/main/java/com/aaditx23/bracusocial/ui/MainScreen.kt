@@ -1,6 +1,7 @@
 package com.aaditx23.bracusocial.ui
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.widget.Toast
 
 import androidx.compose.foundation.rememberScrollState
@@ -42,6 +43,7 @@ import com.aaditx23.bracusocial.components.TopActionBar
 import com.aaditx23.bracusocial.components.drawableToBitmap
 import com.aaditx23.bracusocial.components.models.BottomNavItem
 import com.aaditx23.bracusocial.components.models.NavDrawerItem
+import com.aaditx23.bracusocial.ui.screens.Account.Login
 import com.aaditx23.bracusocial.ui.screens.Account.Signup
 import com.aaditx23.bracusocial.ui.screens.Account.Logout
 import com.aaditx23.bracusocial.ui.screens.CourseScreen
@@ -50,11 +52,11 @@ import com.aaditx23.bracusocial.ui.screens.PrePreReg
 import com.aaditx23.bracusocial.ui.screens.Profile
 import com.aaditx23.bracusocial.ui.screens.SessionInfo
 import com.aaditx23.bracusocial.ui.screens.Friends
-import com.aaditx23.bracusocial.ui.screens.Login_Signup
 import com.aaditx23.bracusocial.ui.screens.Routine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlin.math.sign
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "MutableCollectionMutableState")
@@ -180,6 +182,7 @@ fun Main(){
                         selectedIndexDrawer = 0
                         navController.navigate("Profile")
                     }
+
                     // Routes
                     composable("Profile") {
                         Profile(accountvm, accountproxyvm, navController)
@@ -205,13 +208,8 @@ fun Main(){
                         SessionInfo(sessionvm)
                     }
                     composable("Signup/Login"){
-
-
-                        Login_Signup(
-                            accountvm = accountvm,
-                            success = {
-                                login()
-                            },
+                        Login(
+                            accountvm = accountvm ,
                             navController = navController
                         )
                     }
@@ -222,9 +220,7 @@ fun Main(){
                             accountvm = accountvm,
                             email = email,
                             name = name,
-                            signupSuccess = {
-                                login()
-                            }
+                            navController = navController
                         )
                     }
 

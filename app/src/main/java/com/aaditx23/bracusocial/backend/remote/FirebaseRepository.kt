@@ -14,7 +14,7 @@ import kotlin.coroutines.suspendCoroutine
 class FirebaseRepository @Inject constructor() {
     private val db = Firebase.firestore
 
-    fun addOrUpdateProfile(profile: RemoteProfile) {
+    suspend fun addOrUpdateProfile(profile: RemoteProfile) {
         println("Entered firebase")
         val profileData = hashMapOf(
             "studentId" to profile.studentId,

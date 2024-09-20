@@ -1,5 +1,6 @@
 package com.aaditx23.bracusocial.ui.screens.Account
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.components.NoButtonCircularLoadingDialog
@@ -37,8 +39,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun Login(
     accountvm: AccountVM,
-    loginSuccess: () -> Unit,
-    loginButNoAccount: (name: String, email: String) -> Unit
+//    loginButNoAccount: (name: String, email: String) -> Unit,
+    navController: NavHostController
 ){
 
     val ppVM: AccountProxyVM = hiltViewModel()
@@ -114,23 +116,23 @@ fun Login(
 
                                 if(login){
                                     if(gotProfile){
-                                        Toast.makeText(
-                                            context,
-                                            "Login Successful",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        loginSuccess()
+//                                        Toast.makeText(
+//                                            context,
+//                                            "Login Successful",
+//                                            Toast.LENGTH_SHORT
+//                                        ).show()
+                                        navController.navigate("Profile")
                                     }
                                     else{
-                                        loginButNoAccount(name, email)
+                                        navController.navigate("CreateAccount/${Uri.encode(email)}/${Uri.encode(name)}")
                                     }
                                 }
                                 else{
-                                    Toast.makeText(
-                                        context,
-                                        "Wrong USIS Credentials",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+//                                    Toast.makeText(
+//                                        context,
+//                                        "Wrong USIS Credentials",
+//                                        Toast.LENGTH_SHORT
+//                                    ).show()
                                 }
                             }
                         )

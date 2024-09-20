@@ -1,17 +1,14 @@
 package com.aaditx23.bracusocial.ui.screens.Account
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,19 +21,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.aaditx23.bracusocial.backend.local.models.emptyProfileString
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.material3.Button as Button1
 
 @Composable
 fun Signup(
     email: String,
     name:String,
     accountvm: AccountVM,
-    signupSuccess: () -> Unit
+    navController: NavHostController
 ) {
     var isLoading by rememberSaveable {
         mutableStateOf(true)
@@ -49,42 +45,8 @@ fun Signup(
     val studentName by rememberSaveable { mutableStateOf(name) }
     val emailAddress by rememberSaveable { mutableStateOf(email) }
     val scope = rememberCoroutineScope()
-    var signup by remember{
+    var signupFlag by remember{
         mutableStateOf(false)
-    }
-
-    LaunchedEffect(signup) {
-        if (signup) {
-            println("Signup is true")
-            if (id.isNotEmpty()) {
-                println("id is not empty")
-                try {
-                    accountvm.createRemoteProfile(
-                        listOf(
-                            id,
-                            "",
-                            studentName,
-                            "",
-                            "",
-                            "",
-                            emptyProfileString,
-                            emailAddress
-                        )
-                    )
-                    accountvm.setLoginTrue()
-                    println("Profile created successfully!")
-                    signupSuccess()
-                } catch (e: Exception) {
-                    println("Error in creating profile: ${e.message}")
-                    // Optionally show a Toast or error message here
-                }
-            } else {
-                println("ID cannot be empty")
-                // Optionally show a Toast here if ID is empty
-            }
-            // Reset the signup state to avoid re-triggering LaunchedEffect
-            signup = false
-        }
     }
 
     Column(
@@ -129,7 +91,37 @@ fun Signup(
         )
 
         Button(
-            onClick = { signup = true}
+            onClick = {
+                println("Button clcicked")
+
+                println(id)
+                if (id.isNotEmpty()) {
+                    println("id is not empty")
+                    val profile = listOf(
+                        id,
+                        "",
+                        studentName,
+                        "",
+                        "",
+                        "",
+                        "",
+                        emailAddress
+                    )
+
+                    scope.launch {
+                        accountvm.createProfile(
+                            profileData = profile,
+                            result = { r ->
+                                if (r){
+                                    navController.navigate("Profile")
+                                }
+                            }
+                        )
+
+                        println("Inside scope")
+                    }
+                }
+            }
         ) {
             Text(text = "Signup")
         }

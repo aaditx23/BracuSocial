@@ -36,6 +36,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             // Perform the bitmap conversion in the background
             EmptyImage.emptyProfileImage = drawableToBitmap(drawableEmptyProfile!!)
+
         }
         setContent {
             BracuSocialTheme {
