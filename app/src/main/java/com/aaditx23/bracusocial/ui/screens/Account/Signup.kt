@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -37,7 +38,6 @@ fun Signup(
     accountvm: AccountVM,
     signupSuccess: () -> Unit
 ) {
-    val allProfile by accountvm.allProfiles.collectAsState()
     var isLoading by rememberSaveable {
         mutableStateOf(true)
     }
@@ -49,96 +49,92 @@ fun Signup(
     val studentName by rememberSaveable { mutableStateOf(name) }
     val emailAddress by rememberSaveable { mutableStateOf(email) }
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(allProfile) {
-        CoroutineScope(Dispatchers.IO).launch {
-            delay(200)
-            isLoading = false
-        }
+    var signup by remember{
+        mutableStateOf(false)
     }
 
-    if (isLoading){
-//        NoButtonDialog(title = "Creating account: $id", message = "Please wait...")
-        CircularProgressIndicator()
-    }
-    else{
-        Column(
-            modifier = Modifier
-                .padding(top = 80.dp)
-        ) {
-            Text(
-                text = "Welcome to BracuSocial!",
-                fontSize = 25.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
-            Text(
-                text = name,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-
-            )
-            Text(
-                text = "Please enter your Student ID to create an account in BracuSocial",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium
-
-            )
-            TextField(
-                value = emailAddress,
-                onValueChange = {},
-                label = { Text(text = "Email") },
-                enabled = false,
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth(),
-
-                )
-            TextField(
-                value = id,
-                onValueChange = {setId(it)},
-                label = { Text(text = "ID") },
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
-            Button(onClick = {
-                if(id != ""
-                ){
-                    scope.launch {
-                        accountvm.createProfile(
-                            listOf(
-                                id,
-                                "",
-                                studentName,
-                                "",
-                                "",
-                                "",
-                                emptyProfileString,
-                                emailAddress
-                            )
+    LaunchedEffect(signup) {
+        if (signup) {
+            println("Signup is true")
+            if (id.isNotEmpty()) {
+                println("id is not empty")
+                try {
+                    accountvm.createRemoteProfile(
+                        listOf(
+                            id,
+                            "",
+                            studentName,
+                            "",
+                            "",
+                            "",
+                            emptyProfileString,
+                            emailAddress
                         )
-                        Toast.makeText(context, "Signup Successful", Toast.LENGTH_SHORT).show()
-                        signupSuccess()
-                    }
-
+                    )
+                    accountvm.setLoginTrue()
+                    println("Profile created successfully!")
+                    signupSuccess()
+                } catch (e: Exception) {
+                    println("Error in creating profile: ${e.message}")
+                    // Optionally show a Toast or error message here
                 }
-                else{
-                    Toast.makeText(context, "ID cannot be empty", Toast.LENGTH_SHORT).show()
-                }
-
-            }) {
-                Text(text = "Signup")
+            } else {
+                println("ID cannot be empty")
+                // Optionally show a Toast here if ID is empty
             }
-            Button(onClick = {
-                accountvm.deleteAllProfiles()
-                Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show()
-            }) {
-                Text(text = "Delete All")
-            }
-            Text(text = allProfile.size.toString())
-
+            // Reset the signup state to avoid re-triggering LaunchedEffect
+            signup = false
         }
     }
+
+    Column(
+        modifier = Modifier
+            .padding(top = 80.dp)
+    ) {
+        Text(
+            text = "Welcome to BracuSocial!",
+            fontSize = 25.sp,
+            fontWeight = FontWeight.ExtraBold
+        )
+        Text(
+            text = name,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+
+        )
+        Text(
+            text = "Please enter your Student ID to create an account in BracuSocial",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
+
+        )
+        TextField(
+            value = emailAddress,
+            onValueChange = {},
+            label = { Text(text = "Email") },
+            enabled = false,
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth(),
+
+            )
+        TextField(
+            value = id,
+            onValueChange = {setId(it)},
+            label = { Text(text = "ID") },
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        Button(
+            onClick = { signup = true}
+        ) {
+            Text(text = "Signup")
+        }
+
+    }
+
+
 }

@@ -2,6 +2,7 @@ package com.aaditx23.bracusocial.backend.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.local.repositories.CourseRepository
 import com.aaditx23.bracusocial.backend.local.repositories.FriendProfileRepository
@@ -111,15 +112,10 @@ open class AccountVM @Inject constructor(
         }
     }
 
-    fun createProfile(
-        profileData: List<String>,
-
+    suspend fun makeLocalProfile(
+        profileData: List<String>
     ) {
-
-        viewModelScope.launch {
             val (id,password,name,courses,addedFriends,friendRequests, profilePic, email) = profileData
-//            val remoteProfile = ppR.getProfileProxy(email)
-//            if (remoteProfile == null) {
             profileR.createProfile(
                 sid = id,
                 name = name,
@@ -130,6 +126,12 @@ open class AccountVM @Inject constructor(
                 pic = profilePic,
                 emailData = email
             )
+
+
+    }
+    fun createRemoteProfile(profileData: List<String>){
+        val (id,password,name,courses,addedFriends,friendRequests, profilePic, email) = profileData
+        viewModelScope.launch{
             fbp.addOrUpdateProfile(
                 RemoteProfile(
                     studentId = id,
@@ -141,8 +143,10 @@ open class AccountVM @Inject constructor(
                     profilePicture = profilePic
                 )
             )
-            sessionR.loginStatusUpdate(true)
         }
+    }
+    suspend fun setLoginTrue(){
+        viewModelScope.launch{ sessionR.loginStatusUpdate(true) }
     }
 
     suspend fun createFriends(){
