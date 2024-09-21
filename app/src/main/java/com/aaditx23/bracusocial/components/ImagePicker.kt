@@ -8,6 +8,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.util.Base64
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -38,8 +39,12 @@ fun ImagePicker(onImagePicked: (image: Bitmap) -> Unit){
     }
     val context = LocalContext.current
     var hasImagePermission by remember{ mutableStateOf(false) }
+    val permission =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_IMAGES
+        else Manifest.permission.READ_EXTERNAL_STORAGE
     hasImagePermission = permissionLauncher(
-        context = context
+        context = context,
+        permission = permission
     )
 
     val cropLauncher = rememberLauncherForActivityResult(contract = CropImageContract()) { result ->

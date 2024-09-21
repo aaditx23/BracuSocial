@@ -15,52 +15,24 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 
 @Composable
-fun permissionLauncher(context: Context): Boolean {
+fun permissionLauncher(context: Context, permission: String): Boolean{
     var hasPermission by remember { mutableStateOf(false) }
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         hasPermission = isGranted
     }
-
     LaunchedEffect(Unit) {
-        when {
-            // For Android 13+ (API 33) - request media images permission
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.READ_MEDIA_IMAGES
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    hasPermission = true
-                } else {
-                    permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
-                }
-            }
-            // For Android 10-12 (API 29-32) - request READ_EXTERNAL_STORAGE for gallery access
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    hasPermission = true
-                } else {
-                    permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                }
-            }
-            // For Android 9 and below - request READ_EXTERNAL_STORAGE
-            else -> {
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    hasPermission = true
-                } else {
-                    permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                }
-            }
+        if (ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Fine location permission granted
+            hasPermission = true
+        } else {
+            // Request location permission
+            permissionLauncher.launch(permission)
         }
     }
 
