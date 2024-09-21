@@ -41,7 +41,7 @@ fun Pic_Name_ID(name: String, id: String, pic: String){
     val scope = rememberCoroutineScope()
     var profileImage by remember { mutableStateOf(MainActivity.EmptyImage.emptyProfileImage) }
     var isLoading by remember { mutableStateOf(true) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(pic) {
         scope.launch {
             profileImage =  withContext(Dispatchers.IO){
                 stringToBitmap(pic)!!

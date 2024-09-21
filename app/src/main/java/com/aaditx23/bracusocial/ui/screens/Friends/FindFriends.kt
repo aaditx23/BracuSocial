@@ -94,7 +94,6 @@ fun FindFriends(friendsvm: FriendsVM){
         scope.launch {
             if(searchQuery.text.isNotEmpty()){
                 isFiltering = true
-
                 when (currentFilter) {
                     filter[0] -> friendsvm.filterProfilesByID(
                         searchQuery = searchQuery.text,
@@ -111,7 +110,7 @@ fun FindFriends(friendsvm: FriendsVM){
                     )
 
                     filter[2] -> friendsvm.filterProfilesByCourse(
-                        searchQuery = searchQuery.text,
+                        searchQuery = searchQuery.text.uppercase(),
                         onResult = { list ->
                             println("Filtering by course")
                             filteredProfileList = list
@@ -120,6 +119,7 @@ fun FindFriends(friendsvm: FriendsVM){
 
                     else -> emptyList<RemoteProfile>()
                 }
+
 
                 isFiltering = false
             }
@@ -215,8 +215,6 @@ fun AddFriendRow(friend: RemoteProfile, friendvm: FriendsVM){
             inMyRequests = r
         }
     )
-    println("$sentAlready sent already")
-
     ElevatedCard(
         modifier = Modifier
             .padding(10.dp)
@@ -232,6 +230,7 @@ fun AddFriendRow(friend: RemoteProfile, friendvm: FriendsVM){
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Pic_Name_ID(
                 name = friend.name,
                 id = friend.studentId,
