@@ -113,6 +113,7 @@ fun FindFriends(friendsvm: FriendsVM){
                     filter[2] -> friendsvm.filterProfilesByCourse(
                         searchQuery = searchQuery.text,
                         onResult = { list ->
+                            println("Filtering by course")
                             filteredProfileList = list
                         }
                     )

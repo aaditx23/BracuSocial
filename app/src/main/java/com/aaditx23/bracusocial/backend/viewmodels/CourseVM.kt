@@ -59,6 +59,7 @@ open class CourseVM @Inject constructor(
         onSet("Fetching data from website")
         val allCoursesJson: MutableList<JSONObject> = uc.executeAsyncTask()
 //            val allCoursesJson = courseArray
+        onSet("Processing Data")
         val size = allCoursesJson.size
         setSize(size)
         onSet("Data fetching Complete")

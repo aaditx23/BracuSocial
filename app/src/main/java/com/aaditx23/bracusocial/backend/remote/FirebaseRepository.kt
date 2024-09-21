@@ -167,12 +167,13 @@ class FirebaseRepository @Inject constructor() {
 
     suspend fun fetchProfilesByCourse(searchQuery: String): List<RemoteProfile> {
 
-        val trimmedQuery = searchQuery.trim().lowercase()
+        val trimmedQuery = searchQuery.trim()
         val profileList = mutableListOf<RemoteProfile>()
 
         // Query to find profiles where the enrolledCourses contains the search query
         val querySnapshot = db.collection("profiles")
-            .whereArrayContains("enrolledCourses", trimmedQuery)
+            .whereGreaterThanOrEqualTo("enrolledCourses", trimmedQuery)
+            .whereLessThanOrEqualTo("enrolledCourses", "${trimmedQuery}\uF7FF")
             .get()
             .await() // Using Kotlin coroutine to wait for the query to complete
 

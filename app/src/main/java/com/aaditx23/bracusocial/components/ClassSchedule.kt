@@ -280,7 +280,12 @@ fun RoutineRow(
                             modifier = Modifier
                                 .padding(5.dp),
                             fontWeight = if (time == "") FontWeight.Bold else FontWeight.Normal,
-                            text = if (myRoutine) t else name,
+                            text = if (myRoutine) t else
+                                if ((name?.length ?: 0) > 17) {
+                                    "${name?.take(17)}..."
+                                } else {
+                                    name ?: ""
+                                },
                             color = infoFontColor
                         )
                     } else {

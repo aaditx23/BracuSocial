@@ -39,8 +39,7 @@ fun ImagePicker(onImagePicked: (image: Bitmap) -> Unit){
     val context = LocalContext.current
     var hasImagePermission by remember{ mutableStateOf(false) }
     hasImagePermission = permissionLauncher(
-        context = context,
-        permission = Manifest.permission.READ_MEDIA_IMAGES
+        context = context
     )
 
     val cropLauncher = rememberLauncherForActivityResult(contract = CropImageContract()) { result ->

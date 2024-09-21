@@ -318,7 +318,7 @@ fun ElevatedCardSection(
                 if(items.contains("") && items.size == 1){
                     item{
                         Text(
-                            text = "No friends Added",
+                            text = "No Courses Added",
                             modifier = Modifier.padding(8.dp)
                         )
                     }

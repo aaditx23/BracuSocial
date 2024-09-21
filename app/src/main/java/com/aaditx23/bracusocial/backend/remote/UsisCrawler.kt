@@ -132,7 +132,9 @@ class UsisCrawler{
         return withContext(Dispatchers.IO) {
             val url =
                 "https://usis.bracu.ac.bd/academia/admissionRequirement/getAvailableSeatStatus"
+            println("Connecting to url")
             val doc: Document = Jsoup.connect(url).get()
+            println("doc $doc")
             val rows: Elements = doc.select("tr")
             println(rows.size)
             val courses = dataFormat(rows)
