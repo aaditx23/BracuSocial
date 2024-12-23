@@ -1,4 +1,5 @@
 const axios = require('axios');
+const https = require('https');
 const pdf = require('pdf-parse');
 
 
@@ -66,38 +67,27 @@ function combineSchedule(data) {
 }
 
 
-exports.convertPdfToJson = async (req, res) => {
+exports.convertPdfToJson = async (pdfBuffer) => {
+
   try {
-    const pdfUrl = 'https://www.bracu.ac.bd/sites/default/files/academics/Class-schedule/Class-Schedule-Fall%202024-PRINT-Version.pdf';
-    
-    // Fetch the PDF as a binary response
-    const response = await axios.get(pdfUrl, { responseType: 'arraybuffer' });
-    
-    // Parse the PDF data
-    const data = await pdf(response.data);
+    if (!pdfBuffer) {
+      throw new Error('PDF buffer is required');
+    }
+
+    // Parse PDF data from buffer
+    const data = await pdf(pdfBuffer);
     const pdfText = data.text;
-
-
-    // Process the text to extract schedule data
+    // Extract schedule data
     const lines = pdfText.split('\n');
-    var schedule = [];
+    let schedule = [];
     let currentIndex = 0;
 
+    const roomFormat = /^\d{2}[A-Z]-\d{2}[A-Z]$/;
     while (currentIndex < lines.length) {
+      
       let line = lines[currentIndex].trim();
+      line = line.replace(/^\d+/, '').trim();  // Remove serial numbers if not a room
 
-      // Step 1: Check if the line matches the room number format
-      const roomFormat = /^\d{2}[A-Z]-\d{2}[A-Z]$/;
-      if (roomFormat.test(line)) {
-        // If the current line matches the room format, don't remove the serial number
-        // Proceed to extract fields directly from the current line
-      } else {
-        // If it does not match, use regex to remove the serial number at the start
-        line = line.replace(/^\d+/, '').trim();
-      }
-
-
-      // Step 2: Extract the main schedule details from the current line
       let course = line.substring(0, 6).trim();
       let faculty = '';
       let section = '';
@@ -107,55 +97,40 @@ exports.convertPdfToJson = async (req, res) => {
       let room = '';
 
       let i = 6;
-      // Extract faculty initials
-      while (i < line.length && !/\d/.test(line[i])) {
-        faculty += line[i];
-        i++;
-      }
-
-      // Extract section number (2 digits)
+      while (i < line.length && !/\d/.test(line[i])) faculty += line[i++];
       section = line.substring(i, i + 2);
       i += 2;
-
-      // Extract day
-      while (i < line.length && !/\d/.test(line[i])) {
-        day += line[i];
-        i++;
-      }
-
-      // Extract start and end times
+      while (i < line.length && !/\d/.test(line[i])) day += line[i++];
       startTime = line.substring(i, i + 8).trim();
       i += 8;
       endTime = line.substring(i, i + 8).trim();
       i += 8;
 
-      // Step 3: Check if the next line contains the room number
       if (currentIndex + 1 < lines.length) {
         let nextLine = lines[currentIndex + 1].trim();
         if (roomFormat.test(nextLine)) {
-          room = nextLine; // Room number is on the next line
-          currentIndex += 2; // Move to the line after the next line
+          room = nextLine;
+          currentIndex += 2;
         } else {
-          currentIndex++; // Move to the next line if it doesn't match the room format
+          currentIndex++;
         }
       } else {
-        currentIndex++; // If there's no next line, just move to the next line
+        currentIndex++;
       }
 
-      // Add to schedule if room data was found
       if (room) {
         schedule.push({ course, faculty, section, day, startTime, endTime, room });
       }
     }
 
-    if (schedule.length >0){
-      schedule = combineSchedule(schedule)
+    if (schedule.length > 0) {
+      schedule = combineSchedule(schedule);
     }
 
-    // Return the processed JSON data
-    res.status(200).json(schedule);
+    return schedule;
+
   } catch (error) {
     console.error('Error converting PDF:', error);
-    res.status(500).json({ error: 'Error converting PDF' });
+    throw new Error('Error converting PDF');
   }
 };

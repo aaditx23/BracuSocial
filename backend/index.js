@@ -16,7 +16,7 @@ app.use(express.json())
 app.use(cors())
 
 const profileRoutes = require("./routes/profileRoutes")
-const pdfRoutes = require("./routes/pdfParserRoute")
+const pdfRoutes = require("./routes/pdfRoute")
 
 app.use("/api", profileRoutes)
 app.use("/api", pdfRoutes)

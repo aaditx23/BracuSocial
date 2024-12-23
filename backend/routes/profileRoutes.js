@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const profileController = require('../controllers/profileController');
+const pc = require('../controllers/profileController');
 
-// Route to get a profile by studentId
-router.get('/profiles/:studentId', profileController.getProfileByStudentId);
+router.get('/profiles/:studentId', pc.getProfileByStudentId);
+router.post('/profiles/register', pc.register);
+router.post('/profiles/login', pc.login);
 
 module.exports = router;
