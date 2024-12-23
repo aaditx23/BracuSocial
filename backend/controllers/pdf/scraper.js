@@ -64,7 +64,7 @@ async function scrapeScheduleUrl(baseUrl) {
     return { message: "PDF Not available" };
 
   } catch (error) {
-    console.error("Error scraping schedule URL:", error);
+    console.error("Error scraping schedule URL ", error);
     return { message: "Error scraping schedule URL" };
   }
 }
