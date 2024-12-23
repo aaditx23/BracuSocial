@@ -17,9 +17,11 @@ app.use(cors())
 
 const profileRoutes = require("./routes/profileRoutes")
 const pdfRoutes = require("./routes/pdfRoute")
+const usisRoutes = require("./routes/usisRoutes")
 
 app.use("/api", profileRoutes)
 app.use("/api", pdfRoutes)
+app.use("/api", usisRoutes)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
