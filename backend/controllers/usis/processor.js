@@ -5,7 +5,7 @@ exports.processSchedule = function(response) {
         // Extract relevant fields from the 'cell' array
         const courseCode = entry.cell[1];
         const section = entry.cell[3];
-        const key = `${courseCode}-${section}`;
+        const key = `${courseCode} ${section}`;
         const faculty = entry.cell[8];
         const exam = entry.cell[10];
         const classTimes = entry.cell[11]; // Can be multiple times
@@ -34,8 +34,47 @@ exports.processSchedule = function(response) {
         }
     });
 
-    return demoDb;
+    const transformedDb = {};
+    for (const [key, value] of Object.entries(demoDb)) {
+        transformedDb[key] = transformSchedule(value);
+    }
+
+    return transformedDb;
 };
+
+function transformSchedule(schedule) {
+    // Create a copy of the input object without class and lab fields
+    const copyObject = {
+        course_code: schedule.course_code,
+        section: schedule.section,
+        faculty: schedule.faculty,
+        exam: schedule.exam
+    };
+
+    // Extract and process class field
+    if (schedule.class && Object.keys(schedule.class).length > 0) {
+        const classKeys = Object.keys(schedule.class);
+        copyObject.classDays = classKeys.join(' ');  // Join days with space
+        copyObject.classTime = schedule.class[classKeys[0]];  // Take any available time
+    } else {
+        copyObject.classDays = "";
+        copyObject.classTime = "";
+    }
+    copyObject.classRoom = "";
+    if (schedule.lab && Object.keys(schedule.lab).length > 0) {
+        const labKeys = Object.keys(schedule.lab);
+        copyObject.labDays = labKeys.join(' ');  // Join days with space
+        copyObject.labTime = schedule.lab[labKeys[0]];  // Take any available time
+    } else {
+        copyObject.labDays = "";
+        copyObject.labTime = "";
+    }
+
+    copyObject.labRoom = "unavailable";
+
+    return copyObject;
+}
+
 
 function getDayTime(cell) {
     const dayMap = {

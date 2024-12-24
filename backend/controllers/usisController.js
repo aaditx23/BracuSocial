@@ -43,13 +43,15 @@ exports.getNextSchedule = async (req, res) => {
     const semesterDoc = await admin.firestore().collection('semester').doc('semester').get();
     const nextSemester = semesterDoc.data().nextSemester;
 
-    // Generate session code for next semester
-    const sessionCode = usis.generateSessionCode(nextSemester.semester, nextSemester.year);
+    const [semester, year] = nextSemester.split(" ");
+    
+    const sessionCode = session.generateSessionCode(semester.toLowerCase(), parseInt(year));
 
     // Call the fetchClassSchedule function from usisScraper
     const scheduleResult = await usis.classAndLabSchedule(email, password, sessionCode);
+    const processedSchedule = processor.processSchedule(scheduleResult)
 
-    return res.status(200).json(scheduleResult);  // Return fetched schedule
+    return res.status(200).json(processedSchedule);  // Return fetched schedule
   } catch (error) {
     console.error("Error in getNextSchedule:", error);
     return res.status(500).json({ message: "Internal server error" });
