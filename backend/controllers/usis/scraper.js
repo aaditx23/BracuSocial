@@ -3,79 +3,67 @@ const { wrapper } = require('axios-cookiejar-support');
 const { CookieJar } = require('tough-cookie');
 const qs = require('qs');  // To parse data for the login form
 
-const loginUrl = "https://usis.bracu.ac.bd/academia/j_spring_security_check";
-const scheduleUrlClass = "https://usis.bracu.ac.bd/academia/academicSection/listAcademicSectionWithSchedule?academiaSession=627125&_search=false&nd=1734965745519&rows=5000&page=1&sidx=course_code&sord=asc"
-// Create the cookie jar
-const jar = new CookieJar();
 
-// Create the axios instance wrapped with cookie jar support
+const loginUrl = "https://usis.bracu.ac.bd/academia/j_spring_security_check";
+const scheduleUrlClassAndLab = "https://usis.bracu.ac.bd/academia/academicSection/listAcademicSectionWithSchedule?academiaSession=SESSION&_search=false&nd=1734965745519&rows=5000&page=1&sidx=course_code&sord=asc";
+const scheduleUrlClass = "https://usis.bracu.ac.bd/academia/studentCourse/showClassScheduleInTabularFormatInGrid?query=&academiaSession=SESSION&_search=false&nd=1726345445840&rows=5000&page=1&sidx=course_code&sord=asc";
+
+// Create the cookie jar and axios client with cookie jar support
+const jar = new CookieJar();
 const client = wrapper(axios.create({ jar }));
 
-// Function to login and fetch schedule
-exports.usisLoginAndFetchSchedule = async (email, password) => {
-  try {
-    // Prepare the login data
-    const loginData = qs.stringify({
-      j_username: email,
-      j_password: password,
-    });
+// Function to login and initialize client with cookies
+async function loginToUsis(email, password) {
+  const loginData = qs.stringify({
+    j_username: email,
+    j_password: password,
+  });
 
-    // Step 1: Login via POST request
+  try {
     const loginResponse = await client.post(loginUrl, loginData, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
 
-    // Check if login was successful by inspecting the response content
-    if (!loginResponse.data.includes("Invalid")) {
-      // Login successful, now fetch the schedule
-
-      // Step 2: Fetch schedule using GET request, sending cookies in the header
-      const scheduleResponse = await client.get(scheduleUrlClass);
-
-      if (scheduleResponse.status === 200) {
-        return {
-          success: true,
-          schedule: scheduleResponse.data,  // Return the class schedule JSON data
-        };
-      } else {
-        return {
-          success: false,
-          message: "Failed to fetch schedule.",
-        };
-      }
-    } else {
-      return {
-        success: false,
-        message: "Login failed. Please check your credentials.",
-      };
+    // Check if login was successful
+    if (loginResponse.data.includes("Invalid")) {
+      throw new Error("Login failed. Invalid credentials.");
     }
+
+    return true;  // Login successful
   } catch (error) {
-    console.error("Error during login or fetching schedule:", error);
-    return {
-      success: false,
-      message: "Error during login or fetching schedule. Please try again.",
-    };
+    console.error("Login error:", error);
+    throw new Error("Login failed. Please try again.");
+  }
+}
+
+// Function to fetch class schedule, using client after login
+exports.classAndLabSchedule = async (email, password, sessionCode) => {
+  try {
+    // Login to save cookies and initialize client
+    await loginToUsis(email, password);
+
+    const url = scheduleUrlClassAndLab.replace('SESSION', sessionCode);  // Replace session dynamically
+    const response = await client.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch class schedule:", error);
+    throw new Error("Failed to fetch class schedule.");
   }
 };
 
-// Function to call login and fetch schedule with email and password
-exports.loginAndFetchSchedule = async (email, password) => {
-  if (!email || !password) {
-    return { success: false, message: "Email and password are required" };
-  }
-
+// Function to fetch room schedule, using client after login
+exports.classOnlySchedule = async (email, password, sessionCode) => {
   try {
-    const result = await exports.usisLoginAndFetchSchedule(email, password);
+    // Login to save cookies and initialize client
+    await loginToUsis(email, password);
 
-    if (result.success) {
-      return { success: true, schedule: result.schedule };  // Return the class schedule as JSON
-    } else {
-      return { success: false, message: result.message };  // Return the error message
-    }
+    const url = scheduleUrlClass.replace('SESSION', sessionCode);  // Replace session dynamically
+    const response = await client.get(url);
+    return response.data;
   } catch (error) {
-    console.error("Error in loginAndFetchSchedule:", error);
-    return { success: false, message: "Internal server error. Please try again." };
+    console.error("Failed to fetch room schedule:", error);
+    throw new Error("Failed to fetch room schedule.");
   }
 };
