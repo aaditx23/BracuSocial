@@ -1,4 +1,6 @@
-exports.processSchedule = function(response) {
+const usis = require("../usis/scraper")
+
+async function processSchedule(response) {
     const demoDb = {};
 
     response.rows.forEach(entry => {
@@ -36,13 +38,13 @@ exports.processSchedule = function(response) {
 
     const transformedDb = {};
     for (const [key, value] of Object.entries(demoDb)) {
-        transformedDb[key] = transformSchedule(value);
+        transformedDb[key] = await transformSchedule(value);
     }
 
     return transformedDb;
 };
 
-function transformSchedule(schedule) {
+async function transformSchedule(schedule) {
     // Create a copy of the input object without class and lab fields
     const copyObject = {
         course_code: schedule.course_code,
@@ -109,3 +111,57 @@ function processTime(timeString) {
     }
     return null; 
 }
+
+async function extractClassrooms(response) {
+    const classroomDb = {};
+
+    response.rows.forEach(entry => {
+        const cell = entry.cell;
+        const courseCode = cell[2];
+        const section = cell[4];
+        const classroom = cell[8];
+        const key = `${courseCode} ${section}`;
+
+        if (!classroomDb[key]) {
+            classroomDb[key] = new Set();
+        }
+
+        classroomDb[key].add(classroom);
+    });
+
+    const result = {};
+    for (const [key, value] of Object.entries(classroomDb)) {
+        result[key] = Array.from(value);
+    }
+
+    return result;
+};
+
+async function processScheduleWithRoom(classSchedule, roomJson) {
+    for (const key in classSchedule) {
+        if (roomJson[key]) {
+            classSchedule[key].classRoom = roomJson[key][0] || '';
+        } else {
+            classSchedule[key].classRoom = '';
+        }
+    }
+    return classSchedule;
+};
+
+exports.getProcessedSchedule = async (email, password, sessionCode) => {
+    try {
+        const scheduleWithLab = await usis.classAndLabSchedule(email, password, sessionCode);
+        const processedScheduleWithLab = await processSchedule(scheduleWithLab);
+        
+        const scheduleRoom = await usis.classOnlySchedule(email, password, sessionCode);
+        const classrooms = await extractClassrooms(scheduleRoom);
+
+        const finalJson = await processScheduleWithRoom(processedScheduleWithLab, classrooms);
+
+        return finalJson;
+    } catch (error) {
+        console.error("Error in getProcessedSchedule:", error);
+        throw new Error("Failed to process schedule");
+    }
+};
+

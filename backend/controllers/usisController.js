@@ -18,13 +18,11 @@ exports.getCurrentSchedule = async (req, res) => {
     const [semester, year] = currentSemester.split(" ");
     
     const sessionCode = session.generateSessionCode(semester.toLowerCase(), parseInt(year));
+
+    const finalJson = await processor.getProcessedSchedule(email, password, sessionCode)
     
 
-    // Call the fetchClassSchedule function from usisScraper
-    const scheduleResult = await usis.classAndLabSchedule(email, password, sessionCode);
-    const processedSchedule = processor.processSchedule(scheduleResult)
-
-    return res.status(200).json(processedSchedule);  // Return fetched schedule
+    return res.status(200).json(finalJson); 
   } catch (error) {
     console.error("Error in getCurrentSchedule:", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -39,7 +37,7 @@ exports.getNextSchedule = async (req, res) => {
   }
 
   try {
-    // Fetch nextSemester from Firebase
+    // Fetch currentSemester from Firebase
     const semesterDoc = await admin.firestore().collection('semester').doc('semester').get();
     const nextSemester = semesterDoc.data().nextSemester;
 
@@ -47,13 +45,12 @@ exports.getNextSchedule = async (req, res) => {
     
     const sessionCode = session.generateSessionCode(semester.toLowerCase(), parseInt(year));
 
-    // Call the fetchClassSchedule function from usisScraper
-    const scheduleResult = await usis.classAndLabSchedule(email, password, sessionCode);
-    const processedSchedule = processor.processSchedule(scheduleResult)
+    const finalJson = await processor.getProcessedSchedule(email, password, sessionCode)
+    
 
-    return res.status(200).json(processedSchedule);  // Return fetched schedule
+    return res.status(200).json(finalJson); 
   } catch (error) {
-    console.error("Error in getNextSchedule:", error);
+    console.error("Error in getCurrentSchedule:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

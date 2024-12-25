@@ -13,7 +13,7 @@ function combineSchedule(data) {
     const isClass = room.endsWith('C');
 
     // Create a key based on course and section
-    const key = `${course}-${section}`;
+    const key = `${course} ${section}`;
 
     if (!combinedSchedule[key]) {
       combinedSchedule[key] = {
@@ -34,21 +34,21 @@ function combineSchedule(data) {
       if (combinedSchedule[key].classTime === '') {
         combinedSchedule[key].classTime = `${startTime} - ${endTime}`;
         combinedSchedule[key].classRoom = room;
-        combinedSchedule[key].classDay = day;
+        combinedSchedule[key].classDay = day.slice(0, 2);
       } else {
         // Append days if there are multiple class times
-        combinedSchedule[key].classDay += `, ${day}`;
+        combinedSchedule[key].classDay += ` ${day.slice(0, 2)}`;
       }
     } else if (isLab) {
       // Add lab time information
       if (combinedSchedule[key].labTime === '') {
         combinedSchedule[key].labTime = `${startTime} - ${endTime}`;
         combinedSchedule[key].labRoom = room;
-        combinedSchedule[key].labDay = day;
+        combinedSchedule[key].labDay = day.slice(0, 2);
       } else {
         // Append lab days if there are multiple lab times
         if(combinedSchedule[key].labDay !== day){
-          combinedSchedule[key].labDay += `, ${day}`;
+          combinedSchedule[key].labDay += ` ${day.slice(0, 2)}`;
         }
 
         // Update lab time span if there are multiple entries
