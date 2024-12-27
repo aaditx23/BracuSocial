@@ -73,6 +73,7 @@ exports.getScheduleMetadata = async (req, res) => {
 };
 
 exports.schedules = async (req, res) => {
+    console.log("fetching schedules")
     try {
         const schedules = await PdfCourse.find();
         
