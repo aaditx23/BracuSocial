@@ -1,7 +1,5 @@
-const admin = require('firebase-admin');
 const { getProcessedSchedule } = require('./scraper');
-
-const db = admin.firestore();
+const Semester = require('../../model/semester'); 
 
 exports.getCurrentSchedule = async (semesterName, year) => {
     try {
@@ -19,16 +17,15 @@ exports.getCurrentSchedule = async (semesterName, year) => {
     }
 };
   
-  exports.getNextSchedule = async () => {
+exports.getNextSchedule = async () => {
     try {
-        const semesterDoc = await db.collection('semester').doc('semester').get();
+        const semesterDoc = await Semester.findOne({});
         
-        if (!semesterDoc.exists) {
-            return { error: "No semester data found in Firestore." };
+        if (!semesterDoc) {
+            return { error: "No semester data found in MongoDB." };
         }
         
-        const semesterData = semesterDoc.data();
-        const nextSemester = semesterData.nextSemester;
+        const nextSemester = semesterDoc.nextSemester; 
         const [nextSemesterName, nextYear] = nextSemester.split(" ");
         
         const schedule = await getProcessedSchedule(nextSemesterName, nextYear);
@@ -40,8 +37,7 @@ exports.getCurrentSchedule = async (semesterName, year) => {
         return schedule;
   
     } catch (error) {
-        console.error("Error fetching semester data from Firestore:", error);
+        console.error("Error fetching semester data from MongoDB:", error);
         return { error: "Internal server error" };
     }
-  };
-  
+};

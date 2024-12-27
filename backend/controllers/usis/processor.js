@@ -151,6 +151,10 @@ async function processScheduleWithRoom(classSchedule, roomJson) {
 exports.getProcessedSchedule = async (email, password, sessionCode) => {
     try {
         const scheduleWithLab = await usis.classAndLabSchedule(email, password, sessionCode);
+        if (!scheduleWithLab || scheduleWithLab.length === 0) {
+            console.log("No schedule with lab found, returning empty JSON.");
+            return {}; 
+        }
         const processedScheduleWithLab = await processSchedule(scheduleWithLab);
         
         const scheduleRoom = await usis.classOnlySchedule(email, password, sessionCode);

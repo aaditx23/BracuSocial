@@ -1,25 +1,11 @@
-class Semester {
-    constructor(currentSemester, nextSemester) {
-      this.currentSemester = currentSemester; 
-      this.nextSemester = nextSemester;       
-    }
-  
+const mongoose = require('mongoose');
 
-    toFirestore() {
-      return {
-        currentSemester: this.currentSemester,
-        nextSemester: this.nextSemester
-      };
-    }
-  
-    static fromFirestore(doc) {
-      const data = doc.data();
-      return new Semester(
-        data.currentSemester,
-        data.nextSemester
-      );
-    }
-  }
-  
-  module.exports = Semester;
-  
+const semesterSchema = new mongoose.Schema({
+  currentSemester: { type: String, required: true },
+  nextSemester: { type: String, required: true }
+}, { timestamps: true });
+
+// Model
+const Semester = mongoose.model('Semester', semesterSchema);
+
+module.exports = Semester;

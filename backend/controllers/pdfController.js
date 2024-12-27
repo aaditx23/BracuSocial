@@ -1,18 +1,18 @@
-const admin = require('firebase-admin');
-const db = admin.firestore();
-const pdfUtil = require("./pdf/processor")
-const Metadata = require('../model/course/metadata');
+const mongoose = require('mongoose');
+const pdfUtil = require("./pdf/processor");
+const Semester = require('../model/semester');
+const PdfCourse = require('../model/pdfCourse');
 
 exports.populate = async (req, res) => {
     try {
-        const semesterDoc = await db.collection('semester').doc('semester').get();
+        const semesterDoc = await Semester.findOne();
+        console.log(semesterDoc)
         
-        if (!semesterDoc.exists) {
-            return res.status(404).json({ message: "No semester data found in Firestore." });
+        if (!semesterDoc) {
+            return res.status(404).json({ message: "No semester data found in MongoDB." });
         }
 
-        const semesterData = semesterDoc.data();
-        const currentSemester = semesterData.currentSemester;
+        const currentSemester = semesterDoc.currentSemester;
         const [currentSemesterName, currentYear] = currentSemester.split(" ");
         
         const schedule = await pdfUtil.getCurrentSchedule(currentSemesterName, currentYear);
@@ -21,26 +21,32 @@ exports.populate = async (req, res) => {
             return res.status(404).json({ message: schedule.error });
         }
 
-        const batch = db.batch();
+        const session = await mongoose.startSession();
+        session.startTransaction();
 
-        // Create Metadata entry
-        const metadata = new Metadata(
-            currentSemesterName,
-            currentYear,
-            false,  
-            new Date() 
+        await Semester.findOneAndUpdate(
+            {},
+            {
+                semester: currentSemesterName,
+                year: currentYear,
+                usis: false,
+                lastUpdate: new Date()
+            },
+            { upsert: true, session }
         );
-        
-        const metadataRef = db.collection('pdfSchedule').doc('metadata');
-        batch.set(metadataRef, metadata.toFirestore());
 
-        schedule.forEach(item => {
-            const docName = `${item.course} ${item.section}`;
-            const docRef = db.collection('pdfSchedule').doc(docName);
-            batch.set(docRef, item);
-        });
+        const bulkOps = schedule.map(item => ({
+            updateOne: {
+                filter: { course: item.course, section: item.section },
+                update: item,
+                upsert: true
+            }
+        }));
 
-        await batch.commit();
+        await PdfCourse.bulkWrite(bulkOps, { session });
+
+        await session.commitTransaction();
+        session.endSession();
 
         res.status(200).json({ message: "Schedule populated successfully!" });
 
@@ -52,13 +58,11 @@ exports.populate = async (req, res) => {
 
 exports.getScheduleMetadata = async (req, res) => {
     try {
-        const metadataDoc = await db.collection('pdfSchedule').doc('metadata').get();
+        const metadata = await Semester.findOne();
         
-        if (!metadataDoc.exists) {
-            return res.status(404).json({ message: "Metadata not found in Firestore." });
+        if (!metadata) {
+            return res.status(404).json({ message: "Metadata not found in MongoDB." });
         }
-
-        const metadata = Metadata.fromFirestore(metadataDoc);
 
         res.status(200).json(metadata);
         
@@ -70,19 +74,11 @@ exports.getScheduleMetadata = async (req, res) => {
 
 exports.schedules = async (req, res) => {
     try {
-        const snapshot = await db.collection('pdfSchedule').get();
+        const schedules = await PdfCourse.find();
         
-        if (snapshot.empty) {
-            return res.status(404).json({ message: "No schedules found in Firestore." });
+        if (schedules.length === 0) {
+            return res.status(404).json({ message: "No schedules found in MongoDB." });
         }
-
-        const schedules = [];
-        
-        snapshot.forEach(doc => {
-            if (doc.id !== 'metadata') {
-                schedules.push({ id: doc.id, ...doc.data() });
-            }
-        });
 
         res.status(200).json(schedules);
 
@@ -94,22 +90,45 @@ exports.schedules = async (req, res) => {
 
 exports.getAll = async (req, res) => {
     try {
-        const snapshot = await db.collection('pdfSchedule').get();
+        const schedules = await PdfCourse.find();
         
-        if (snapshot.empty) {
-            return res.status(404).json({ message: "No schedules found in Firestore." });
+        if (schedules.length === 0) {
+            return res.status(404).json({ message: "No schedules found in MongoDB." });
         }
-
-        const schedules = [];
-        
-        snapshot.forEach(doc => {
-            schedules.push({ id: doc.id, ...doc.data() });
-        });
 
         res.status(200).json(schedules);
 
     } catch (error) {
         console.error("Error fetching schedules:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.searchCourses = async (req, res) => {
+    try {
+        const { course, section, faculty, classTime, classRoom, classDay, labTime, labRoom, labDay } = req.body;
+
+        const filters = {};
+        if (course) filters.course = course;
+        if (section) filters.section = section;
+        if (faculty) filters.faculty = faculty;
+        if (classTime) filters.classTime = classTime;
+        if (classRoom) filters.$or = [{ classRoom }, { labRoom: classRoom }];
+        if (classDay) filters.$or = [{ classDay }, { labDay: classDay }];
+        if (labTime) filters.labTime = labTime;
+        if (labRoom) filters.labRoom = labRoom;
+        if (labDay) filters.labDay = labDay;
+
+        const matchedCourses = await PdfCourse.find(filters);
+
+        if (matchedCourses.length === 0) {
+            return res.status(404).json({ message: "No matching courses found." });
+        }
+
+        res.status(200).json(matchedCourses);
+
+    } catch (error) {
+        console.error("Error searching courses:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };

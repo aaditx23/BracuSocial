@@ -29,26 +29,32 @@ function combineSchedule(data) {
       };
     }
 
+    const shortDay = day.slice(0, 2);  // Get the first two letters of the day (e.g., Mo, Tu)
+
     if (isClass) {
       // Add class time information
       if (combinedSchedule[key].classTime === '') {
         combinedSchedule[key].classTime = `${startTime} - ${endTime}`;
         combinedSchedule[key].classRoom = room;
-        combinedSchedule[key].classDay = day.slice(0, 2);
+        combinedSchedule[key].classDay = shortDay;
       } else {
-        // Append days if there are multiple class times
-        combinedSchedule[key].classDay += ` ${day.slice(0, 2)}`;
+        // Add unique days only
+        const days = combinedSchedule[key].classDay.split(' ');
+        if (!days.includes(shortDay)) {
+          combinedSchedule[key].classDay += ` ${shortDay}`;
+        }
       }
     } else if (isLab) {
       // Add lab time information
       if (combinedSchedule[key].labTime === '') {
         combinedSchedule[key].labTime = `${startTime} - ${endTime}`;
         combinedSchedule[key].labRoom = room;
-        combinedSchedule[key].labDay = day.slice(0, 2);
+        combinedSchedule[key].labDay = shortDay;
       } else {
-        // Append lab days if there are multiple lab times
-        if(combinedSchedule[key].labDay !== day){
-          combinedSchedule[key].labDay += ` ${day.slice(0, 2)}`;
+        // Add unique lab days
+        const labDays = combinedSchedule[key].labDay.split(' ');
+        if (!labDays.includes(shortDay)) {
+          combinedSchedule[key].labDay += ` ${shortDay}`;
         }
 
         // Update lab time span if there are multiple entries
@@ -65,6 +71,7 @@ function combineSchedule(data) {
 
   return result;
 }
+
 
 
 exports.convertPdfToJson = async (pdfBuffer) => {
@@ -120,6 +127,9 @@ exports.convertPdfToJson = async (pdfBuffer) => {
 
       if (room) {
         schedule.push({ course, faculty, section, day, startTime, endTime, room });
+      }
+      if(course === "CSE221" && section === "27"){
+        console.log(course, faculty, section, day, startTime, endTime, room)
       }
     }
 

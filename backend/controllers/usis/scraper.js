@@ -49,7 +49,6 @@ exports.classAndLabSchedule = async (email, password, sessionCode) => {
     return response.data;
   } catch (error) {
     console.error("Failed to fetch class schedule:", error);
-    throw new Error("Failed to fetch class schedule.");
   }
 };
 

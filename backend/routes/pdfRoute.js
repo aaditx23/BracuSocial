@@ -6,5 +6,6 @@ router.get('/pdf/populate', pdfC.populate);
 router.get('/pdf/metadata', pdfC.getScheduleMetadata);
 router.get('/pdf/schedules', pdfC.schedules);
 router.get('/pdf/getAll', pdfC.getAll);
+router.post("/pdf/search", pdfC.searchCourses)
 
 module.exports = router;
