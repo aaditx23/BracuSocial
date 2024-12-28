@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import AddedCourses from "../components/preprereg/addedCourses";
-import CourseDetailsCard from "../components/preprereg/courseDetailsCard";
 import CourseList from "../components/courseList";
+import RoutineTable from "@/components/preprereg/table";
 
 const PrePreRegPage: React.FC = () => {
-  const [filteredCourses, setFilteredCourses] = useState<any[]>([]);
+  const [_, setFilteredCourses] = useState<any[]>([]);
   const [addedCourses, setAddedCourses] = useState<any[]>([]);
 
   // Double-click handler: Add or remove course
@@ -30,25 +30,35 @@ const PrePreRegPage: React.FC = () => {
   
 
   return (
-    <div className="flex w-full h-[500px]">
+    <div className="flex flex-col w-full h-[500px]">
 
-      {/* Course List (Search and Browse) */}
-      <div className="flex-1 p-4">
-        <CourseList
-          setFilteredCourses={setFilteredCourses}
-          setLoading={() => {}}
-          showList={true}
-          addedCourses={addedCourses}
-          handleCourseSelect={handleCourseClick} // Pass single-click handler
-        />
+      {/* Row 1: Course List and Added Courses */}
+      <div className="flex w-full space-x-4 p-4">
+        {/* Course List (Search and Browse) */}
+        <div className="flex-1">
+          <CourseList
+            setFilteredCourses={setFilteredCourses}
+            setLoading={() => {}}
+            showList={true}
+            addedCourses={addedCourses}
+            handleCourseSelect={handleCourseClick} // Pass single-click handler
+          />
+        </div>
+
+        {/* Added Courses Column */}
+        <div className="flex-2">
+          <AddedCourses
+            addedCourses={addedCourses}
+            handleCourseClick={handleCourseClick}
+          />
+        </div>
       </div>
 
-      {/* Added Courses Column */}
+      {/* Row 2: Course Schedule Table */}
       <div className="flex-1 p-4">
-        <AddedCourses
-          addedCourses={addedCourses}
-          handleCourseClick={handleCourseClick}
-        />
+        <RoutineTable 
+        addedCourses={addedCourses}
+        getClash={() => {} } />
       </div>
     </div>
   );

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { XIcon } from 'lucide-react'
 import { Course } from "@/types/Course";
+import { Spinner } from './ui/spinner'
 
 
 interface CourseListProps {
@@ -30,10 +30,12 @@ const CourseList: React.FC<CourseListProps> = ({
   const [faculty, setFaculty] = useState('')
   const [room, setRoom] = useState('')
   const [day, setDay] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchCourses = async () => {
       setLoading(true)
+      
       try {
         const response = await axios.get<Course[]>('http://localhost:3000/api/pdf/schedules')
         setCourses(response.data)
@@ -43,10 +45,11 @@ const CourseList: React.FC<CourseListProps> = ({
         console.error('Failed to fetch courses:', err)
       }
       setLoading(false)
+      setIsLoading(false)
     }
 
     fetchCourses()
-  }, [setFilteredCourses, setLoading])
+  }, [setFilteredCourses])
 
   useEffect(() => {
     filterCourses() // Re-filter courses when filter fields change
@@ -54,6 +57,7 @@ const CourseList: React.FC<CourseListProps> = ({
 
   const filterCourses = () => {
     setLoading(true)
+    setIsLoading(true)
     const filtered = courses.filter((courseItem) => {
       return (
         (course === '' || courseItem.course.toLowerCase().includes(course.toLowerCase())) &&
@@ -71,6 +75,7 @@ const CourseList: React.FC<CourseListProps> = ({
     setFilteredCoursesState(filtered) // Update filteredCourses state
     setFilteredCourses(filtered) // Update parent state (if necessary)
     setLoading(false)
+    setIsLoading(false)
   }
 
   const resetField = (field: string) => {
@@ -177,23 +182,31 @@ const CourseList: React.FC<CourseListProps> = ({
       </div>
 
       {showList && (
-        <ScrollArea className="h-[30vh] w-full border rounded-md">
-          <Table>
-            <TableHeader className="sticky top-0 bg-background z-10">
+        
+        <div className="h-[30vh] w-full border rounded-md overflow-y-auto">
+        <Table className="w-full">
+          <TableHeader className="sticky top-0 bg-background z-10">
+            <TableRow>
+              <TableHead className="text-center">Course</TableHead>
+              <TableHead className="text-center">Section</TableHead>
+              <TableHead className="text-center">Faculty</TableHead>
+              <TableHead className="text-center">Class Room</TableHead>
+              <TableHead className="text-center">Class Day</TableHead>
+              <TableHead className="text-center">Class Time</TableHead>
+              <TableHead className="text-center">Lab Room</TableHead>
+              <TableHead className="text-center">Lab Day</TableHead>
+              <TableHead className="text-center">Lab Time</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
               <TableRow>
-                <TableHead>Course</TableHead>
-                <TableHead>Section</TableHead>
-                <TableHead>Faculty</TableHead>
-                <TableHead>Class Room</TableHead>
-                <TableHead>Class Day</TableHead>
-                <TableHead>Class Time</TableHead>
-                <TableHead>Lab Room</TableHead>
-                <TableHead>Lab Day</TableHead>
-                <TableHead>Lab Time</TableHead>
+                <TableCell colSpan={9} className="text-center py-4">
+                  <Spinner size="sm" className="bg-black dark:bg-white" />
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredCourses.map((courseItem) => ( // Bind to filteredCourses
+            ) : (
+              filteredCourses.map((courseItem) => (
                 <TableRow
                   key={courseItem._id}
                   onClick={() => handleCourseSelect(courseItem)}
@@ -202,22 +215,24 @@ const CourseList: React.FC<CourseListProps> = ({
                       ? 'bg-green-500/30 text-black hover:bg-green-500/50'
                       : 'hover:bg-muted'
                   }`}
-                  
                 >
-                  <TableCell>{courseItem.course}</TableCell>
-                  <TableCell>{courseItem.section}</TableCell>
-                  <TableCell>{courseItem.faculty}</TableCell>
-                  <TableCell>{courseItem.classRoom}</TableCell>
-                  <TableCell>{courseItem.classDay}</TableCell>
-                  <TableCell>{courseItem.classTime}</TableCell>
-                  <TableCell>{courseItem.labRoom}</TableCell>
-                  <TableCell>{courseItem.labDay}</TableCell>
-                  <TableCell>{courseItem.labTime}</TableCell>
+                  <TableCell className="text-center">{courseItem.course}</TableCell>
+                  <TableCell className="text-center">{courseItem.section}</TableCell>
+                  <TableCell className="text-center">{courseItem.faculty}</TableCell>
+                  <TableCell className="text-center">{courseItem.classRoom}</TableCell>
+                  <TableCell className="text-center">{courseItem.classDay}</TableCell>
+                  <TableCell className="text-center">{courseItem.classTime}</TableCell>
+                  <TableCell className="text-center">{courseItem.labRoom}</TableCell>
+                  <TableCell className="text-center">{courseItem.labDay}</TableCell>
+                  <TableCell className="text-center">{courseItem.labTime}</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </ScrollArea>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      
+        
       )}
     </div>
   )

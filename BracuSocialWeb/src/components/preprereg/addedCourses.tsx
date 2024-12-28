@@ -13,11 +13,11 @@ const AddedCourses: React.FC<AddedCoursesProps> = ({
   handleCourseClick: handleCourseClick,
 }) => {
   return (
-    <Card className="flex-1 bg-gray-100">
+    <Card className="h-[35vh] bg-gray-100 flex flex-col">
       <CardHeader>
         <CardTitle className="font-bold">Added Courses</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-y-auto flex-grow">
         <ul className="space-y-2">
           {addedCourses.map((course) => (
             <li
@@ -31,6 +31,7 @@ const AddedCourses: React.FC<AddedCoursesProps> = ({
         </ul>
       </CardContent>
     </Card>
+
   );
 };
 
