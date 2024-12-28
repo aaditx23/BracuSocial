@@ -31,6 +31,9 @@ const NavBar: React.FC = () => {
             <Link to="/preprereg">
               <Button variant="ghost">PrePreReg</Button>
             </Link>
+            <Link to="/findroom">
+              <Button variant="ghost">Free Rooms</Button>
+            </Link>
           </nav>
         </div>
       </div>

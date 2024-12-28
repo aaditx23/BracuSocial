@@ -3,6 +3,7 @@ import { ToastProvider, ToastViewport } from "@/components/ui/toast";
 import Navbar from "./components/navbar";
 import AllCourses from './pages/AllCourses';
 import PrePreRegPage from './pages/PrePreRegPage';
+import FindRoom from './pages/FindRoom';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
             <Routes>
               <Route path="/" element={<AllCourses />} />
               <Route path="/preprereg" element={<PrePreRegPage />} />
+              <Route path="/findroom" element={<FindRoom />} />
             </Routes>
             <ToastViewport /> 
           </main>

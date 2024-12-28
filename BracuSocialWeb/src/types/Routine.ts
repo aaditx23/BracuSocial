@@ -13,7 +13,7 @@ export interface Routine {
   }
 
 
-export const createRoutineFromCourse = (course: Course, room: string): Routine => {
+export const RoutineFromCourse = (course: Course, room: string): Routine => {
   return {
     _id: course._id,
     course: course.course,

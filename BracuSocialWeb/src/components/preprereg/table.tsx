@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Course } from "@/types/Course";
-import { Routine, createRoutineFromCourse } from "@/types/Routine";
+import { Routine, RoutineFromCourse } from "@/types/Routine";
 
 const TimeSlots = [
   "08:00 AM - 09:20 AM",
@@ -95,7 +95,7 @@ const RoutineTable: React.FC<RoutineTableProps> = ({ addedCourses, getClash }) =
       const { rows, columns } = getSlot(course.classDay, course.classTime);
       columns.forEach((column) => {
         rows.forEach((row) => {
-          tableData[row][column].push(createRoutineFromCourse(course, course.classRoom));
+          tableData[row][column].push(RoutineFromCourse(course, course.classRoom));
         });
       });
   
@@ -103,7 +103,7 @@ const RoutineTable: React.FC<RoutineTableProps> = ({ addedCourses, getClash }) =
         const { rows: labRows, columns: labColumns } = getSlot(course.labDay, course.labTime);
         labColumns.forEach((column) => {
           labRows.forEach((row) => {
-            tableData[row][column].push(createRoutineFromCourse(course, course.labRoom));
+            tableData[row][column].push(RoutineFromCourse(course, course.labRoom));
           });
         });
       }
@@ -128,7 +128,7 @@ const RoutineTable: React.FC<RoutineTableProps> = ({ addedCourses, getClash }) =
             {TimeSlots.map((slot, rowIndex) => (
               <TableRow key={slot}>
                 <TableCell className="w-[140px] border border-gray-300">{slot}</TableCell>
-                {WeekDays.map((day, colIndex) => {
+                {WeekDays.map((_, colIndex) => {
                   const courseList = tableData[rowIndex][colIndex];
                   const isClash = courseList.length > 1;
     

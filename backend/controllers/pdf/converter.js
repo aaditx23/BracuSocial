@@ -4,15 +4,13 @@ const pdf = require('pdf-parse');
 
 
 function combineSchedule(data) {
-  // Object to hold combined data by course and section
   const combinedSchedule = {};
 
   data.forEach(entry => {
     const { course, faculty, section, day, startTime, endTime, room } = entry;
     const isLab = room.endsWith('L');
-    const isClass = room.endsWith('C');
+    const isClass = room.endsWith('C') || room.endsWith('L');  // Treat L rooms as flexible
 
-    // Create a key based on course and section
     const key = `${course} ${section}`;
 
     if (!combinedSchedule[key]) {
@@ -29,48 +27,51 @@ function combineSchedule(data) {
       };
     }
 
-    const shortDay = day.slice(0, 2);  // Get the first two letters of the day (e.g., Mo, Tu)
+    const shortDay = day.slice(0, 2);
+    const timeSlot = `${startTime} - ${endTime}`;
 
     if (isClass) {
-      // Add class time information
-      if (combinedSchedule[key].classTime === '') {
-        combinedSchedule[key].classTime = `${startTime} - ${endTime}`;
-        combinedSchedule[key].classRoom = room;
-        combinedSchedule[key].classDay = shortDay;
-      } else {
-        // Add unique days only
-        const days = combinedSchedule[key].classDay.split(' ');
-        if (!days.includes(shortDay)) {
-          combinedSchedule[key].classDay += ` ${shortDay}`;
-        }
-      }
-    } else if (isLab) {
-      // Add lab time information
-      if (combinedSchedule[key].labTime === '') {
-        combinedSchedule[key].labTime = `${startTime} - ${endTime}`;
-        combinedSchedule[key].labRoom = room;
-        combinedSchedule[key].labDay = shortDay;
-      } else {
-        // Add unique lab days
-        const labDays = combinedSchedule[key].labDay.split(' ');
-        if (!labDays.includes(shortDay)) {
-          combinedSchedule[key].labDay += ` ${shortDay}`;
-        }
+      if (room.endsWith('L')) {
+        // Handle lab-like classes
+        if (!combinedSchedule[key].labDay.includes(shortDay)) {
+          // Add new day and time
+          combinedSchedule[key].labDay += (combinedSchedule[key].labDay ? ' ' : '') + shortDay;
+          combinedSchedule[key].labTime += (combinedSchedule[key].labTime ? '; ' : '') + timeSlot;
+        } else {
+          // Extend existing lab time for the day
+          const existingTimes = combinedSchedule[key].labTime.split('; ');
+          const days = combinedSchedule[key].labDay.split(' ');
 
-        // Update lab time span if there are multiple entries
-        const labTimes = combinedSchedule[key].labTime.split(' - ');
-        const firstStartTime = startTime;
-        const secondEndTime = labTimes[1];
-        combinedSchedule[key].labTime = `${firstStartTime} - ${secondEndTime}`;
+          const dayIndex = days.indexOf(shortDay);
+          const [existingStart, existingEnd] = existingTimes[dayIndex].split(' - ');
+
+          combinedSchedule[key].labTime = existingTimes.map((slot, index) => {
+            if (index === dayIndex) {
+              return `${existingStart} - ${endTime}`;
+            }
+            return slot;
+          }).join('; ');
+        }
+        combinedSchedule[key].labRoom = room;
+      } else {
+        // Regular class
+        if (combinedSchedule[key].classTime === '') {
+          combinedSchedule[key].classTime = timeSlot;
+          combinedSchedule[key].classRoom = room;
+          combinedSchedule[key].classDay = shortDay;
+        } else {
+          const days = combinedSchedule[key].classDay.split(' ');
+          if (!days.includes(shortDay)) {
+            combinedSchedule[key].classDay += ` ${shortDay}`;
+          }
+        }
       }
     }
   });
 
-  // Convert combinedSchedule object to an array
-  const result = Object.values(combinedSchedule);
-
-  return result;
+  return Object.values(combinedSchedule);
 }
+
 
 
 
@@ -128,7 +129,7 @@ exports.convertPdfToJson = async (pdfBuffer) => {
       if (room) {
         schedule.push({ course, faculty, section, day, startTime, endTime, room });
       }
-      if(course === "CSE221" && section === "27"){
+      if(course === "CSE391"){
         console.log(course, faculty, section, day, startTime, endTime, room)
       }
     }
