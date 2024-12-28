@@ -100,7 +100,6 @@ const FindRoom: React.FC = () => {
   
       {/* Day Buttons */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Select Day</h2>
         <div className="flex justify-center space-x-4">
           {daysOfWeek.map((day) => (
             <button
@@ -116,7 +115,6 @@ const FindRoom: React.FC = () => {
   
       {/* Time Slot Buttons */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Select Time Slot</h2>
         <div className="flex justify-center space-x-2 flex-wrap">
           {timeSlots.map((slot) => (
             <button

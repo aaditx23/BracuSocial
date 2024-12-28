@@ -4,6 +4,9 @@
 
 /* ... */
 
+body{
+  font-family: "Inter", serif;
+}
 
 @layer base {
   :root {

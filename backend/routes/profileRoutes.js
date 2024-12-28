@@ -3,7 +3,7 @@ const router = express.Router();
 const pc = require('../controllers/profileController');
 
 router.get('/profiles/:studentId', pc.getProfileByStudentId);
-router.post('/profiles/register', pc.register);
-router.post('/profiles/login', pc.login);
+router.post('/auth/register', pc.register);
+router.post('/auth/login', pc.login);
 
 module.exports = router;

@@ -34,7 +34,6 @@ exports.populate = async (req, res) => {
             },
             { upsert: true, session }
         );
-
         const bulkOps = schedule.map(item => ({
             updateOne: {
                 filter: { course: item.course, section: item.section },

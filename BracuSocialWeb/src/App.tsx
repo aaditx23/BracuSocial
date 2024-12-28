@@ -4,18 +4,22 @@ import Navbar from "./components/navbar";
 import AllCourses from './pages/AllCourses';
 import PrePreRegPage from './pages/PrePreRegPage';
 import FindRoom from './pages/FindRoom';
+import { Auth } from './pages/Auth';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
     <ToastProvider>
       <BrowserRouter>
-        <div className="min-h-screen bg-background font-sans antialiased">
+        <div className="min-h-screen bg-background antialiased">
           <Navbar />
           <main className="container mx-auto px-4 py-8">
             <Routes>
               <Route path="/" element={<AllCourses />} />
               <Route path="/preprereg" element={<PrePreRegPage />} />
               <Route path="/findroom" element={<FindRoom />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Routes>
             <ToastViewport /> 
           </main>

@@ -31,52 +31,114 @@ const RoutineTable: React.FC<RoutineTableProps> = ({ addedCourses, getClash }) =
         );
 
   
-    const getSlot = (dayInfo: string, timeInfo: string) => {
-      const days = dayInfo.split(" ");
-      const columns = days.map((d) => WeekDays.indexOf(d));
-      let rows: number[] = [];
-  
-      switch (timeInfo) {
-        case "08:00 AM - 09:20 AM":
-          rows = [0];
-          break;
-        case "09:30 AM - 10:50 AM":
-          rows = [1];
-          break;
-        case "11:00 AM - 12:20 PM":
-          rows = [2];
-          break;
-        case "12:30 PM - 01:50 PM":
-          rows = [3];
-          break;
-        case "02:00 PM - 03:20 PM":
-          rows = [4];
-          break;
-        case "03:30 PM - 04:50 PM":
-          rows = [5];
-          break;
-        case "05:00 PM - 06:20 PM":
-          rows = [6];
-          break;
-        case "06:30 PM - 08:00 PM":
-          rows = [7];
-          break;
-        case "08:00 AM - 10:50 AM":
-          rows = [0, 1];
-          break;
-        case "11:00 AM - 01:50 PM":
-          rows = [2, 3];
-          break;
-        case "02:00 PM - 04:50 PM":
-          rows = [4, 5];
-          break;
-        case "05:00 PM - 07:50 PM":
-          rows = [6, 7];
-          break;
-      }
-  
-      return { rows, columns };
-    };
+        const getSlot = (dayInfo: string, timeInfo: string) => {
+          const days = dayInfo.split(" ");
+          const timeSlots = timeInfo.split(";").map((time) => time.trim());
+          console.log(dayInfo, timeInfo)
+        
+          let rows: number[] = [];
+          const columns: number[] = [];
+        
+          if (timeSlots.length > 1 && timeSlots.length === days.length) {
+            // Special case: Each time corresponds to a specific day
+            for (let i = 0; i < days.length; i++) {
+              const column = WeekDays.indexOf(days[i]);
+              columns.push(column);
+        
+              switch (timeSlots[i]) {
+                case "08:00 AM - 09:20 AM":
+                  rows.push(0);
+                  break;
+                case "09:30 AM - 10:50 AM":
+                  rows.push(1);
+                  break;
+                case "11:00 AM - 12:20 PM":
+                  rows.push(2);
+                  break;
+                case "12:30 PM - 01:50 PM":
+                  rows.push(3);
+                  break;
+                case "02:00 PM - 03:20 PM":
+                  rows.push(4);
+                  break;
+                case "03:30 PM - 04:50 PM":
+                  rows.push(5);
+                  break;
+                case "05:00 PM - 06:20 PM":
+                  rows.push(6);
+                  break;
+                case "06:30 PM - 08:00 PM":
+                  rows.push(7);
+                  break;
+                case "08:00 AM - 10:50 AM":
+                  rows.push(0, 1);
+                  break;
+                case "11:00 AM - 01:50 PM":
+                  rows.push(2, 3);
+                  break;
+                case "02:00 PM - 04:50 PM":
+                  rows.push(4, 5);
+                  break;
+                case "05:00 PM - 07:50 PM":
+                  rows.push(6, 7);
+                  break;
+              }
+            }
+          } else {
+            // General case: Apply all times to all days
+            for (const day of days) {
+              const column = WeekDays.indexOf(day);
+              columns.push(column);
+            }
+        
+            for (const time of timeSlots) {
+              switch (time) {
+                case "08:00 AM - 09:20 AM":
+                  rows.push(0);
+                  break;
+                case "09:30 AM - 10:50 AM":
+                  rows.push(1);
+                  break;
+                case "11:00 AM - 12:20 PM":
+                  rows.push(2);
+                  break;
+                case "12:30 PM - 01:50 PM":
+                  rows.push(3);
+                  break;
+                case "02:00 PM - 03:20 PM":
+                  rows.push(4);
+                  break;
+                case "03:30 PM - 04:50 PM":
+                  rows.push(5);
+                  break;
+                case "05:00 PM - 06:20 PM":
+                  rows.push(6);
+                  break;
+                case "06:30 PM - 08:00 PM":
+                  rows.push(7);
+                  break;
+                case "08:00 AM - 10:50 AM":
+                  rows.push(0, 1);
+                  break;
+                case "11:00 AM - 01:50 PM":
+                  rows.push(2, 3);
+                  break;
+                case "02:00 PM - 04:50 PM":
+                  rows.push(4, 5);
+                  break;
+                case "05:00 PM - 07:50 PM":
+                  rows.push(6, 7);
+                  break;
+              }
+            }
+          }
+        
+          // Remove duplicate row entries and sort them
+          rows = Array.from(new Set(rows)).sort((a, b) => a - b);
+        
+          return { rows, columns };
+        };
+        
   
     const findClash = () => {
       let hasClash = false;
@@ -100,7 +162,9 @@ const RoutineTable: React.FC<RoutineTableProps> = ({ addedCourses, getClash }) =
       });
   
       if (course.labDay !== "-") {
+        console.log("Lab ase")
         const { rows: labRows, columns: labColumns } = getSlot(course.labDay, course.labTime);
+        console.log(labRows, labColumns)
         labColumns.forEach((column) => {
           labRows.forEach((row) => {
             tableData[row][column].push(RoutineFromCourse(course, course.labRoom));
