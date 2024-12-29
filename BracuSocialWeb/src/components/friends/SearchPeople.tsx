@@ -74,7 +74,7 @@ export function SearchPeople({ profile }: SearchPeopleProps) {
       {/* Scrollable area for profile list */}
       <div className="max-h-[300px] overflow-y-auto">
         {filteredProfiles.map((p) => (
-          <Card key={p.studentId} className="mb-4 p-4 flex items-center">
+          <Card key={p.studentId} className="mb-4 p-4 flex items-center border border-gray-300 shadow-md">
             <ProfileCard profile={p} />
             <Button className="ml-2 p-2" variant="outline" disabled={isFriend(p.addedFriends.split(",").map(id => id.trim()))}>
               {isRequestPending(p.studentId) ? (

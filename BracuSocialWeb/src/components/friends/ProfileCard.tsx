@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Profile } from "@/types/Profile";
 
 interface ProfileCardProps {
@@ -11,13 +10,14 @@ export function ProfileCard({ profile }: ProfileCardProps) {
     : [];
 
   return (
-    <Card className="w-64">
-      <CardHeader>
-        <CardTitle>{profile.name}</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="w-64 p-4">
+      {/* Align the name to the start (left) */}
+      <div className="text-left">
+        <h3><strong>{profile.name}</strong></h3>
+      </div>
+      <div className="flex flex-col items-center justify-center mt-2">
         {courses.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 justify-center">
             {courses.map((course, index) => (
               <div
                 key={index}
@@ -30,7 +30,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
         ) : (
           <p>No courses added yet</p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

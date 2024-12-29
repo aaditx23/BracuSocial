@@ -77,7 +77,7 @@ export function AddedFriends({ profile }: AddedFriendsProps) {
         {/* Scrollable area for friends */}
         <div className="max-h-[300px] overflow-y-auto">
           {friends.map((friend) => (
-            <Card key={friend.studentId} className="mb-4 p-4 flex items-center">
+            <Card key={friend.studentId} className="mb-4 p-4 flex items-center border border-gray-300 shadow-md">
               <ProfileCard profile={friend} />
               <Button
                 onClick={() => handleUnfriend(friend.studentId)}

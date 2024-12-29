@@ -73,7 +73,7 @@ export function FriendRequests({ profile }: FriendRequestsProps) {
         {/* Scrollable area for requests */}
         <div className="max-h-[300px] overflow-y-auto">
           {requests.map((request) => (
-            <Card key={request.studentId} className="mb-4 p-4 flex items-center">
+            <Card key={request.studentId} className="mb-4 p-4 flex items-center border border-gray-300 shadow-md">
               <ProfileCard profile={request} />
               <Button
                 onClick={() => handleAddFriend(request.studentId)}
