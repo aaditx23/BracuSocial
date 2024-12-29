@@ -161,12 +161,16 @@ const RoutineParent: React.FC<RoutineParentProps> = ({ showFriends = true }) => 
               </option>
             ))}
           </select>
+          
         )}
-
-        <label>
+        {showFriends &&(
+          <label>
           <input type="checkbox" checked={includeSelf} onChange={handleSwitchChange} />
           Include My Routine
         </label>
+        )}
+
+        
       </div>
 
       <RoutineTable routines={filterRoutineList()} />

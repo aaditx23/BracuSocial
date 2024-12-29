@@ -77,8 +77,6 @@ export function FriendRequests({ profile, setProfile }: FriendRequestsProps) {
       // Assuming you have access to `profile.studentId` (current user's ID)
       const studentId = profile.studentId;  // Make sure `profile.studentId` is available
   
-      console.log("My ID:", studentId);
-      console.log("Add friend:", friendId);
   
       // Send POST request to the API to accept the friend request
       const response = await axios.post("http://localhost:3000/api/profile/acceptRequest", {
