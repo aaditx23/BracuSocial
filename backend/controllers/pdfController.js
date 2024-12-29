@@ -86,6 +86,26 @@ exports.schedules = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+exports.getCourseBySection = async (req, res) => {
+  try {
+    const { course, section } = req.body;
+
+    const foundCourse = await PdfCourse.findOne({ course, section });
+
+    if (!foundCourse) {
+      return res
+        .status(404)
+        .json({ message: "Course not found for this section" });
+    }
+
+    res.status(200).json(foundCourse);
+  } catch (error) {
+    console.error("Error fetching course:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 exports.getAllClassrooms = async (req, res) => {
     try {
         // Fetch distinct classroom names from the databas

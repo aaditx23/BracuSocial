@@ -167,9 +167,7 @@ exports.addCourseToProfile = async (req, res) => {
       return res.status(404).json({ message: 'Profile not found' });
     }
 
-    const updatedCourses = profile.enrolledCourses
-      ? `${profile.enrolledCourses},${newCourse}`
-      : newCourse;
+    const updatedCourses = newCourse;
 
     profile.enrolledCourses = updatedCourses;
     await profile.save();
