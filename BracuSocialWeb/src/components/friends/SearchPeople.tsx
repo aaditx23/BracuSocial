@@ -46,7 +46,6 @@ export function SearchPeople({ profile }: SearchPeopleProps) {
   );
 
   const isRequestPending = (friendRequest: string) => {
-    console.log(friendRequest)
     return profile.friendRequests.includes(friendRequest);
   };
 
@@ -56,6 +55,24 @@ export function SearchPeople({ profile }: SearchPeopleProps) {
 
   const isFriend = (addedFriends: string[]) => {
     return addedFriends.includes(profile.studentId);
+  };
+
+  const handleSendRequest = async (friendId: string) => {
+    try {
+      const studentId = profile.studentId; // Get the current student's ID
+
+      // Make the API call to send the friend request
+      const response = await axios.post("http://localhost:3000/api/profile/sendFriendRequest", {
+        studentId,
+        friendId,
+      });
+
+      console.log("Friend request sent:", response.data);
+      // Optionally, update the state to reflect the request status
+    } catch (error) {
+      console.error("Error sending friend request:", error);
+      // Handle error (e.g., show an alert)
+    }
   };
 
   return (
@@ -76,7 +93,16 @@ export function SearchPeople({ profile }: SearchPeopleProps) {
         {filteredProfiles.map((p) => (
           <Card key={p.studentId} className="mb-4 p-4 flex items-center border border-gray-300 shadow-md">
             <ProfileCard profile={p} />
-            <Button className="ml-2 p-2" variant="outline" disabled={isFriend(p.addedFriends.split(",").map(id => id.trim()))}>
+            <Button
+              className="ml-2 p-2"
+              variant="outline"
+              disabled={isFriend(p.addedFriends.split(",").map(id => id.trim()))}
+              onClick={() => {
+                if (!isRequestPending(p.studentId) && !isAwaitingApproval(p.friendRequests.split(",").map(id => id.trim())) && !isFriend(p.addedFriends.split(",").map(id => id.trim()))) {
+                  handleSendRequest(p.studentId); // Call function only if none of the conditions are true
+                }
+              }}
+            >
               {isRequestPending(p.studentId) ? (
                 <HourglassIcon className="h-5 w-5 text-yellow-500" /> // Show waiting person icon
               ) : isAwaitingApproval(p.friendRequests.split(",").map(id => id.trim())) ? (

@@ -77,9 +77,27 @@ export function FriendRequests({ profile }: FriendRequestsProps) {
   };
 
   const handleCancelRequest = async (friendId: string) => {
-    // Placeholder for canceling a friend request API call
-    console.log("Cancel request:", friendId);
+    try {
+      // Get the studentId from the profile (already available in the props or state)
+      const studentId = profile.studentId;
+  
+      // Make the API call to cancel the friend request
+      const response = await axios.post("http://localhost:3000/api/profile/cancelRequest", {
+        studentId,
+        friendId,
+      });
+  
+      // Handle success response
+      console.log(response.data.message); // "Friend request canceled"
+      // Optionally, update the state to reflect the changes, like removing the friend request from UI
+      // For example, you can update the `profile.friendRequests` state here.
+  
+    } catch (error) {
+      console.error("Error canceling friend request:", error);
+      // Optionally, display an error message
+    }
   };
+  
 
   return (
     <Card className="p-6 max-h-[500px]">

@@ -12,5 +12,7 @@ router.post('/profile/uploadImage', pc.uploadProfileImage)
 router.post('/profile/addCourse', pc.addCourseToProfile)
 router.post('/profile/sendFriendRequest', pc.sendFriendRequest)
 router.post('/profile/acceptRequest', pc.acceptFriendRequest)
+router.post('/profile/unfriend', pc.unfriend)
+router.post('/profile/cancelRequest', pc.cancelFriendRequest)
 
 module.exports = router;

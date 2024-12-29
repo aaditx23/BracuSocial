@@ -47,10 +47,24 @@ export function AddedFriends({ profile }: AddedFriendsProps) {
     fetchFriends();
   }, [profile]);
 
-  const handleUnfriend = (friendId: string) => {
-    // Placeholder for unfriend API call
-    console.log("Unfriend:", friendId);
+  const handleUnfriend = async (friendId: string) => {
+    try {
+      const studentId = profile.studentId;  // Assuming profile is available and has studentId
+  
+      // Call the unfriend API
+      const response = await axios.post('http://localhost:3000/api/profile/unfriend', {
+        studentId,
+        friendId
+      });
+  
+      console.log("Unfriend API Response:", response.data);
+      // You can update the state here if needed, like removing the friend from the UI list
+    } catch (error) {
+      console.error("Error unfriending:", error);
+      // Handle the error (e.g., show an alert to the user)
+    }
   };
+  
 
   if (loading) return <p>Loading added friends...</p>;
   if (error) return <p className="text-red-600">{error}</p>;

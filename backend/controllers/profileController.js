@@ -112,22 +112,22 @@ exports.login = async (req, res) => {
 
 exports.sendFriendRequest = async (req, res) => {
   try {
-    const { from, to } = req.body;
+    const { studentId, friendId } = req.body;
 
-    const fromProfile = await Profile.findOne({ studentId: from });
-    const toProfile = await Profile.findOne({ studentId: to });
+    const profile = await Profile.findOne({ studentId: studentId });
+    const friendProfile = await Profile.findOne({ studentId: friendId });
 
-    if (!fromProfile || !toProfile) {
+    if (!profile || !friendProfile) {
       return res.status(404).json({ message: 'Profile not found' });
     }
 
-    if (!toProfile.friendRequests.includes(from)) {
-      const updatedRequests = toProfile.friendRequests
-        ? `${toProfile.friendRequests},${from}`
-        : from;
+    if (!friendProfile.friendRequests.includes(studentId)) {
+      const updatedRequests = friendProfile.friendRequests
+        ? `${friendProfile.friendRequests},${studentId}`
+        : studentId;
 
-      toProfile.friendRequests = updatedRequests;
-      await toProfile.save();
+      friendProfile.friendRequests = updatedRequests;
+      await friendProfile.save();
 
       res.status(200).json({ message: 'Friend request sent successfully' });
     } else {
@@ -194,21 +194,74 @@ exports.acceptFriendRequest = async (req, res) => {
   }
 };
 
+exports.unfriend = async (req, res) => {
+  try {
+    const { studentId, friendId } = req.body;
+
+    // Find the student's profile
+    const profile = await Profile.findOne({ studentId });
+    if (!profile) {
+      return res.status(404).json({ message: 'Student profile not found' });
+    }
+
+    // Find the friend's profile
+    const friendProfile = await Profile.findOne({ studentId: friendId });
+    if (!friendProfile) {
+      return res.status(404).json({ message: 'Friend profile not found' });
+    }
+
+    // Remove friendId from student's addedFriends
+    if (profile.addedFriends.includes(friendId)) {
+      const updatedFriends = profile.addedFriends
+        .split(',')
+        .filter(id => id !== friendId)
+        .join(',');
+
+      profile.addedFriends = updatedFriends;
+    }
+
+    // Remove studentId from friend's addedFriends
+    if (friendProfile.addedFriends.includes(studentId)) {
+      const updatedFriendFriends = friendProfile.addedFriends
+        .split(',')
+        .filter(id => id !== studentId)
+        .join(',');
+
+      friendProfile.addedFriends = updatedFriendFriends;
+    }
+
+    // Save both profiles
+    await profile.save();
+    await friendProfile.save();
+
+    res.status(200).json({ message: 'Unfriended successfully' });
+  } catch (error) {
+    console.error('Error unfriending:', error);
+    res.status(500).json({ error: 'Error unfriending user' });
+  }
+};
+
+
 
 exports.cancelFriendRequest = async (req, res) => {
   try {
-    const { from, to } = req.body;
+    const { studentId, friendId } = req.body;  // Changed to studentId and friendId
 
-    const profile = await Profile.findOne({ studentId: to });
+    // Find the profile of the student
+    const profile = await Profile.findOne({ studentId });
     if (!profile) {
       return res.status(404).json({ message: 'Profile not found' });
     }
 
+    // Remove the friendId from the student's friendRequests
     const updatedRequests = profile.friendRequests
       .split(',')
-      .filter(id => id !== from)
+      .filter(id => id !== friendId)  // Remove the friendId
       .join(',');
 
+      console.log(profile.friendRequests, updatedRequests)
+
+    // Update the profile with the new friendRequests list
     profile.friendRequests = updatedRequests;
     await profile.save();
 
@@ -218,6 +271,7 @@ exports.cancelFriendRequest = async (req, res) => {
     res.status(500).json({ error: 'Error canceling friend request' });
   }
 };
+
 
 exports.addCourseToProfile = async (req, res) => {
   try {
