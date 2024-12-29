@@ -55,8 +55,25 @@ export function FriendRequests({ profile }: FriendRequestsProps) {
   }
 
   const handleAddFriend = async (friendId: string) => {
-    // Placeholder for adding a friend API call
-    console.log("Add friend:", friendId);
+    try {
+      // Assuming you have access to `profile.studentId` (current user's ID)
+      const studentId = profile.studentId;  // Make sure `profile.studentId` is available
+  
+      console.log("My ID:", studentId);
+      console.log("Add friend:", friendId);
+  
+      // Send POST request to the API to accept the friend request
+      const response = await axios.post("http://localhost:3000/api/profile/acceptRequest", {
+        studentId,
+        friendId,
+      });
+  
+      // Handle the response, e.g., update UI or state
+      console.log("Friend request accepted:", response.data);
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+      // Optionally, handle error, e.g., show an error message to the user
+    }
   };
 
   const handleCancelRequest = async (friendId: string) => {

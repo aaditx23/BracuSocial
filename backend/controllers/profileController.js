@@ -143,34 +143,57 @@ exports.acceptFriendRequest = async (req, res) => {
   try {
     const { studentId, friendId } = req.body;
 
+    // Find the student's profile
     const profile = await Profile.findOne({ studentId });
     if (!profile) {
       return res.status(404).json({ message: 'Profile not found' });
     }
 
-    if (!profile.addedFriends.includes(friendId)) {
-      const updatedFriends = profile.addedFriends
-        ? `${profile.addedFriends},${friendId}`
-        : friendId;
+    // Find the friend's profile
+    const friendProfile = await Profile.findOne({ studentId: friendId });
+    if (!friendProfile) {
+      return res.status(404).json({ message: 'Friend profile not found' });
+    }
 
+    // Remove friendId from student's friendRequests
+    if (profile.friendRequests.includes(friendId)) {
       const updatedRequests = profile.friendRequests
         .split(',')
         .filter(id => id !== friendId)
         .join(',');
 
-      profile.addedFriends = updatedFriends;
       profile.friendRequests = updatedRequests;
-      await profile.save();
-
-      res.status(200).json({ message: 'Friend request accepted' });
-    } else {
-      res.status(400).json({ message: 'Already friends' });
     }
+
+    // Add friendId to student's addedFriends
+    if (!profile.addedFriends.includes(friendId)) {
+      const updatedFriends = profile.addedFriends
+        ? `${profile.addedFriends},${friendId}`
+        : friendId;
+
+      profile.addedFriends = updatedFriends;
+    }
+
+    // Add studentId to friend's addedFriends
+    if (!friendProfile.addedFriends.includes(studentId)) {
+      const updatedFriendFriends = friendProfile.addedFriends
+        ? `${friendProfile.addedFriends},${studentId}`
+        : studentId;
+
+      friendProfile.addedFriends = updatedFriendFriends;
+    }
+
+    // Save both profiles
+    await profile.save();
+    await friendProfile.save();
+
+    res.status(200).json({ message: 'Friend request accepted' });
   } catch (error) {
     console.error('Error accepting friend request:', error);
     res.status(500).json({ error: 'Error accepting friend request' });
   }
 };
+
 
 exports.cancelFriendRequest = async (req, res) => {
   try {
