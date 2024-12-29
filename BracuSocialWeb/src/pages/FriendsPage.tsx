@@ -30,6 +30,8 @@ export function FriendsPage() {
     };
 
     fetchProfile();
+    const intervalId = setInterval(fetchProfile, 1000);
+    return () => clearInterval(intervalId);
   }, []);
 
   if (loading) return <p>Loading...</p>;
@@ -37,9 +39,9 @@ export function FriendsPage() {
 
   return (
     <div className="flex flex-row space-x-4">
-      <AddedFriends profile={profile!} />
-      <FriendRequests profile={profile!} />
-      <SearchPeople profile={profile!} />
+      <AddedFriends profile={profile!} setProfile={setProfile} />
+      <FriendRequests profile={profile!} setProfile={setProfile} />
+      <SearchPeople profile={profile!} setProfile={setProfile} />
     </div>
   );
 }

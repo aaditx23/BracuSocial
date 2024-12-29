@@ -11,7 +11,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
     : [];
 
   return (
-    <div className="w-64 p-4 ">
+    <div className="p-4 ">
       <div className="flex items-center mb-4">
           <ImagePreview 
           base64String={profile.profilePicture || ""}

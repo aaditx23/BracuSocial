@@ -9,6 +9,7 @@ import { UserPlusIcon, ClockIcon, CheckCircleIcon, HourglassIcon } from "lucide-
 
 interface SearchPeopleProps {
   profile: Profile;
+  setProfile: (profile: Profile) => void;
 }
 
 export function SearchPeople({ profile }: SearchPeopleProps) {
@@ -76,7 +77,7 @@ export function SearchPeople({ profile }: SearchPeopleProps) {
   };
 
   return (
-    <Card className="p-6 max-h-[500px]">
+    <Card className="max-h-[85vh] w-[30vw] p-6 ">
       <CardHeader>
         <CardTitle>Search People</CardTitle>
       </CardHeader>
@@ -89,9 +90,9 @@ export function SearchPeople({ profile }: SearchPeopleProps) {
       </CardContent>
 
       {/* Scrollable area for profile list */}
-      <div className="max-h-[300px] overflow-y-auto">
+      <div className="max-h-[65vh] overflow-y-auto">
         {filteredProfiles.map((p) => (
-          <Card key={p.studentId} className="mb-4 p-4 flex items-center border border-gray-300 shadow-md">
+          <Card key={p.studentId} className="mb-4 p-4 flex items-center justify-between border border-gray-300 shadow-md">
             <ProfileCard profile={p} />
             <Button
               className="ml-2 p-2"

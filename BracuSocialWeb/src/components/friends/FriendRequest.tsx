@@ -8,9 +8,10 @@ import { CheckCheckIcon, TrashIcon } from "lucide-react"; // Import the icons
 
 interface FriendRequestsProps {
   profile: Profile;
+  setProfile: (profile: Profile) => void;
 }
 
-export function FriendRequests({ profile }: FriendRequestsProps) {
+export function FriendRequests({ profile, setProfile }: FriendRequestsProps) {
   const [requests, setRequests] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,6 +29,7 @@ export function FriendRequests({ profile }: FriendRequestsProps) {
       }
 
       try {
+        
         const requestsData = await Promise.all(
           ids.map((id) =>
             axios
@@ -35,6 +37,8 @@ export function FriendRequests({ profile }: FriendRequestsProps) {
               .then((res) => res.data)
           )
         );
+        const updatedProfile = await axios.get(`http://localhost:3000/api/profile/${profile.studentId}`);
+        setProfile(updatedProfile.data);
         setRequests(requestsData);
       } catch (err) {
         setError("Error fetching friend requests.");
@@ -44,14 +48,28 @@ export function FriendRequests({ profile }: FriendRequestsProps) {
       }
     };
 
-    fetchRequests();
+    fetchRequests(); // Initial fetch
+    const intervalId = setInterval(fetchRequests, 1000); // Fetch every second
+
+    // Cleanup the interval when the component unmounts
+    return () => clearInterval(intervalId);
   }, [profile]);
 
   if (loading) return <p>Loading friend requests...</p>;
   if (error) return <p className="text-red-600">{error}</p>;
 
+  // Show message if there are no requests
   if (requests.length === 0) {
-    return <p>No pending friend requests</p>; // If no requests are found, show this message
+    return (
+      <Card className="p-6 max-h-[85vh] w-[30vw]">
+        <CardHeader>
+          <CardTitle>Pending Friend Requests</CardTitle>
+        </CardHeader>
+        <CardContent className="mb-4">
+          <p>No pending friend requests.</p> {/* Message for no requests */}
+        </CardContent>
+      </Card>
+    );
   }
 
   const handleAddFriend = async (friendId: string) => {
@@ -74,6 +92,7 @@ export function FriendRequests({ profile }: FriendRequestsProps) {
       console.error("Error accepting friend request:", error);
       // Optionally, handle error, e.g., show an error message to the user
     }
+    window.location.reload()
   };
 
   const handleCancelRequest = async (friendId: string) => {
@@ -96,33 +115,33 @@ export function FriendRequests({ profile }: FriendRequestsProps) {
       console.error("Error canceling friend request:", error);
       // Optionally, display an error message
     }
+    window.location.reload()
   };
-  
 
   return (
-    <Card className="p-6 max-h-[500px]">
+    <Card className="p-6 max-h-[85vh] w-[30vw]">
       <CardHeader>
         <CardTitle>Pending Friend Requests</CardTitle>
       </CardHeader>
       <CardContent className="mb-4">
         {/* Scrollable area for requests */}
-        <div className="max-h-[300px] overflow-y-auto">
+        <div className="max-h-[65vh] overflow-y-auto">
           {requests.map((request) => (
-            <Card key={request.studentId} className="mb-4 p-4 flex items-center border border-gray-300 shadow-md">
+            <Card key={request.studentId} className="mb-4 p-4 flex items-center justify-between border border-gray-300 shadow-md">
               <ProfileCard profile={request} />
               <Button
                 onClick={() => handleAddFriend(request.studentId)}
                 className="ml-2 p-2"
                 variant="outline"
               >
-                <CheckCheckIcon className="h-5 w-5 text-green-500" /> {/* Add friend icon */}
+                <CheckCheckIcon className="h-5 w-5 text-green-500" />
               </Button>
               <Button
                 onClick={() => handleCancelRequest(request.studentId)}
                 className="ml-2 p-2"
                 variant="outline"
               >
-                <TrashIcon className="h-5 w-5 text-red-500" /> {/* Cancel request icon */}
+                <TrashIcon className="h-5 w-5 text-red-500" /> 
               </Button>
             </Card>
           ))}
