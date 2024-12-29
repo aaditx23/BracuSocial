@@ -7,6 +7,8 @@ import FindRoom from './pages/FindRoom';
 import { Auth } from './pages/Auth';
 import ProfilePage from './pages/ProfilePage';
 import { FriendsPage } from './pages/FriendsPage';
+import FriendsRoutinePage from './pages/FriendsRoutinePage';
+import RoutinePage from './pages/RoutinePage';
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
               <Route path="/auth" element={<Auth />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/friends" element={<FriendsPage />} />
+              <Route path="/friendroutine" element={<FriendsRoutinePage />} />
+              <Route path="/routine" element={<RoutinePage />} />
             </Routes>
             <ToastViewport /> 
           </main>

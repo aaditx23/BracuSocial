@@ -9,7 +9,9 @@ export interface Routine {
     classTime: string;
     labDay: string;
     labTime: string;
-    room: String
+    room: String;
+    name?: String;
+    profilePicture?: String
   }
 
 
@@ -26,3 +28,10 @@ export const RoutineFromCourse = (course: Course, room: string): Routine => {
     room: room,
   };
 };
+
+export const ProfileWithRoutine = (name: String, pic: String, routine: Routine): Routine => {
+  routine.name = name
+  routine.profilePicture = pic
+
+  return routine
+}

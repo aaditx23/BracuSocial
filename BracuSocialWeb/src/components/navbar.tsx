@@ -73,6 +73,18 @@ const NavBar: React.FC = () => {
               
             )}
             {isLoggedIn &&(
+              <Link to="/routine">
+                <Button variant="ghost">Routine</Button>
+              </Link>
+              
+            )}
+            {isLoggedIn &&(
+              <Link to="/friendroutine">
+                <Button variant="ghost">Friends' Routine</Button>
+              </Link>
+              
+            )}
+            {isLoggedIn &&(
               <Link to="/friends">
                 <Button variant="ghost">Friends</Button>
               </Link>

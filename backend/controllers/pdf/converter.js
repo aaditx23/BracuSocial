@@ -20,27 +20,64 @@ function handleClass(entry, combinedSchedule, key, shortDay) {
   }
 }
 
+function convertTo24HourFormat(time) {
+  const [hours, minutes] = time.split(/[: ]/);
+  const isPM = time.includes("PM");
+  let hour24 = parseInt(hours, 10);
+  if (isPM && hour24 !== 12) hour24 += 12;
+  if (!isPM && hour24 === 12) hour24 = 0;
+  return hour24 * 60 + parseInt(minutes, 10); // Convert to total minutes
+}
+
+function convertTo12HourFormat(totalMinutes) {
+  const hours24 = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const isPM = hours24 >= 12;
+  const hours12 = hours24 % 12 || 12;
+  
+  // Ensure both hour and minute are two digits
+  const formattedHours = hours12.toString().padStart(2, "0");
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+  const period = isPM ? "PM" : "AM";
+  
+  return `${formattedHours}:${formattedMinutes} ${period}`;
+}
+
+
 function handleLab(entry, combinedSchedule, key, shortDay) {
   const { startTime, endTime, room } = entry;
 
-  if (combinedSchedule[key].labTime === '') {
+  if (combinedSchedule[key].labTime === "") {
     combinedSchedule[key].labTime = `${startTime} - ${endTime}`;
     combinedSchedule[key].labRoom = room;
     combinedSchedule[key].labDay = shortDay;
   } else {
     // Add unique lab days
-    const labDays = combinedSchedule[key].labDay.split(' ');
+    const labDays = combinedSchedule[key].labDay.split(" ");
     if (!labDays.includes(shortDay)) {
       combinedSchedule[key].labDay += ` ${shortDay}`;
     }
 
     // Update lab time span if there are multiple entries
-    const labTimes = combinedSchedule[key].labTime.split(' - ');
-    const firstStartTime = startTime;
-    const secondEndTime = labTimes[1];
-    combinedSchedule[key].labTime = `${firstStartTime} - ${secondEndTime}`;
+    const labTimes = combinedSchedule[key].labTime.split(" - ");
+
+    // Collect all time entries and convert to 24-hour format
+    const timesInMinutes = [
+      convertTo24HourFormat(labTimes[0]),
+      convertTo24HourFormat(labTimes[1]),
+      convertTo24HourFormat(startTime),
+      convertTo24HourFormat(endTime),
+    ];
+
+    // Find smallest and largest times
+    const smallestTime = Math.min(...timesInMinutes);
+    const largestTime = Math.max(...timesInMinutes);
+
+    // Update lab time span
+    combinedSchedule[key].labTime = `${convertTo12HourFormat(smallestTime)} - ${convertTo12HourFormat(largestTime)}`;
   }
 }
+
 
 function combineSchedule(data) {
   // Object to hold combined data by course and section
@@ -77,6 +114,10 @@ function combineSchedule(data) {
         handleClass(entry, combinedSchedule, key, shortDay);
       } else if (isLab) {
         handleLab(entry, combinedSchedule, key, shortDay);
+      }
+
+      if(entry.course === "CSE110" && entry.section === "03"){
+        console.log(entry.room, isClass, isLab)
       }
 
 

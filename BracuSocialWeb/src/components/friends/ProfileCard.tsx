@@ -1,4 +1,5 @@
 import { Profile } from "@/types/Profile";
+import ImagePreview from "../image/imagePreview";
 
 interface ProfileCardProps {
   profile: Profile;
@@ -10,12 +11,19 @@ export function ProfileCard({ profile }: ProfileCardProps) {
     : [];
 
   return (
-    <div className="w-64 p-4">
-      {/* Align the name to the start (left) */}
-      <div className="text-left">
-        <h3><strong>{profile.name}</strong></h3>
+    <div className="w-64 p-4 ">
+      <div className="flex items-center mb-4">
+          <ImagePreview 
+          base64String={profile.profilePicture || ""}
+          size={50}
+           />
+
+        <div className="text-left mx-5">
+          <h3 className="text-xl font-bold">{profile.name}</h3>
+        </div>
       </div>
-      <div className="flex flex-col items-center justify-center mt-2">
+
+      <div className="flex flex-col items-center justify-center mt-4">
         {courses.length > 0 ? (
           <div className="flex flex-wrap gap-2 justify-center">
             {courses.map((course, index) => (

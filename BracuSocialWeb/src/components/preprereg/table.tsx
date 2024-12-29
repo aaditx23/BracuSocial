@@ -34,12 +34,12 @@ const RoutineTable: React.FC<RoutineTableProps> = ({ addedCourses, getClash }) =
         const getSlot = (dayInfo: string, timeInfo: string) => {
           const days = dayInfo.split(" ");
           const timeSlots = timeInfo.split(";").map((time) => time.trim());
-          console.log(dayInfo, timeInfo)
+          console.log(days, timeSlots)
         
           let rows: number[] = [];
           const columns: number[] = [];
         
-          if (timeSlots.length > 1 && timeSlots.length === days.length) {
+          if (timeSlots.length >= 1 && timeSlots.length === days.length) {
             // Special case: Each time corresponds to a specific day
             for (let i = 0; i < days.length; i++) {
               const column = WeekDays.indexOf(days[i]);

@@ -3,13 +3,21 @@ import UploadImage from './uploadImage';
 
 interface ImagePreviewProps {
   base64String: string;
+  showModal?: boolean; // Controls if modal functionality is enabled
+  size?: Number
 }
 
-const ImagePreview: React.FC<ImagePreviewProps> = ({ base64String }) => {
+const ImagePreview: React.FC<ImagePreviewProps> = ({
+  base64String,
+  showModal = false, // Default: modal is disabled
+  size = 32
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleImageClick = () => {
-    setIsModalOpen(true); // Open the modal when image is clicked
+    if (showModal) {
+      setIsModalOpen(true); // Open the modal only if showModal is true
+    }
   };
 
   const handleCloseModal = () => {
@@ -19,7 +27,8 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ base64String }) => {
   return (
     <div className="flex justify-center items-center">
       <div
-        className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 flex justify-center items-center cursor-pointer"
+        className={`rounded-full overflow-hidden border-2 border-gray-300 flex justify-center items-center cursor-pointer`}
+        style={{ width: `${size}px`, height: `${size}px` }} // Dynamic width and height
         onClick={handleImageClick} // Trigger modal on click
       >
         {base64String !== "" ? (

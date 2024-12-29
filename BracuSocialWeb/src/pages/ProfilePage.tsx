@@ -5,6 +5,7 @@ import { Profile } from "@/types/Profile";
 import AddCourses from "@/components/addCourses";
 import { Button } from "@/components/ui/button";
 import ImagePreview from "@/components/image/imagePreview";
+import RoutineParent from "@/components/routine/routine";
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -60,7 +61,11 @@ const ProfilePage: React.FC = () => {
           
             
             <div className="flex justify-center mb-4 ">
-              <ImagePreview base64String={profile.profilePicture} />
+              <ImagePreview 
+              base64String={profile.profilePicture} 
+              showModal={true}
+              size={100}
+              />
             </div>
             <div className="mb-4 space-y-2 text-center">
               <p className="text-lg font-medium">
@@ -73,10 +78,6 @@ const ProfilePage: React.FC = () => {
                 <strong>Email:</strong> {profile.email}
               </p>
             </div>
-
-            
-
-            
 
             <div className="mt-6">
               <h2 className="text-2xl font-semibold mb-4">Enrolled Courses</h2>

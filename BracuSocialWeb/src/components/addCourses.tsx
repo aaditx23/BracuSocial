@@ -35,7 +35,7 @@ const AddCourses: React.FC = () => {
         for (const course of courseArray) {
           const [courseName, section] = course.split(" ");
           try {
-            const courseResponse = await axios.post("http://localhost:3000/api/pdf/getCourse", {
+            const courseResponse = await axios.post("http://localhost:3000/api/pdf/", {
               course: courseName,
               section,
             });
