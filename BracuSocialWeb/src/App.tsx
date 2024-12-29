@@ -6,6 +6,7 @@ import PrePreRegPage from './pages/PrePreRegPage';
 import FindRoom from './pages/FindRoom';
 import { Auth } from './pages/Auth';
 import ProfilePage from './pages/ProfilePage';
+import { FriendsPage } from './pages/FriendsPage';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               <Route path="/findroom" element={<FindRoom />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/friends" element={<FriendsPage />} />
             </Routes>
             <ToastViewport /> 
           </main>

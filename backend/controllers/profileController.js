@@ -3,6 +3,17 @@ const Profile = require('../model/profile');
 const Course = require('../model/pdfCourse');
 const mongoose = require('mongoose');
 
+exports.getAllProfiles = async (req, res) => {
+  try {
+    const profiles = await Profile.find({});
+    res.status(200).json(profiles);
+  } catch (error) {
+    console.error('Error fetching all profiles:', error);
+    res.status(500).json({ error: 'Error fetching all profiles' });
+  }
+};
+
+
 exports.getProfileByStudentId = async (req, res) => {
   try {
     const { studentId } = req.params;

@@ -3,4 +3,6 @@ export interface Profile {
     studentId: string;
     email: string;
     enrolledCourses: string;
+    friendRequests: string;
+    addedFriends: string;
   }

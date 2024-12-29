@@ -6,7 +6,7 @@ import CourseList from "../components/courseList";
 import { Button } from "@/components/ui/button";
 
 const AddCourses: React.FC = () => {
-  const [filteredCourses, setFilteredCourses] = useState<any[]>([]);
+  const [_, setFilteredCourses] = useState<any[]>([]);
   const [addedCourses, setAddedCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -22,7 +22,7 @@ const AddCourses: React.FC = () => {
       }
 
       try {
-        const response = await axios.get(`http://localhost:3000/api/profiles/${id}`);
+        const response = await axios.get(`http://localhost:3000/api/profile/${id}`);
         const courses = response.data?.enrolledCourses || "";
         console.log(courses)
         
@@ -83,7 +83,7 @@ const AddCourses: React.FC = () => {
 
     setSaving(true);
     try {
-      await axios.post("http://localhost:3000/api/profiles/addCourse", {
+      await axios.post("http://localhost:3000/api/profile/addCourse", {
         email,
         newCourse: courseStrings,
       });

@@ -24,7 +24,7 @@ const ProfilePage: React.FC = () => {
     const fetchProfile = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/profiles/${studentId}`
+          `http://localhost:3000/api/profile/${studentId}`
         );
         setProfile(response.data);
       } catch (err) {
