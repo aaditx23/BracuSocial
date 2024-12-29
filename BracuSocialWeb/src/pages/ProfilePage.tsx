@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Profile } from "@/types/Profile";
 import AddCourses from "@/components/addCourses";
 import { Button } from "@/components/ui/button";
+import ImagePreview from "@/components/image/imagePreview";
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -36,6 +37,7 @@ const ProfilePage: React.FC = () => {
     };
 
     fetchProfile();
+    console.log(profile)
   }, []);
 
   if (loading) {
@@ -54,7 +56,13 @@ const ProfilePage: React.FC = () => {
         </CardHeader>
         {profile && (
           <CardContent>
-            <div className="mb-4 space-y-2">
+            {/* ImagePreview Component */}
+          
+            
+            <div className="flex justify-center mb-4 ">
+              <ImagePreview base64String={profile.profilePicture} />
+            </div>
+            <div className="mb-4 space-y-2 text-center">
               <p className="text-lg font-medium">
                 <strong>Name:</strong> {profile.name}
               </p>
@@ -65,6 +73,10 @@ const ProfilePage: React.FC = () => {
                 <strong>Email:</strong> {profile.email}
               </p>
             </div>
+
+            
+
+            
 
             <div className="mt-6">
               <h2 className="text-2xl font-semibold mb-4">Enrolled Courses</h2>

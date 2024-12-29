@@ -1,7 +1,34 @@
 const bcrypt = require('bcrypt');
 const Profile = require('../model/profile');
-const Course = require('../model/pdfCourse');
 const mongoose = require('mongoose');
+
+
+exports.uploadProfileImage = async (req, res) => {
+  try {
+    const { studentId, profilePicture } = req.body;
+
+    if (!profilePicture) {
+      return res.status(400).json({ message: 'No image data provided' });
+    }
+
+    // Find the profile by studentId
+    const profile = await Profile.findOne({ studentId });
+
+    if (!profile) {
+      return res.status(404).json({ message: 'Profile not found' });
+    }
+
+    // Update the profile image field with the Base64 string
+    profile.profilePicture = profilePicture;
+    await profile.save();
+
+    res.status(200).json({ message: 'Profile image uploaded successfully', profile });
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    res.status(500).json({ error: 'Error uploading profile image' });
+  }
+};
+
 
 exports.getAllProfiles = async (req, res) => {
   try {

@@ -5,4 +5,5 @@ export interface Profile {
     enrolledCourses: string;
     friendRequests: string;
     addedFriends: string;
+    profilePicture: string;
   }
