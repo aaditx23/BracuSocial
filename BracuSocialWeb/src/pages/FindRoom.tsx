@@ -69,7 +69,7 @@ const FindRoom: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://bracusocial-web-backend-b6x213chy-aaditx23s-projects.vercel.app/api/pdf/getClasses",
+        "https://bracusocial-web-backend.vercel.app/api/pdf/getClasses",
         { day, time }
       );
       setClassrooms(response.data); // Save fetched classrooms in state

@@ -26,7 +26,7 @@ const ProfilePage: React.FC = () => {
     const fetchProfile = async () => {
       try {
         const response = await axios.get(
-          `https://bracusocial-web-backend-b6x213chy-aaditx23s-projects.vercel.app/api/profile/${studentId}`
+          `https://bracusocial-web-backend.vercel.app/api/profile/${studentId}`
         );
         setProfile(response.data);
       } catch (err) {

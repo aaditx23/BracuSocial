@@ -14,7 +14,7 @@ export const Login: React.FC = () => {
     setIsSuccess(false);
 
     try {
-      const response = await fetch("https://bracusocial-web-backend-b6x213chy-aaditx23s-projects.vercel.app/api/auth/login", {
+      const response = await fetch("https://bracusocial-web-backend.vercel.app/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

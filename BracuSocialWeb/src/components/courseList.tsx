@@ -43,7 +43,7 @@ const CourseList: React.FC<CourseListProps> = ({
 
       try {
         const response = await axios.get<Course[]>(
-          "https://bracusocial-web-backend-b6x213chy-aaditx23s-projects.vercel.app/api/pdf/schedules"
+          "https://bracusocial-web-backend.vercel.app/api/pdf/schedules"
         );
         setCourses(response.data);
         setFilteredCoursesState(response.data);
