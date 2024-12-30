@@ -13,7 +13,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "https://bracusocial-web-backend.vercel.app/",
-        changeOrigin: true,
+        changeOrigin: false,
         secure: false,
       },
     },
