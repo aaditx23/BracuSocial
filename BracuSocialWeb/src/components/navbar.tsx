@@ -17,8 +17,8 @@ const NavBar: React.FC = () => {
   const checkLoginStatus = () => {
     const email = localStorage.getItem("email");
     const id = localStorage.getItem("id");
-    setIsLoggedIn(email !== "" && id !== "");
-  };
+    setIsLoggedIn(email !== null && id !== null && email !== "" && id !== "");
+};
 
   useEffect(() => {
     checkLoginStatus();
@@ -35,12 +35,13 @@ const NavBar: React.FC = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.setItem("email", "");
-    localStorage.setItem("id", "");
+    localStorage.removeItem("email");
+    localStorage.removeItem("id");
     setIsLoggedIn(false);
     window.dispatchEvent(new Event("loginStatusChange"));
     navigate("/");
-  };
+};
+
 
   const getButtonClass = (path: string) => {
     return location.pathname === path ? "text-black" : "text-gray-500";
