@@ -13,10 +13,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
   return (
     <div className="p-4 ">
       <div className="flex items-center mb-4">
-          <ImagePreview 
-          base64String={profile.profilePicture || ""}
-          size={50}
-           />
+        <ImagePreview base64String={profile.profilePicture || ""} size={50} />
 
         <div className="text-left mx-5">
           <h3 className="text-xl font-bold">{profile.name}</h3>

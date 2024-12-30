@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import {
   NavigationMenu,
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 const NavBar: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const checkLoginStatus = () => {
     const email = localStorage.getItem("email");
@@ -20,10 +21,8 @@ const NavBar: React.FC = () => {
   };
 
   useEffect(() => {
-    // Initial check
     checkLoginStatus();
 
-    // Listen for custom login/logout events
     const handleStorageChange = () => {
       checkLoginStatus();
     };
@@ -39,8 +38,12 @@ const NavBar: React.FC = () => {
     localStorage.setItem("email", "");
     localStorage.setItem("id", "");
     setIsLoggedIn(false);
-    window.dispatchEvent(new Event("loginStatusChange"));  // Trigger event
+    window.dispatchEvent(new Event("loginStatusChange"));
     navigate("/");
+  };
+
+  const getButtonClass = (path: string) => {
+    return location.pathname === path ? "text-black" : "text-gray-500";
   };
 
   return (
@@ -58,46 +61,65 @@ const NavBar: React.FC = () => {
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-2">
             <Link to="/">
-              <Button variant="ghost">Courses</Button>
+              <Button variant="ghost" className={getButtonClass("/")}>
+                Courses
+              </Button>
             </Link>
             <Link to="/preprereg">
-              <Button variant="ghost">PrePreReg</Button>
+              <Button variant="ghost" className={getButtonClass("/preprereg")}>
+                PrePreReg
+              </Button>
             </Link>
             <Link to="/findroom">
-              <Button variant="ghost">Free Rooms</Button>
+              <Button variant="ghost" className={getButtonClass("/findroom")}>
+                Free Rooms
+              </Button>
             </Link>
-            {isLoggedIn &&(
+            <Link to="/findlab">
+              <Button variant="ghost" className={getButtonClass("/findlab")}>
+                Free Labs
+              </Button>
+            </Link>
+            {isLoggedIn && (
               <Link to="/profile">
-                <Button variant="ghost">Profile</Button>
+                <Button variant="ghost" className={getButtonClass("/profile")}>
+                  Profile
+                </Button>
               </Link>
-              
             )}
-            {isLoggedIn &&(
+            {isLoggedIn && (
               <Link to="/routine">
-                <Button variant="ghost">Routine</Button>
+                <Button variant="ghost" className={getButtonClass("/routine")}>
+                  Routine
+                </Button>
               </Link>
-              
             )}
-            {isLoggedIn &&(
+            {isLoggedIn && (
               <Link to="/friendroutine">
-                <Button variant="ghost">Friends' Routine</Button>
+                <Button
+                  variant="ghost"
+                  className={getButtonClass("/friendroutine")}
+                >
+                  Friends' Routine
+                </Button>
               </Link>
-              
             )}
-            {isLoggedIn &&(
+            {isLoggedIn && (
               <Link to="/friends">
-                <Button variant="ghost">Friends</Button>
+                <Button variant="ghost" className={getButtonClass("/friends")}>
+                  Friends
+                </Button>
               </Link>
-              
             )}
             {isLoggedIn ? (
-              
               <Button variant="ghost" onClick={handleLogout}>
                 Logout
               </Button>
             ) : (
               <Link to="/auth">
-                <Button variant="ghost">Login</Button>
+                <Button variant="ghost" className={getButtonClass("/auth")}>
+                  Login
+                </Button>
               </Link>
             )}
           </nav>

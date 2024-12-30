@@ -5,7 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Profile } from "@/types/Profile";
-import { UserPlusIcon, ClockIcon, CheckCircleIcon, HourglassIcon } from "lucide-react"; // Import necessary icons
+import {
+  UserPlusIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  HourglassIcon,
+} from "lucide-react";
 
 interface SearchPeopleProps {
   profile: Profile;
@@ -21,8 +26,12 @@ export function SearchPeople({ profile }: SearchPeopleProps) {
   useEffect(() => {
     const fetchAllProfiles = async () => {
       try {
-        const { data } = await axios.get("http://localhost:3000/api/profiles/getAll");
-        setProfiles(data.filter((p: Profile) => p.studentId !== profile.studentId));
+        const { data } = await axios.get(
+          "http://localhost:3000/api/profiles/getAll"
+        );
+        setProfiles(
+          data.filter((p: Profile) => p.studentId !== profile.studentId)
+        );
       } catch (err) {
         setError("Error fetching profiles.");
         console.error(err);
@@ -40,7 +49,9 @@ export function SearchPeople({ profile }: SearchPeopleProps) {
   const filteredProfiles = profiles.filter((p) =>
     ["name", "email", "studentId", "enrolledCourses"].some((field) => {
       if (field in p) {
-        return p[field as keyof Profile]?.toLowerCase()?.includes(searchText.toLowerCase());
+        return p[field as keyof Profile]
+          ?.toLowerCase()
+          ?.includes(searchText.toLowerCase());
       }
       return false;
     })
@@ -60,19 +71,19 @@ export function SearchPeople({ profile }: SearchPeopleProps) {
 
   const handleSendRequest = async (friendId: string) => {
     try {
-      const studentId = profile.studentId; // Get the current student's ID
+      const studentId = profile.studentId;
 
-      // Make the API call to send the friend request
-      const response = await axios.post("http://localhost:3000/api/profile/sendFriendRequest", {
-        studentId,
-        friendId,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/profile/sendFriendRequest",
+        {
+          studentId,
+          friendId,
+        }
+      );
 
       console.log("Friend request sent:", response.data);
-      // Optionally, update the state to reflect the request status
     } catch (error) {
       console.error("Error sending friend request:", error);
-      // Handle error (e.g., show an alert)
     }
   };
 
@@ -89,29 +100,41 @@ export function SearchPeople({ profile }: SearchPeopleProps) {
         />
       </CardContent>
 
-      {/* Scrollable area for profile list */}
       <div className="max-h-[65vh] overflow-y-auto">
         {filteredProfiles.map((p) => (
-          <Card key={p.studentId} className="mb-4 p-4 flex items-center justify-between border border-gray-300 shadow-md">
+          <Card
+            key={p.studentId}
+            className="mb-4 p-4 flex items-center justify-between border border-gray-300 shadow-md"
+          >
             <ProfileCard profile={p} />
             <Button
               className="ml-2 p-2"
               variant="outline"
-              disabled={isFriend(p.addedFriends.split(",").map(id => id.trim()))}
+              disabled={isFriend(
+                p.addedFriends.split(",").map((id) => id.trim())
+              )}
               onClick={() => {
-                if (!isRequestPending(p.studentId) && !isAwaitingApproval(p.friendRequests.split(",").map(id => id.trim())) && !isFriend(p.addedFriends.split(",").map(id => id.trim()))) {
-                  handleSendRequest(p.studentId); // Call function only if none of the conditions are true
+                if (
+                  !isRequestPending(p.studentId) &&
+                  !isAwaitingApproval(
+                    p.friendRequests.split(",").map((id) => id.trim())
+                  ) &&
+                  !isFriend(p.addedFriends.split(",").map((id) => id.trim()))
+                ) {
+                  handleSendRequest(p.studentId);
                 }
               }}
             >
               {isRequestPending(p.studentId) ? (
-                <HourglassIcon className="h-5 w-5 text-yellow-500" /> // Show waiting person icon
-              ) : isAwaitingApproval(p.friendRequests.split(",").map(id => id.trim())) ? (
-                <ClockIcon className="h-5 w-5 text-blue-500" /> // Show awaiting approval icon
-              ) : isFriend(p.addedFriends.split(",").map(id => id.trim())) ? (
-                <CheckCircleIcon className="h-5 w-5 text-green-500" /> // Show approved icon
+                <HourglassIcon className="h-5 w-5 text-yellow-500" />
+              ) : isAwaitingApproval(
+                  p.friendRequests.split(",").map((id) => id.trim())
+                ) ? (
+                <ClockIcon className="h-5 w-5 text-blue-500" />
+              ) : isFriend(p.addedFriends.split(",").map((id) => id.trim())) ? (
+                <CheckCircleIcon className="h-5 w-5 text-green-500" />
               ) : (
-                <UserPlusIcon className="h-5 w-5 text-green-500" /> // Show add friend icon
+                <UserPlusIcon className="h-5 w-5 text-green-500" />
               )}
             </Button>
           </Card>

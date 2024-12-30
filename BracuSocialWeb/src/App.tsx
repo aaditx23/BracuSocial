@@ -9,6 +9,7 @@ import ProfilePage from './pages/ProfilePage';
 import { FriendsPage } from './pages/FriendsPage';
 import FriendsRoutinePage from './pages/FriendsRoutinePage';
 import RoutinePage from './pages/RoutinePage';
+import FindLab from './pages/FindLab';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
               <Route path="/" element={<AllCourses />} />
               <Route path="/preprereg" element={<PrePreRegPage />} />
               <Route path="/findroom" element={<FindRoom />} />
+              <Route path="/findlab" element={<FindLab />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/friends" element={<FriendsPage />} />

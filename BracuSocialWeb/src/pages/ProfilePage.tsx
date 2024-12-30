@@ -38,7 +38,7 @@ const ProfilePage: React.FC = () => {
     };
 
     fetchProfile();
-    console.log(profile)
+    console.log(profile);
   }, []);
 
   if (loading) {
@@ -57,14 +57,11 @@ const ProfilePage: React.FC = () => {
         </CardHeader>
         {profile && (
           <CardContent>
-            {/* ImagePreview Component */}
-          
-            
             <div className="flex justify-center mb-4 ">
-              <ImagePreview 
-              base64String={profile.profilePicture} 
-              showModal={true}
-              size={100}
+              <ImagePreview
+                base64String={profile.profilePicture}
+                showModal={true}
+                size={100}
               />
             </div>
             <div className="mb-4 space-y-2 text-center">
@@ -85,7 +82,10 @@ const ProfilePage: React.FC = () => {
                 <div>
                   <AddCourses />
                   <div className="mt-4 flex space-x-4">
-                    <Button variant="outline" onClick={() => setIsEditing(false)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsEditing(false)}
+                    >
                       Cancel
                     </Button>
                   </div>
@@ -101,7 +101,9 @@ const ProfilePage: React.FC = () => {
                       ))}
                   </ul>
                   <div className="mt-4">
-                    <Button onClick={() => setIsEditing(true)}>Edit Courses</Button>
+                    <Button onClick={() => setIsEditing(true)}>
+                      Edit Courses
+                    </Button>
                   </div>
                 </div>
               ) : (

@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import UploadImage from './uploadImage';
+import React, { useState } from "react";
+import UploadImage from "./uploadImage";
 
 interface ImagePreviewProps {
   base64String: string;
   showModal?: boolean; // Controls if modal functionality is enabled
-  size?: Number
+  size?: Number;
 }
 
 const ImagePreview: React.FC<ImagePreviewProps> = ({
   base64String,
   showModal = false, // Default: modal is disabled
-  size = 32
+  size = 32,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 

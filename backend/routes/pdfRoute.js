@@ -8,6 +8,7 @@ router.get('/pdf/schedules', pdfC.schedules);
 router.get('/pdf/getAll', pdfC.getAll);
 router.post("/pdf/getCourse", pdfC.getCourseBySection)
 router.post('/pdf/getClasses', pdfC.getEmptyClassrooms);
+router.post('/pdf/getLabs', pdfC.getEmptyLabRooms);
 
 router.post("/pdf/search", pdfC.searchCourses)
 

@@ -15,7 +15,9 @@ export function FriendsPage() {
       const studentId = localStorage.getItem("id");
       if (studentId) {
         try {
-          const { data } = await axios.get(`http://localhost:3000/api/profile/${studentId}`);
+          const { data } = await axios.get(
+            `http://localhost:3000/api/profile/${studentId}`
+          );
           setProfile(data);
         } catch (err) {
           setError("Error fetching profile.");

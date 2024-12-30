@@ -2,7 +2,6 @@ import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Course } from "@/types/Course";
 
-
 interface AddedCoursesProps {
   addedCourses: Course[];
   handleCourseClick: (course: Course) => void;
@@ -31,7 +30,6 @@ const AddedCourses: React.FC<AddedCoursesProps> = ({
         </ul>
       </CardContent>
     </Card>
-
   );
 };
 

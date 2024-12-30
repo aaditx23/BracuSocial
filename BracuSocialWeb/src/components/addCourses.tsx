@@ -22,10 +22,12 @@ const AddCourses: React.FC = () => {
       }
 
       try {
-        const response = await axios.get(`http://localhost:3000/api/profile/${id}`);
+        const response = await axios.get(
+          `http://localhost:3000/api/profile/${id}`
+        );
         const courses = response.data?.enrolledCourses || "";
-        console.log(courses)
-        
+        console.log(courses);
+
         const courseArray = courses
           .split(",")
           .map((course: string) => course.trim())
@@ -35,15 +37,21 @@ const AddCourses: React.FC = () => {
         for (const course of courseArray) {
           const [courseName, section] = course.split(" ");
           try {
-            const courseResponse = await axios.post("http://localhost:3000/api/pdf/", {
-              course: courseName,
-              section,
-            });
+            const courseResponse = await axios.post(
+              "http://localhost:3000/api/pdf/",
+              {
+                course: courseName,
+                section,
+              }
+            );
             if (courseResponse.data) {
               fetchedCourses.push(courseResponse.data);
             }
           } catch (err) {
-            console.error(`Error fetching course: ${courseName} ${section}`, err);
+            console.error(
+              `Error fetching course: ${courseName} ${section}`,
+              err
+            );
           }
         }
 
@@ -89,7 +97,6 @@ const AddCourses: React.FC = () => {
       });
       navigate("/profile");
       alert("Courses saved successfully!");
-      
     } catch (err) {
       console.error("Error saving courses", err);
       alert("Failed to save courses.");

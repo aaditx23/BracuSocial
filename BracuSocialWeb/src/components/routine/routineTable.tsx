@@ -122,7 +122,10 @@ const RoutineTable: React.FC<RoutineTableProps> = ({ routines }) => {
           <TableRow>
             <TableHead className="w-[140px]">Time/Day</TableHead>
             {WeekDays.map((day) => (
-              <TableHead key={day} className="w-[100px] text-center border border-gray-300">
+              <TableHead
+                key={day}
+                className="w-[100px] text-center border border-gray-300"
+              >
                 {day}
               </TableHead>
             ))}
@@ -136,7 +139,7 @@ const RoutineTable: React.FC<RoutineTableProps> = ({ routines }) => {
                 const courseList = tableData[rowIndex][colIndex];
 
                 return (
-                    <TableCell
+                  <TableCell
                     key={colIndex}
                     className="w-[100px] h-[80px] text-center border border-gray-300 align-top"
                   >
@@ -147,11 +150,17 @@ const RoutineTable: React.FC<RoutineTableProps> = ({ routines }) => {
                           className="bg-[#e0f7fa] rounded-md shadow-sm p-2 m-1 flex flex-col justify-between"
                         >
                           <div className="flex items-center space-x-2">
-                            <ImagePreview base64String={routine.profilePicture!!.toString()} />
-                            <span className="text-xs"><strong>{routine.name}</strong></span>
+                            <ImagePreview
+                              base64String={routine.profilePicture!!.toString()}
+                            />
+                            <span className="text-xs">
+                              <strong>{routine.name}</strong>
+                            </span>
                           </div>
                           <div className="text-xs mt-1">
-                            <strong>{routine.course} - {routine.section}</strong>
+                            <strong>
+                              {routine.course} - {routine.section}
+                            </strong>
                             <br />
                             {routine.room}
                           </div>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 interface UploadImageProps {
   isOpen: boolean;
@@ -16,13 +16,14 @@ const UploadImage: React.FC<UploadImageProps> = ({ isOpen, onClose }) => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size <= 50 * 1024) { // 50KB limit
+      if (file.size <= 50 * 1024) {
+        // 50KB limit
         setImageFile(file);
         setError(null); // Reset error if file is valid
         convertToBase64(file);
       } else {
         setImageFile(null);
-        setError('Cannot upload an image larger than 50KB');
+        setError("Cannot upload an image larger than 50KB");
       }
     }
   };
@@ -44,24 +45,27 @@ const UploadImage: React.FC<UploadImageProps> = ({ isOpen, onClose }) => {
 
     setLoading(true);
 
-    const studentId = localStorage.getItem('id');
+    const studentId = localStorage.getItem("id");
     if (!studentId) {
-      setError('Student ID is not available.');
+      setError("Student ID is not available.");
       setLoading(false);
       return;
     }
 
     try {
       // Send base64 string to the backend
-      const response = await axios.post('http://localhost:3000/api/profile/uploadImage', {
-        studentId,
-        profilePicture: base64Image, // Send the base64 string instead of a file
-      });
-      console.log('Image uploaded successfully:', response.data);
+      const response = await axios.post(
+        "http://localhost:3000/api/profile/uploadImage",
+        {
+          studentId,
+          profilePicture: base64Image, // Send the base64 string instead of a file
+        }
+      );
+      console.log("Image uploaded successfully:", response.data);
       onClose(); // Close the modal after successful upload
     } catch (error) {
-      console.error('Error uploading image:', error);
-      setError('Failed to upload image. Please try again.');
+      console.error("Error uploading image:", error);
+      setError("Failed to upload image. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -72,7 +76,9 @@ const UploadImage: React.FC<UploadImageProps> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-md w-80">
-        <h2 className="text-lg font-semibold text-center">Upload Profile Image</h2>
+        <h2 className="text-lg font-semibold text-center">
+          Upload Profile Image
+        </h2>
 
         {/* Image input */}
         <div className="mt-4">
@@ -90,7 +96,11 @@ const UploadImage: React.FC<UploadImageProps> = ({ isOpen, onClose }) => {
         {/* Display the image preview */}
         {base64Image && (
           <div className="mt-4 flex justify-center">
-            <img src={base64Image} alt="Preview" className="max-w-[200px] max-h-[200px] rounded-full object-cover" />
+            <img
+              src={base64Image}
+              alt="Preview"
+              className="max-w-[200px] max-h-[200px] rounded-full object-cover"
+            />
           </div>
         )}
 
@@ -99,9 +109,11 @@ const UploadImage: React.FC<UploadImageProps> = ({ isOpen, onClose }) => {
           <button
             onClick={handleUpload}
             disabled={loading || !base64Image}
-            className={`px-4 py-2 text-white ${loading || !base64Image ? 'bg-gray-400' : 'bg-blue-500'} rounded-md`}
+            className={`px-4 py-2 text-white ${
+              loading || !base64Image ? "bg-gray-400" : "bg-blue-500"
+            } rounded-md`}
           >
-            {loading ? 'Uploading...' : 'Upload Image'}
+            {loading ? "Uploading..." : "Upload Image"}
           </button>
         </div>
 

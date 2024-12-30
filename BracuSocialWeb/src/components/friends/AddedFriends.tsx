@@ -20,11 +20,11 @@ export function AddedFriends({ profile, setProfile }: AddedFriendsProps) {
     const ids = profile.addedFriends
       .split(",")
       .map((id) => id.trim())
-      .filter((id) => id !== ""); // Filter out empty values
+      .filter((id) => id !== "");
 
     if (ids.length === 0) {
       setLoading(false);
-      return; // No friends to fetch
+      return;
     }
 
     try {
@@ -36,7 +36,9 @@ export function AddedFriends({ profile, setProfile }: AddedFriendsProps) {
         )
       );
       setFriends(friendsData);
-      const updatedProfile = await axios.get(`http://localhost:3000/api/profile/${profile.studentId}`);
+      const updatedProfile = await axios.get(
+        `http://localhost:3000/api/profile/${profile.studentId}`
+      );
       setProfile(updatedProfile.data);
     } catch (err) {
       setError("Error fetching added friends.");
@@ -53,25 +55,25 @@ export function AddedFriends({ profile, setProfile }: AddedFriendsProps) {
 
   const handleUnfriend = async (friendId: string) => {
     try {
-      const studentId = profile.studentId;  // Assuming profile is available and has studentId
+      const studentId = profile.studentId;
 
-      // Call the unfriend API
-      const response = await axios.post('http://localhost:3000/api/profile/unfriend', {
-        studentId,
-        friendId
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/profile/unfriend",
+        {
+          studentId,
+          friendId,
+        }
+      );
 
       console.log("Unfriend API Response:", response.data);
 
-      // Update the profile and friends list locally after unfriend
-      setFriends((prevFriends) => prevFriends.filter((friend) => friend.studentId !== friendId));
-
-
+      setFriends((prevFriends) =>
+        prevFriends.filter((friend) => friend.studentId !== friendId)
+      );
     } catch (error) {
       console.error("Error unfriending:", error);
-      // Handle the error (e.g., show an alert to the user)
     }
-    window.location.reload()
+    window.location.reload();
   };
 
   if (loading) return <p>Loading added friends...</p>;
@@ -96,17 +98,19 @@ export function AddedFriends({ profile, setProfile }: AddedFriendsProps) {
         <CardTitle>Added Friends</CardTitle>
       </CardHeader>
       <CardContent className="mb-4">
-        {/* Scrollable area for friends */}
         <div className="max-h-[65vh] overflow-y-auto">
           {friends.map((friend) => (
-            <Card key={friend.studentId} className="mb-4 p-4 flex items-center justify-between border border-gray-300 shadow-md">
+            <Card
+              key={friend.studentId}
+              className="mb-4 p-4 flex items-center justify-between border border-gray-300 shadow-md"
+            >
               <ProfileCard profile={friend} />
               <Button
                 onClick={() => handleUnfriend(friend.studentId)}
                 className="ml-2 p-2"
-                variant="outline" // Optional for styling
+                variant="outline"
               >
-                <UserMinusIcon className="h-5 w-5 text-red-500" /> {/* Icon button */}
+                <UserMinusIcon className="h-5 w-5 text-red-500" />
               </Button>
             </Card>
           ))}

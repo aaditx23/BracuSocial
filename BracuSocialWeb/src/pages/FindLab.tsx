@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const FindRoom: React.FC = () => {
-  const timeSlots = [
-    "08:00 AM - 09:20 AM",
-    "09:30 AM - 10:50 AM",
-    "11:00 AM - 12:20 PM",
-    "12:30 PM - 01:50 PM",
-    "02:00 PM - 03:20 PM",
-    "03:30 PM - 04:50 PM",
-    "05:00 PM - 06:20 PM",
-    "06:30 PM - 08:00 PM",
+const FindLab: React.FC = () => {
+  const labTimeSlots = [
+    "08:00 AM - 10:50 AM",
+    "11:00 AM - 01:50 PM",
+    "02:00 PM - 04:50 PM",
+    "05:00 PM - 08:00 PM",
   ];
 
   const daysOfWeek = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
-  const [classrooms, setClassrooms] = useState<string[]>([]);
+  const [labs, setLabs] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentDay, setCurrentDay] = useState<string>(getCurrentDay());
@@ -24,36 +20,26 @@ const FindRoom: React.FC = () => {
   );
   const [isClosed, setIsClosed] = useState<boolean>(false);
 
-  // Function to get the current day
+  // Get the current day
   function getCurrentDay() {
     const currentDayIndex = new Date().getDay(); // 0 = Sun, 1 = Mon, etc.
-    return daysOfWeek[currentDayIndex]; // Return the current day
+    return daysOfWeek[currentDayIndex];
   }
 
-  // Function to get the current time slot
+  // Get the current time slot
   function getCurrentTimeSlot() {
     const currentTime = new Date();
-
-    // Get current hours and minutes
     let hours = currentTime.getHours();
     let minutes = currentTime.getMinutes();
-
-    // Determine AM or PM
     const ampm = hours >= 12 ? "PM" : "AM";
 
-    // Convert to 12-hour format
-    hours = hours % 12;
-    hours = hours ? hours : 12; // 0 hour is 12 in 12-hour format
-
-    // Pad hours and minutes to always have two digits
+    hours = hours % 12 || 12;
     const paddedHours = hours < 10 ? "0" + hours : hours;
     const paddedMinutes = minutes < 10 ? "0" + minutes : minutes;
-
     const currentTimeString = `${paddedHours}:${paddedMinutes} ${ampm}`;
 
-    for (let slot of timeSlots) {
+    for (let slot of labTimeSlots) {
       const [start, end] = slot.split("-");
-
       if (
         currentTimeString >= start.trim() &&
         currentTimeString <= end.trim()
@@ -64,54 +50,53 @@ const FindRoom: React.FC = () => {
     return "Closed";
   }
 
-  // Fetch classrooms from API
-  const fetchEmptyRooms = async (day: string, time: string) => {
+  // Fetch available labs
+  const fetchEmptyLabs = async (day: string, time: string) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/pdf/getClasses",
+        "http://localhost:3000/api/pdf/getLabs",
         { day, time }
       );
-      setClassrooms(response.data); // Save fetched classrooms in state
+      setLabs(response.data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching empty classrooms:", error);
-      setError("Failed to load classrooms.");
+      console.error("Error fetching empty labs:", error);
+      setError("Failed to load labs.");
       setLoading(false);
     }
   };
 
-  // Fetch empty classrooms for the initial load
+  // Initial fetch
   useEffect(() => {
     if (currentTimeSlot === "Closed") {
       setIsClosed(true);
       setLoading(false);
     } else {
       setIsClosed(false);
-      fetchEmptyRooms(currentDay, currentTimeSlot);
+      fetchEmptyLabs(currentDay, currentTimeSlot);
     }
   }, [currentDay, currentTimeSlot]);
 
-  // Handle day and time button clicks
+  // Handle day and time selection
   const handleDayClick = (day: string) => {
     setCurrentDay(day);
     setIsClosed(false);
-    fetchEmptyRooms(day, currentTimeSlot);
+    fetchEmptyLabs(day, currentTimeSlot);
   };
 
   const handleTimeSlotClick = (time: string) => {
     setCurrentTimeSlot(time);
     setIsClosed(false);
-    fetchEmptyRooms(currentDay, time);
+    fetchEmptyLabs(currentDay, time);
   };
 
-  // Filter out empty classrooms
-  const filteredClassrooms = classrooms.filter((classroom) => classroom !== "");
+  const filteredLabs = labs.filter((lab) => lab !== "");
 
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold text-center mb-6">
-        Find Available Classrooms
+        Find Available Labs
       </h1>
 
       {/* Day Buttons */}
@@ -134,7 +119,7 @@ const FindRoom: React.FC = () => {
       {/* Time Slot Buttons */}
       <div className="mb-6">
         <div className="flex justify-center space-x-2 flex-wrap">
-          {timeSlots.map((slot) => (
+          {labTimeSlots.map((slot) => (
             <button
               key={slot}
               onClick={() => handleTimeSlotClick(slot)}
@@ -150,9 +135,9 @@ const FindRoom: React.FC = () => {
         </div>
       </div>
 
-      {/* Classroom Results */}
+      {/* Lab Results */}
       {loading ? (
-        <p className="text-center">Loading classrooms...</p>
+        <p className="text-center">Loading labs...</p>
       ) : error ? (
         <p className="text-center text-red-500">{error}</p>
       ) : (
@@ -164,23 +149,21 @@ const FindRoom: React.FC = () => {
             </p>
           ) : (
             <>
-              <h3 className="text-xl font-semibold mb-2">
-                Available Classrooms
-              </h3>
-              {filteredClassrooms.length === 0 ? (
-                <p>No classrooms available.</p>
+              <h3 className="text-xl font-semibold mb-2">Available Labs</h3>
+              {filteredLabs.length === 0 ? (
+                <p>No labs available.</p>
               ) : (
                 <div>
                   <p className="mt-4 text-center text-lg font-semibold">
-                    Total Classrooms: {filteredClassrooms.length}
+                    Total Labs: {filteredLabs.length}
                   </p>
                   <ul className="space-y-2">
-                    {filteredClassrooms.map((classroom, index) => (
+                    {filteredLabs.map((lab, index) => (
                       <li
                         key={index}
                         className="border p-2 rounded-lg text-center"
                       >
-                        {classroom}
+                        {lab}
                       </li>
                     ))}
                   </ul>
@@ -194,4 +177,4 @@ const FindRoom: React.FC = () => {
   );
 };
 
-export default FindRoom;
+export default FindLab;
