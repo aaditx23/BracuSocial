@@ -32,12 +32,12 @@ export function FriendRequests({ profile, setProfile }: FriendRequestsProps) {
         const requestsData = await Promise.all(
           ids.map((id) =>
             axios
-              .get(`http://localhost:3000/api/profile/${id}`)
+              .get(`https://bracusocial-web-backend-b6x213chy-aaditx23s-projects.vercel.app/api/profile/${id}`)
               .then((res) => res.data)
           )
         );
         const updatedProfile = await axios.get(
-          `http://localhost:3000/api/profile/${profile.studentId}`
+          `https://bracusocial-web-backend-b6x213chy-aaditx23s-projects.vercel.app/api/profile/${profile.studentId}`
         );
         setProfile(updatedProfile.data);
         setRequests(requestsData);
@@ -76,7 +76,7 @@ export function FriendRequests({ profile, setProfile }: FriendRequestsProps) {
       const studentId = profile.studentId;
 
       const response = await axios.post(
-        "http://localhost:3000/api/profile/acceptRequest",
+        "https://bracusocial-web-backend-b6x213chy-aaditx23s-projects.vercel.app/api/profile/acceptRequest",
         {
           studentId,
           friendId,
@@ -95,7 +95,7 @@ export function FriendRequests({ profile, setProfile }: FriendRequestsProps) {
       const studentId = profile.studentId;
 
       const response = await axios.post(
-        "http://localhost:3000/api/profile/cancelRequest",
+        "https://bracusocial-web-backend-b6x213chy-aaditx23s-projects.vercel.app/api/profile/cancelRequest",
         {
           studentId,
           friendId,

@@ -6,7 +6,11 @@ require("dotenv").config();
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://bracusocial-web-backend-b6x213chy-aaditx23s-projects.vercel.app',  // Replace with your actual frontend domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],  // Allow the necessary HTTP methods
+  credentials: true,  // If you're handling cookies or authentication
+}));
 
 const MONGO_URI = process.env.MONGODB_URI;
 

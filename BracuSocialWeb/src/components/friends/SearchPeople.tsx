@@ -27,7 +27,7 @@ export function SearchPeople({ profile }: SearchPeopleProps) {
     const fetchAllProfiles = async () => {
       try {
         const { data } = await axios.get(
-          "http://localhost:3000/api/profiles/getAll"
+          "https://bracusocial-web-backend-b6x213chy-aaditx23s-projects.vercel.app/api/profiles/getAll"
         );
         setProfiles(
           data.filter((p: Profile) => p.studentId !== profile.studentId)
@@ -74,7 +74,7 @@ export function SearchPeople({ profile }: SearchPeopleProps) {
       const studentId = profile.studentId;
 
       const response = await axios.post(
-        "http://localhost:3000/api/profile/sendFriendRequest",
+        "https://bracusocial-web-backend-b6x213chy-aaditx23s-projects.vercel.app/api/profile/sendFriendRequest",
         {
           studentId,
           friendId,
