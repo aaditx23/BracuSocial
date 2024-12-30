@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/table";
 import { XIcon } from "lucide-react";
 import { Course } from "@/types/Course";
-import { Spinner } from "./ui/spinner";
 
 interface CourseListProps {
   setFilteredCourses: React.Dispatch<React.SetStateAction<Course[]>>;
@@ -24,9 +23,7 @@ interface CourseListProps {
 const CourseList: React.FC<CourseListProps> = ({
   setFilteredCourses,
   setLoading,
-  addedCourses = [],
   showList,
-  handleCourseSelect,
 }) => {
   const [courses, setCourses] = useState<Course[]>([]); // The full list of courses
   const [filteredCourses, setFilteredCoursesState] = useState<Course[]>([]); // The filtered list
@@ -35,7 +32,7 @@ const CourseList: React.FC<CourseListProps> = ({
   const [faculty, setFaculty] = useState("");
   const [room, setRoom] = useState("");
   const [day, setDay] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [_, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchCourses = async () => {

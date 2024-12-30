@@ -7,7 +7,7 @@ interface UploadImageProps {
 }
 
 const UploadImage: React.FC<UploadImageProps> = ({ isOpen, onClose }) => {
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [_, setImageFile] = useState<File | null>(null);
   const [base64Image, setBase64Image] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);

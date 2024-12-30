@@ -5,7 +5,6 @@ import { Profile } from "@/types/Profile";
 import AddCourses from "@/components/addCourses";
 import { Button } from "@/components/ui/button";
 import ImagePreview from "@/components/image/imagePreview";
-import RoutineParent from "@/components/routine/routine";
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
