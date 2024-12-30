@@ -55,7 +55,7 @@ const FindLab: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://bracusocial-web-backend.vercel.app/api/pdf/getLabs",
+        "/api/pdf/getLabs",
         { day, time }
       );
       setLabs(response.data);

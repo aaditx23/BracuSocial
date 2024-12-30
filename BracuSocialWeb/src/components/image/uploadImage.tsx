@@ -55,7 +55,7 @@ const UploadImage: React.FC<UploadImageProps> = ({ isOpen, onClose }) => {
     try {
       // Send base64 string to the backend
       const response = await axios.post(
-        "https://bracusocial-web-backend.vercel.app/api/profile/uploadImage",
+        "/api/profile/uploadImage",
         {
           studentId,
           profilePicture: base64Image, // Send the base64 string instead of a file

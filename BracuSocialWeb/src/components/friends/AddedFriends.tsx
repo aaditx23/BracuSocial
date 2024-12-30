@@ -31,13 +31,13 @@ export function AddedFriends({ profile, setProfile }: AddedFriendsProps) {
       const friendsData = await Promise.all(
         ids.map((id) =>
           axios
-            .get(`https://bracusocial-web-backend.vercel.app/api/profile/${id}`)
+            .get(`/api/profile/${id}`)
             .then((res) => res.data)
         )
       );
       setFriends(friendsData);
       const updatedProfile = await axios.get(
-        `https://bracusocial-web-backend.vercel.app/api/profile/${profile.studentId}`
+        `/api/profile/${profile.studentId}`
       );
       setProfile(updatedProfile.data);
     } catch (err) {
@@ -58,7 +58,7 @@ export function AddedFriends({ profile, setProfile }: AddedFriendsProps) {
       const studentId = profile.studentId;
 
       const response = await axios.post(
-        "https://bracusocial-web-backend.vercel.app/api/profile/unfriend",
+        "/api/profile/unfriend",
         {
           studentId,
           friendId,

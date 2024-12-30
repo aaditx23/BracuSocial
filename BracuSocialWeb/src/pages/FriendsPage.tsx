@@ -16,7 +16,7 @@ export function FriendsPage() {
       if (studentId) {
         try {
           const { data } = await axios.get(
-            `https://bracusocial-web-backend.vercel.app/api/profile/${studentId}`
+            `/api/profile/${studentId}`
           );
           setProfile(data);
         } catch (err) {

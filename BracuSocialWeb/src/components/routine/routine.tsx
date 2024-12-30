@@ -38,7 +38,7 @@ const RoutineParent: React.FC<RoutineParentProps> = ({
 
         // Fetch current user's profile
         const { data: currentProfile } = await axios.get(
-          `https://bracusocial-web-backend.vercel.app/api/profile/${currentStudentId}`
+          `/api/profile/${currentStudentId}`
         );
         const currentEnrolledCourses = currentProfile.enrolledCourses
           ? currentProfile.enrolledCourses
@@ -50,7 +50,7 @@ const RoutineParent: React.FC<RoutineParentProps> = ({
         for (const courseString of currentEnrolledCourses) {
           const [courseCode, section] = courseString.split(" ");
           const { data: course } = await axios.post(
-            "https://bracusocial-web-backend.vercel.app/api/pdf/getCourse",
+            "/api/pdf/getCourse",
             {
               course: courseCode.trim(),
               section: section.trim(),
@@ -80,7 +80,7 @@ const RoutineParent: React.FC<RoutineParentProps> = ({
 
           for (const friendId of addedFriends) {
             const { data: friendProfile } = await axios.get(
-              `https://bracusocial-web-backend.vercel.app/api/profile/${friendId}`
+              `/api/profile/${friendId}`
             );
             const friendEnrolledCourses = friendProfile.enrolledCourses
               ? friendProfile.enrolledCourses
@@ -92,7 +92,7 @@ const RoutineParent: React.FC<RoutineParentProps> = ({
             for (const courseString of friendEnrolledCourses) {
               const [courseCode, section] = courseString.split(" ");
               const { data: course } = await axios.post(
-                "https://bracusocial-web-backend.vercel.app/api/pdf/getCourse",
+                "/api/pdf/getCourse",
                 {
                   course: courseCode.trim(),
                   section: section.trim(),

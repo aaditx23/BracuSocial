@@ -23,7 +23,7 @@ const AddCourses: React.FC = () => {
 
       try {
         const response = await axios.get(
-          `https://bracusocial-web-backend.vercel.app/api/profile/${id}`
+          `/api/profile/${id}`
         );
         const courses = response.data?.enrolledCourses || "";
         console.log(courses);
@@ -38,7 +38,7 @@ const AddCourses: React.FC = () => {
           const [courseName, section] = course.split(" ");
           try {
             const courseResponse = await axios.post(
-              "https://bracusocial-web-backend.vercel.app/api/pdf/",
+              "/api/pdf/getCourse",
               {
                 course: courseName,
                 section,
@@ -91,7 +91,7 @@ const AddCourses: React.FC = () => {
 
     setSaving(true);
     try {
-      await axios.post("https://bracusocial-web-backend.vercel.app/api/profile/addCourse", {
+      await axios.post("/api/profile/addCourse", {
         email,
         newCourse: courseStrings,
       });

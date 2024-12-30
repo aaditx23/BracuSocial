@@ -9,4 +9,13 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://bracusocial-web-backend.vercel.app/",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 })
