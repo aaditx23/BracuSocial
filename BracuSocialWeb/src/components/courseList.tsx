@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { XIcon } from 'lucide-react'
 import { Course } from "@/types/Course";
-import { Spinner } from './ui/spinner'
 
 
 interface CourseListProps {
@@ -30,7 +29,7 @@ const CourseList: React.FC<CourseListProps> = ({
   const [faculty, setFaculty] = useState('')
   const [room, setRoom] = useState('')
   const [day, setDay] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
+  const [_, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchCourses = async () => {
