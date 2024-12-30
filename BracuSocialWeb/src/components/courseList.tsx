@@ -36,7 +36,7 @@ const CourseList: React.FC<CourseListProps> = ({
       setLoading(true)
       
       try {
-        const response = await axios.get<Course[]>('api/pdf/schedules')
+        const response = await axios.get<Course[]>('https://bracusocial-web-backend.vercel.app/api/pdf/schedules')
         setCourses(response.data)
         setFilteredCoursesState(response.data) // Initialize filteredCourses with all data
         setFilteredCourses(response.data) // Update parent state (if needed)

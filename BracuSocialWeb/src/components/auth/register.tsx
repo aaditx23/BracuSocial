@@ -16,7 +16,7 @@ export const Register: React.FC = () => {
     setIsSuccess(false); // Reset success on every attempt
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch("https://bracusocial-web-backend.vercel.app/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
