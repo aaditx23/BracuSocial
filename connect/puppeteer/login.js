@@ -1,18 +1,17 @@
-const chromium = require("@sparticuz/chromium");
-const puppeteerCore = require("puppeteer-core");
+const chromium = require("chrome-aws-lambda");
+const puppeteer = require("puppeteer");
 
 async function launchBrowser() {
     let browser;
     if (process.env.VERCEL) {
-        // Running on Vercel (use puppeteer-core with sparticuz chromium)
-        browser = await puppeteerCore.launch({
+        // Running on Vercel
+        browser = await puppeteer.launch({
             args: chromium.args,
-            executablePath: await chromium.executablePath(), // Ensure it's a function call to resolve path
+            executablePath: await chromium.executablePath || "/usr/bin/google-chrome-stable",
             headless: chromium.headless,
         });
     } else {
-        // Running locally (use full puppeteer package)
-        const puppeteer = require("puppeteer"); // This imports full Puppeteer with bundled Chromium
+        // Running locally
         browser = await puppeteer.launch({
             headless: true, // Set to false if you want to debug
             args: ["--no-sandbox", "--disable-setuid-sandbox"],
