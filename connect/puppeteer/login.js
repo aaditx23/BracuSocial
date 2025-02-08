@@ -1,22 +1,26 @@
-const chromium = require("chrome-aws-lambda");
-const puppeteer = require("puppeteer");
+const chromium = require('@sparticuz/chromium');
+const puppeteer = require('puppeteer-core');
+const fs = require('fs');
+const path = require('path');
 
 async function launchBrowser() {
     let browser;
-    if (process.env.VERCEL) {
-        // Running on Vercel
-        browser = await puppeteer.launch({
-            args: chromium.args,
-            executablePath: await chromium.executablePath || "/usr/bin/google-chrome-stable",
-            headless: chromium.headless,
-        });
-    } else {
-        // Running locally
-        browser = await puppeteer.launch({
-            headless: true, // Set to false if you want to debug
-            args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        });
+
+    // Check if Chromium binary exists in /tmp directory
+    const chromiumPath = '/tmp/chromium';
+    if (!fs.existsSync(chromiumPath)) {
+        console.log("Chromium not found. Downloading and extracting...");
+        // Download and extract Chromium
+        const execPath = await chromium.executablePath();
+        console.log(`Chromium executable path: ${execPath}`);
     }
+
+    browser = await puppeteer.launch({
+        args: chromium.args,
+        executablePath: chromiumPath || await chromium.executablePath(),  // Ensure path is set to extracted chromium
+        headless: chromium.headless,
+    });
+
     return browser;
 }
 
