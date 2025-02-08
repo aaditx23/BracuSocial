@@ -1,8 +1,28 @@
-const puppeteer = require('puppeteer');
-const axios = require('axios');
+const chromium = require("chrome-aws-lambda");
+const puppeteer = require("puppeteer-core");
+
+async function launchBrowser() {
+    let browser;
+    if (process.env.VERCEL) {
+        // Running on Vercel
+        browser = await puppeteer.launch({
+            args: chromium.args,
+            executablePath: await chromium.executablePath || "/usr/bin/google-chrome-stable",
+            headless: chromium.headless,
+        });
+    } else {
+        // Running locally
+        const puppeteerFull = require("puppeteer");
+        browser = await puppeteerFull.launch({
+            headless: true, // Set to false if you want to debug
+            args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        });
+    }
+    return browser;
+}
 
 module.exports.connectLogin = async (username, password) => {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await launchBrowser();
   const page = await browser.newPage();
 
   let authorizationToken = '';
@@ -45,7 +65,6 @@ module.exports.connectLogin = async (username, password) => {
 
     // If authorization token is found, proceed
     if (authorizationToken !== "") {
-        console.log(`Auth Token: ${authorizationToken}`)
       return authorizationToken;
     } else {
       throw new Error('Authorization token not found');
