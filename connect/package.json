@@ -11,16 +11,18 @@
     "start": "nodemon index.js"
   },
   "dependencies": {
+    "@sparticuz/chromium": "^106.0.2",
     "axios": "^1.7.9",
-    "chrome-aws-lambda": "^10.1.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongoose": "^8.10.0",
     "nodemon": "^3.1.9",
-    "puppeteer": "^24.2.0",
-    "puppeteer-core": "^10.4.0",
+    "puppeteer-core": "^18.0.5",
     "querystring": "^0.2.1"
+  },
+  "devDependencies": {
+    "puppeteer": "^24.2.0"
   }
 }
