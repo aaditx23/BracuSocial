@@ -1,26 +1,20 @@
-package com.aaditx23.bracusocial.backend.local
+package com.aaditx23.bracusocial.application
 
-import android.app.Application
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.local.models.FriendProfile
 import com.aaditx23.bracusocial.backend.local.models.Profile
 import com.aaditx23.bracusocial.backend.local.models.SavedRoutine
 import com.aaditx23.bracusocial.backend.local.models.Session
 import com.aaditx23.bracusocial.backend.remote.ProfileProxy
-import dagger.hilt.android.HiltAndroidApp
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 
-@HiltAndroidApp
-class LocalServer: Application() {
-    // register models and store it in a variable for accessing all over the application
-    companion object{
-        lateinit var realm: Realm
-    }
+object RealmServer {
+    lateinit var realm: Realm
+        private set
 
-    override fun onCreate() {
-        super.onCreate()
 
+    fun initRealm(){
         realm = Realm.open(
             configuration = RealmConfiguration.create(
                 schema = setOf(     // register models here
@@ -34,5 +28,4 @@ class LocalServer: Application() {
             )
         )
     }
-
 }

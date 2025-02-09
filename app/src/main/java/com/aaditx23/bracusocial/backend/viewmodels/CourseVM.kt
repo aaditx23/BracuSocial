@@ -2,7 +2,6 @@ package com.aaditx23.bracusocial.backend.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aaditx23.bracusocial.backend.local.models.courseArray
 import com.aaditx23.bracusocial.backend.local.repositories.CourseRepository
 import com.aaditx23.bracusocial.backend.local.repositories.SavedRoutineRepository
 import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository

@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+/app/src/main/java/com/aaditx23/bracusocial/backend/secrets.kt
+

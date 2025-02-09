@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
+import com.aaditx23.bracusocial.backend.remote.webview.WebViewLogin
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.components.NoButtonCircularLoadingDialog
 import kotlinx.coroutines.launch
@@ -54,6 +55,7 @@ fun Login(
         mutableStateOf(false)
     }
     var passwordVisible by remember { mutableStateOf(false) }
+    var startWebView by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val (email, setEmail) = rememberSaveable { mutableStateOf("") }
@@ -110,32 +112,33 @@ fun Login(
                     scope.launch {
                         isLoading = true
                         println("Loggin in...")
-                        accountvm.login(
-                            email, pass,
-                            result = { login, name, gotProfile ->
-
-                                if(login){
-                                    if(gotProfile){
-//                                        Toast.makeText(
-//                                            context,
-//                                            "Login Successful",
-//                                            Toast.LENGTH_SHORT
-//                                        ).show()
-                                        navController.navigate("Profile")
-                                    }
-                                    else{
-                                        navController.navigate("CreateAccount/${Uri.encode(email)}/${Uri.encode(name)}")
-                                    }
-                                }
-                                else{
-//                                    Toast.makeText(
-//                                        context,
-//                                        "Wrong USIS Credentials",
-//                                        Toast.LENGTH_SHORT
-//                                    ).show()
-                                }
-                            }
-                        )
+                        startWebView = true
+//                        accountvm.login(
+//                            email, pass,
+//                            result = { login, name, gotProfile ->
+//
+//                                if(login){
+//                                    if(gotProfile){
+////                                        Toast.makeText(
+////                                            context,
+////                                            "Login Successful",
+////                                            Toast.LENGTH_SHORT
+////                                        ).show()
+//                                        navController.navigate("Profile")
+//                                    }
+//                                    else{
+//                                        navController.navigate("CreateAccount/${Uri.encode(email)}/${Uri.encode(name)}")
+//                                    }
+//                                }
+//                                else{
+////                                    Toast.makeText(
+////                                        context,
+////                                        "Wrong USIS Credentials",
+////                                        Toast.LENGTH_SHORT
+////                                    ).show()
+//                                }
+//                            }
+//                        )
                         isLoading = false
 
                     }
@@ -146,6 +149,19 @@ fun Login(
         }
         if(isLoading){
             NoButtonCircularLoadingDialog(title = "Logging in to $email", message = "Please wait...")
+        }
+        if(startWebView){
+            WebViewLogin(
+                email = email,
+                password = pass,
+                onTokenReceived = { token ->
+                    if(token != null){
+                        println("Token is $token")
+
+                    }
+                    startWebView = false
+                }
+            )
         }
     }
 

@@ -30,7 +30,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.aaditx23.bracusocial.R
 
-import com.aaditx23.bracusocial.backend.local.models.demoProfiles
 
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aaditx23.bracusocial.backend.local.models.Course
-import com.aaditx23.bracusocial.backend.local.models.emptyProfileString
 import com.aaditx23.bracusocial.backend.local.repositories.CourseRepository
 import com.aaditx23.bracusocial.backend.local.repositories.FriendProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.ProfileRepository
@@ -14,14 +13,17 @@ import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import com.aaditx23.bracusocial.backend.remote.ProfileProxyRepository
 import com.aaditx23.bracusocial.backend.remote.RemoteProfile
 import com.aaditx23.bracusocial.backend.remote.USISClient
+import com.aaditx23.bracusocial.backend.remote.api.ConnectService
 import com.aaditx23.bracusocial.component6
 import com.aaditx23.bracusocial.component7
 import com.aaditx23.bracusocial.component8
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +34,8 @@ open class AccountVM @Inject constructor(
     private val ppR: ProfileProxyRepository,
     private val courseR: CourseRepository,
     private val fbp: FirebaseRepository,
-    private val usisClient: USISClient
+    private val usisClient: USISClient,
+    private val Connect: ConnectService
 ): ViewModel() {
 
     val allSessions = sessionR.getAllSession()
@@ -51,66 +54,85 @@ open class AccountVM @Inject constructor(
 
 //    val firstProfile = profileR.getFirstProfile()
 
+    fun connectLogin(email: String, pass: String) {
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    Connect.getLoginPage().execute()  // Runs in background thread
+                }
+
+                if (response.isSuccessful) {
+                    val finalUrl = response.raw().request.url.toString()
+                    println("✅ Final Login Page URL: $finalUrl")
+                } else {
+                    println("❌ Failed to get login page: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                println("⚠️ Error: ${e.message}")
+            }
+        }
+    }
 
     suspend fun login(
         email: String,
         pass: String,
         result: (login: Boolean, name: String, gotProfile: Boolean) -> Unit
     ){
-        viewModelScope.launch {
-            val (login, name) = async{ usisClient.loginAndFetchName(email, pass) }.await()
-
-
-            if(login){
-//                println("In vm login is true")
-                val profile =  async {
-                    fbp.getProfileByEmail(email)
-                }.await()
-
-                if (profile != null){
-                    profileR.createProfile(
-                        sid = profile.studentId,
-                        name = name,
-                        pass = pass,
-                        friends = profile.addedFriends,
-                        courses = profile.enrolledCourses,
-                        requests = profile.friendRequests,
-                        pic = profile.profilePicture,
-                        emailData = profile.email
-                    )
-
-                    profile.addedFriends.split(",").forEachIndexed{_, s ->
-                        if(s != ""){
-//                            println("Friend is $s")
-                            val friend = async {
-                                ppR.getProfileProxyId(s)
-                            }.await()
-                            if (friend != null) {
-//                                println("Friend found $s , accountproxyvm, login")
-                                fpR.createFriendProfile(
-                                    sid = s,
-                                    name = friend.studentName,
-                                    courses = friend.enrolledCourses,
-                                    friends = friend.addedFriends,
-                                    pic = friend.profilePicture,
-                                    emailData = friend.email
-                                )
-                            }
-                        }
-
-                    }
-                    sessionR.loginStatusUpdate(true)
-
-                }
-                result(true, name, profile != null)
-
-            }
-            else{
-                result(false, "No name", false)
-            }
-
-
-        }
+        connectLogin(email, pass)
+//        viewModelScope.launch {
+//            val (login, name) = async{ usisClient.loginAndFetchName(email, pass) }.await()
+//
+//
+//            if(login){
+////                println("In vm login is true")
+//                val profile =  async {
+//                    fbp.getProfileByEmail(email)
+//                }.await()
+//
+//                if (profile != null){
+//                    profileR.createProfile(
+//                        sid = profile.studentId,
+//                        name = name,
+//                        pass = pass,
+//                        friends = profile.addedFriends,
+//                        courses = profile.enrolledCourses,
+//                        requests = profile.friendRequests,
+//                        pic = profile.profilePicture,
+//                        emailData = profile.email
+//                    )
+//
+//                    profile.addedFriends.split(",").forEachIndexed{_, s ->
+//                        if(s != ""){
+////                            println("Friend is $s")
+//                            val friend = async {
+//                                ppR.getProfileProxyId(s)
+//                            }.await()
+//                            if (friend != null) {
+////                                println("Friend found $s , accountproxyvm, login")
+//                                fpR.createFriendProfile(
+//                                    sid = s,
+//                                    name = friend.studentName,
+//                                    courses = friend.enrolledCourses,
+//                                    friends = friend.addedFriends,
+//                                    pic = friend.profilePicture,
+//                                    emailData = friend.email
+//                                )
+//                            }
+//                        }
+//
+//                    }
+//                    sessionR.loginStatusUpdate(true)
+//
+//                }
+//                result(true, name, profile != null)
+//
+//            }
+//            else{
+//                result(false, "No name", false)
+//            }
+//
+//
+//        }
     }
 
     suspend fun createProfile(
@@ -127,7 +149,7 @@ open class AccountVM @Inject constructor(
                 courses = courses,
                 friends = addedFriends,
                 requests = friendRequests,
-                pic = emptyProfileString,
+                pic = "",
                 emailData = email
             )
             fbp.addOrUpdateProfile(
@@ -138,7 +160,7 @@ open class AccountVM @Inject constructor(
                     addedFriends = "",
                     enrolledCourses = "",
                     friendRequests = "",
-                    profilePicture = emptyProfileString
+                    profilePicture = ""
                 )
             )
             sessionR.loginStatusUpdate(true)

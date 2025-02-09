@@ -361,6 +361,7 @@ fun DayCard(day: String, isToday: Boolean){
     }
     val infoFontColor =  paletteBlue9
 
+
     ElevatedCard(
         modifier = Modifier
             .padding(5.dp)
