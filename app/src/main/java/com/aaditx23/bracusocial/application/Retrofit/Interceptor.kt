@@ -13,7 +13,7 @@ class Interceptor : Interceptor {
         val response = chain.proceed(request)
 
         // Check if the Authorization token is present in the response headers
-        val token = response.header("Authorization")
+        val token = request.header("Authorization")
         if (token != null) {
             // The token is in the "Authorization" header of the response
             authToken = token.split(" ")[1]  // Split to get the token without 'Bearer'

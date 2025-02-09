@@ -1,6 +1,7 @@
 package com.aaditx23.bracusocial.application.Retrofit
 
 import com.aaditx23.bracusocial.backend.CONNECT_BASE
+import com.aaditx23.bracusocial.backend.adapters.StudentCourseAdapter
 import com.aaditx23.bracusocial.backend.remote.api.ConnectService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -27,13 +28,12 @@ object RetrofitServer {
 
         val client = OkHttpClient.Builder()
             .cookieJar(RetrofitCookieJar)
-            .followRedirects(true)
-            .followSslRedirects(true)
-            .addInterceptor(interceptor)
+//            .addInterceptor(interceptor)
 //            .addInterceptor(loggingInterceptor)       // use if need logs. else no.
             .build()
 
         moshi = Moshi.Builder()
+            .add(StudentCourseAdapter())
             .add(KotlinJsonAdapterFactory())
             .build()
 

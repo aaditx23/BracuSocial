@@ -156,8 +156,9 @@ fun Login(
                 password = pass,
                 onTokenReceived = { token ->
                     if(token != null){
-                        println("Token is $token")
-
+                        scope.launch {
+                            accountvm.getStudentInfo(token)
+                        }
                     }
                     startWebView = false
                 }

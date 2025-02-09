@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.awaitResponse
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,6 +54,25 @@ open class AccountVM @Inject constructor(
         )
 
 //    val firstProfile = profileR.getFirstProfile()
+
+    fun getStudentInfo(authToken: String){
+        viewModelScope.launch{
+            val info = Connect.getStudentInfo(authToken).awaitResponse()
+            println("Profile info: ${info.body()}")
+            info.body()?.let {
+                val id = info.body()!![0].id
+                val courses = Connect.getStudentCourses(
+                    id = id.toString(), authorizationToken = authToken
+                ).awaitResponse()
+                println("Student enrolled courses: ${courses.body()}")
+            }
+        }
+    }
+    fun getEnrolledCourses(authToken: String, id: String){
+        viewModelScope.launch {
+            val response = ""
+        }
+    }
 
     fun connectLogin(email: String, pass: String) {
         viewModelScope.launch {
