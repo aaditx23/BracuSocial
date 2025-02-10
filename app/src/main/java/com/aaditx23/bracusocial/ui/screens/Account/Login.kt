@@ -1,11 +1,15 @@
 package com.aaditx23.bracusocial.ui.screens.Account
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Base64
 import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -24,6 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -31,11 +36,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil3.compose.AsyncImage
 import com.aaditx23.bracusocial.backend.remote.AccountProxyVM
 import com.aaditx23.bracusocial.backend.remote.webview.WebViewLogin
 import com.aaditx23.bracusocial.backend.viewmodels.AccountVM
 import com.aaditx23.bracusocial.components.NoButtonCircularLoadingDialog
 import kotlinx.coroutines.launch
+import java.io.ByteArrayInputStream
 
 @Composable
 fun Login(
@@ -56,6 +63,9 @@ fun Login(
     }
     var passwordVisible by remember { mutableStateOf(false) }
     var startWebView by remember { mutableStateOf(false) }
+    var imageString by remember{
+        mutableStateOf("")
+    }
 
     val context = LocalContext.current
     val (email, setEmail) = rememberSaveable { mutableStateOf("") }
@@ -64,11 +74,33 @@ fun Login(
 
 
 
+    fun base64ToBitmap(base64String: String): Bitmap? {
+        // Decode the Base64 string into a byte array
+        val decodedString = Base64.decode(base64String, Base64.DEFAULT)
+
+        // Convert the byte array to an InputStream
+        val byteArrayInputStream = ByteArrayInputStream(decodedString)
+
+        // Decode the InputStream to a Bitmap
+        return BitmapFactory.decodeStream(byteArrayInputStream)
+    }
 
     Column(
         modifier = Modifier
             .padding(top = 80.dp)
     ) {
+        if(imageString != ""){
+            println("IMAGE FOUND")
+            println(imageString)
+            AsyncImage(
+                model = base64ToBitmap(imageString),
+                contentDescription = "Profile",
+                modifier = Modifier
+                    .size(100.dp)
+                    .border(1.dp, Color.Cyan),
+                contentScale = ContentScale.FillWidth
+            )
+        }
         TextField(
             value = email,
             onValueChange = {setEmail(it)},
@@ -105,42 +137,15 @@ fun Login(
 
         Button(
             onClick = {
-                if(email == "" || pass == ""){
+                if(
+                    email == "" || pass == ""
+                    ){
                     Toast.makeText(context, "Fields cannot be empty", Toast.LENGTH_SHORT).show()
                 }
                 else{
                     scope.launch {
-                        isLoading = true
                         println("Loggin in...")
                         startWebView = true
-//                        accountvm.login(
-//                            email, pass,
-//                            result = { login, name, gotProfile ->
-//
-//                                if(login){
-//                                    if(gotProfile){
-////                                        Toast.makeText(
-////                                            context,
-////                                            "Login Successful",
-////                                            Toast.LENGTH_SHORT
-////                                        ).show()
-//                                        navController.navigate("Profile")
-//                                    }
-//                                    else{
-//                                        navController.navigate("CreateAccount/${Uri.encode(email)}/${Uri.encode(name)}")
-//                                    }
-//                                }
-//                                else{
-////                                    Toast.makeText(
-////                                        context,
-////                                        "Wrong USIS Credentials",
-////                                        Toast.LENGTH_SHORT
-////                                    ).show()
-//                                }
-//                            }
-//                        )
-                        isLoading = false
-
                     }
                 }
             }
@@ -154,16 +159,26 @@ fun Login(
             WebViewLogin(
                 email = email,
                 password = pass,
+
                 onTokenReceived = { token ->
                     if(token != null){
                         scope.launch {
-                            accountvm.getStudentInfo(token)
+                            accountvm.getStudentInfo(
+                                authToken = token,
+                                setImage = { image ->
+                                    imageString = image
+                                }
+                            )
                         }
                     }
                     startWebView = false
+                },
+                setLoading = { loading ->
+                    isLoading = loading
                 }
             )
         }
+
     }
 
 

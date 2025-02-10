@@ -1,15 +1,14 @@
 package com.aaditx23.bracusocial.backend.viewmodels
 
+import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aaditx23.bracusocial.backend.local.models.Course
 import com.aaditx23.bracusocial.backend.local.repositories.CourseRepository
 import com.aaditx23.bracusocial.backend.local.repositories.FriendProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.ProfileRepository
 import com.aaditx23.bracusocial.backend.local.repositories.SessionRepository
 import com.aaditx23.bracusocial.backend.remote.FirebaseRepository
-import com.aaditx23.bracusocial.backend.remote.ProfileProxy
 import com.aaditx23.bracusocial.backend.remote.ProfileProxyRepository
 import com.aaditx23.bracusocial.backend.remote.RemoteProfile
 import com.aaditx23.bracusocial.backend.remote.USISClient
@@ -54,25 +53,45 @@ open class AccountVM @Inject constructor(
         )
 
 //    val firstProfile = profileR.getFirstProfile()
+    private fun encodedFilePath(filePath: String): String {
+        val lastDotIndex = filePath.lastIndexOf('.')
 
-    fun getStudentInfo(authToken: String){
+        if (lastDotIndex == -1) {
+            throw IllegalArgumentException("File path must contain an extension.")
+        }
+
+        val extension = filePath.substring(lastDotIndex) // e.g., ".jpg"
+
+        val filePathWithoutExtension = filePath
+
+        val encodedFilePath = Base64.encodeToString(filePathWithoutExtension.toByteArray(), Base64.NO_WRAP)
+
+        return "$encodedFilePath$extension"
+    }
+
+    fun getStudentInfo(authToken: String, setImage: (String) -> Unit){
         viewModelScope.launch{
             val info = Connect.getStudentInfo(authToken).awaitResponse()
             println("Profile info: ${info.body()}")
             info.body()?.let {
                 val id = info.body()!![0].id
+                val fileName = info.body()!![0].filePath!!
                 val courses = Connect.getStudentCourses(
                     id = id.toString(), authorizationToken = authToken
                 ).awaitResponse()
+                val imageResponse = Connect.getStudentImage(encodedFilePath(fileName), authToken).awaitResponse()
                 println("Student enrolled courses: ${courses.body()}")
+                val byteArray = imageResponse.body()?.bytes()
+
+                val image = Base64.encodeToString(byteArray, Base64.NO_WRAP)
+                println("Size is ${imageResponse.body()!!.contentType()}")
+                println("BYTE ARRA IS ${encodedFilePath(fileName)}")
+                setImage(image)
+                println("Base64 String: $image")
             }
         }
     }
-    fun getEnrolledCourses(authToken: String, id: String){
-        viewModelScope.launch {
-            val response = ""
-        }
-    }
+
 
     fun connectLogin(email: String, pass: String) {
         viewModelScope.launch {

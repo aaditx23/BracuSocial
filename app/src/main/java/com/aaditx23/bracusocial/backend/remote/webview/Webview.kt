@@ -10,8 +10,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 val login = "https://sso.bracu.ac.bd/realms/bracu/protocol/openid-connect/auth?client_id=slm&redirect_uri=https%3A%2F%2Fconnect.bracu.ac.bd%2F&"
 
@@ -19,15 +22,18 @@ val login = "https://sso.bracu.ac.bd/realms/bracu/protocol/openid-connect/auth?c
 fun WebViewLogin(
     email: String,
     password: String,
-    onTokenReceived: (String?) -> Unit
+    onTokenReceived: (String?) -> Unit,
+    setLoading: (Boolean) -> Unit
 ) {
-    val isLoading = remember { mutableStateOf(true) }
     var isCaptured by remember{
         mutableStateOf(false)
     }
 
-
+        setLoading(true)
         AndroidView(
+            modifier = Modifier
+                .size(0.dp)
+            ,
             factory = { context ->
                 WebView(context).apply {
                     // Enable JavaScript
@@ -51,7 +57,6 @@ fun WebViewLogin(
                             super.onPageFinished(view, url)
                             // Print URL when page has finished loading
                             println("Finished loading: $url")
-                            isLoading.value = false
 
                             // Inject email and password into the fields and submit
                             if (url?.contains(login) == true) {
@@ -77,7 +82,6 @@ fun WebViewLogin(
                             error: android.webkit.WebResourceError?
                         ) {
                             super.onReceivedError(view, request, error)
-                            isLoading.value = false
                             Toast.makeText(
                                 context,
                                 "Failed to load page: ${error?.description}",
@@ -103,6 +107,7 @@ fun WebViewLogin(
                                     view.loadUrl("about:blank")  // Load a blank page instead of crashing
                                 }
                                 onTokenReceived(authorization)
+                                setLoading(false)
                                 println("Authorization Token: $authorization")
                             }
                             return super.shouldInterceptRequest(view, request)
@@ -117,12 +122,6 @@ fun WebViewLogin(
                 // Any update logic (like sending cookies or headers) can go here later
             }
         )
-
-
-    // Show a loading indicator while the page is loading
-    if (isLoading.value) {
-        CircularProgressIndicator()
-    }
 }
 
 

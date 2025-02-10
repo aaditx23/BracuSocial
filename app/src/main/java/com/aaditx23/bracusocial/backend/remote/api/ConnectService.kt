@@ -1,6 +1,7 @@
 package com.aaditx23.bracusocial.backend.remote.api
 
 import com.aaditx23.bracusocial.backend.STUDENT_COURSES
+import com.aaditx23.bracusocial.backend.STUDENT_IMAGE
 import com.aaditx23.bracusocial.backend.STUDENT_INFO
 import com.aaditx23.bracusocial.backend.remote.models.StudentCourse
 import okhttp3.ResponseBody
@@ -37,6 +38,11 @@ interface ConnectService{
         @Header("Authorization") authorizationToken: String  // Add Authorization header
     ): Call<List<StudentCourse>>
 
+    @GET("$STUDENT_IMAGE/{fileName}")
+    fun getStudentImage(
+        @Path("fileName") fileName: String,
+        @Header("Authorization") authorizationToken: String
+    ): Call<ResponseBody>
 
 }
 
@@ -49,7 +55,7 @@ data class StudentInfo(
     val id: Int,
     val studentId: String,
     val fullName: String,
-    val photoId: String?,
+    val filePath: String?,
     val programOrCourse: String,
     val academicType: String,
     val cgpa: Double,
